@@ -8,14 +8,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -33,10 +37,14 @@ fun CustomTextField(
     placeholderMessage: String,
     textState: String,
     onTextChange: (String) -> Unit,
+    onSearch: (String) -> Unit = {},
     isPassword: Boolean = false,
     maxLength: Int = 20,
     textStyle: TextStyle = MaterialTheme.typography.labelMedium.copy(color = Black)
 ) {
+    // 키보드를 제어하기 위한 컨트롤러
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     BasicTextField(
         value = textState,
         onValueChange =  { if (it.length <= maxLength) onTextChange(it) },
@@ -51,13 +59,14 @@ fun CustomTextField(
         decorationBox = { innerTextField ->
             Row(
                 modifier = Modifier
-                    .padding(horizontal = 20.dp)
+                    .padding(horizontal = 10.dp)
                     .fillMaxWidth()
                     .background(color = White, shape = RoundedCornerShape(size = 10.dp))
                     .border(1.dp, color = Gray100, shape = RoundedCornerShape(size = 10.dp))
                     .padding(all = 16.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
+                // 텍스트 박스가 비어있을 경우 placeholder 메시지 출력
                 if (textState.isEmpty()) {
                     Text(
                         text = placeholderMessage,
@@ -72,7 +81,16 @@ fun CustomTextField(
                     innerTextField()
                 }
             }
-
         },
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+        keyboardActions = KeyboardActions(
+            // 완료 버튼을 눌렀을 때 실행될 동작
+            onDone = {
+                // onSearch 콜백 함수 실행
+                onSearch(textState)
+                // 검색 실행 후 키보드 숨기기
+                keyboardController?.hide()
+            }
+        )
     )
 }

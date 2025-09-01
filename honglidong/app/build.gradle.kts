@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("com.google.devtools.ksp")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -60,9 +62,24 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+
+    // naver map api
     implementation("com.naver.maps:map-sdk:3.21.0")
     implementation("io.github.fornewid:naver-map-compose:1.7.4")
     implementation("com.google.android.gms:play-services-location:21.0.1")
     implementation("io.github.fornewid:naver-map-location:21.0.2")
 
+
+    // room local database
+    val room_version = "2.7.2"
+
+    implementation("androidx.room:room-runtime:${room_version}")
+    ksp("androidx.room:room-compiler:$room_version")
+    implementation("androidx.room:room-ktx:${room_version}")
+
+    // hilt di
+    val hilt_version = "2.57.1"
+    implementation("com.google.dagger:hilt-android:$hilt_version")
+    ksp("com.google.dagger:hilt-android-compiler:$hilt_version")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 }

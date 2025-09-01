@@ -1,7 +1,6 @@
 package com.hongildong.map.navGraph
 
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavHost
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -11,11 +10,12 @@ import com.hongildong.map.MainScreen
 import com.hongildong.map.ui.home.BookmarkScreen
 import com.hongildong.map.ui.home.NearbyScreen
 import com.hongildong.map.ui.home.ProfileScreen
-import com.hongildong.map.ui.home.SearchScreen
+import com.hongildong.map.ui.home.search.SearchScreen
 import com.hongildong.map.ui.user.EnterScreen
 import com.hongildong.map.ui.user.LoginScreen
 import com.hongildong.map.ui.user.SignupScreen
 
+// 전체 앱 navhost
 @Composable
 fun AppNavHost() {
     val rootNavController = rememberNavController()
@@ -46,6 +46,7 @@ fun AppNavHost() {
     }
 }
 
+// 로그인/회원가입 부분 navhost
 @Composable
 fun EnterNavHost(
     rootNavController: NavHostController
@@ -97,6 +98,7 @@ fun EnterNavHost(
     }
 }
 
+// 메인 화면 바텀 네비 호스트
 @Composable
 fun MainNavHost(
     rootNavController: NavHostController,

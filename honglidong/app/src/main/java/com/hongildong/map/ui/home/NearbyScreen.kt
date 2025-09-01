@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -71,14 +72,14 @@ fun NearbyScreen(
                     .padding(all = 15.dp)
             ) {
                 Text(
-                    "홍익대학교에서 길을 찾아보세요.",
+                    stringResource(R.string.suggest_search),
                     style = MaterialTheme.typography.labelMedium.copy(color = Gray400)
                 )
             }
             Spacer(Modifier.width(10.dp))
             Image(
                 painter = painterResource(R.drawable.ic_search_route),
-                contentDescription = "search route",
+                contentDescription = stringResource(R.string.search_button),
                 modifier = Modifier
                     .fillMaxWidth(1f)
                     .height(56.dp)
@@ -103,7 +104,7 @@ fun NearbyScreen(
                 horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.Top
             ) {
-                Text("여기는 어때요?", style = MaterialTheme.typography.titleMedium.copy(Black))
+                Text(stringResource(R.string.place_recommend), style = MaterialTheme.typography.titleMedium.copy(Black))
                 Spacer(Modifier.height(20.dp))
                 RecommendPlaces()
             }
