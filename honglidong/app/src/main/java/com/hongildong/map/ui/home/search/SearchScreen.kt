@@ -19,30 +19,21 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
-import androidx.room.util.copy
 import com.hongildong.map.R
-import com.hongildong.map.data.entity.SearchKeyword
-import com.hongildong.map.ui.theme.Gray600
-import com.hongildong.map.ui.theme.HongildongTheme
 import com.hongildong.map.ui.theme.White
 import com.hongildong.map.ui.util.CustomTextField
 import com.hongildong.map.ui.util.EmptyContents
-import dagger.hilt.android.AndroidEntryPoint
 
 @Composable
 fun SearchScreen(
@@ -67,14 +58,14 @@ fun SearchScreen(
         ) {
             Image(
                 painter = painterResource(R.drawable.ic_back),
-                contentDescription = "go back button",
+                contentDescription = stringResource(R.string.go_back),
                 modifier = Modifier
                     .clickable {
                         navController.popBackStack()
                     }
             )
             CustomTextField(
-                placeholderMessage = "홍익대학교에서 길을 찾아보세요.",
+                placeholderMessage = stringResource(R.string.suggest_search),
                 textState = textState,
                 onTextChange = { textState = it },
                 onSearch = {
@@ -97,12 +88,12 @@ fun SearchScreen(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = "최근 검색",
+                text = stringResource(R.string.recently_searched_title),
                 style = MaterialTheme.typography.titleSmall
             )
 
             Text(
-                text = "전체 삭제",
+                text = stringResource(R.string.delete_all),
                 style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Normal),
                 modifier = Modifier
                     .padding(horizontal = 10.dp, vertical = 5.dp)
@@ -118,7 +109,7 @@ fun SearchScreen(
         // 검색기록 없을 때는 검색기록이 없다 문구 / 검색기록 있을 때는 검색기록 보여주기
         if (recentlySearchedKeywords.isEmpty()) {
             // 검색기록 없음 문구
-            EmptyContents("검색 기록이 없습니다.")
+            EmptyContents(stringResource(R.string.empty_search_keyword))
         } else {
             // 검색기록 보여주기
             LazyColumn {

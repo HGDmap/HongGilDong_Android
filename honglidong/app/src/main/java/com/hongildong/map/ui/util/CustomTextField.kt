@@ -81,6 +81,7 @@ fun CustomTextField(
                 }
             }
         },
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
         // 2. 키보드 액션 설정
         keyboardActions = KeyboardActions(
             // 완료 버튼을 눌렀을 때 실행될 동작

@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Hongildong</string>
+    <string name="empty_search_keyword">검색 기록이 없습니다.</string>
+    <string name="suggest_search">홍익대학교에서 길을 찾아보세요.</string>
+    <string name="go_back">뒤로가기</string>
+    <string name="recently_searched_title">최근 검색</string>
+    <string name="delete_all">전체 삭제</string>
+    <string name="delete_item">%1$s 삭제하기</string>
+    <string name="search_button">검색하기</string>
 </resources>
