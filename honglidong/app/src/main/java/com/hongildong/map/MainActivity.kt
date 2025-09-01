@@ -21,7 +21,9 @@ import com.hongildong.map.navGraph.MainNavHost
 import com.hongildong.map.ui.theme.HongildongTheme
 import com.hongildong.map.ui.user.EnterScreen
 import com.hongildong.map.ui.util.MapBackground
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 
