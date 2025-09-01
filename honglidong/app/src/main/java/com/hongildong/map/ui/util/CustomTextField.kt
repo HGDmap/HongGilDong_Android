@@ -66,6 +66,7 @@ fun CustomTextField(
                     .padding(all = 16.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
+                // 텍스트 박스가 비어있을 경우 placeholder 메시지 출력
                 if (textState.isEmpty()) {
                     Text(
                         text = placeholderMessage,
@@ -82,7 +83,6 @@ fun CustomTextField(
             }
         },
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-        // 2. 키보드 액션 설정
         keyboardActions = KeyboardActions(
             // 완료 버튼을 눌렀을 때 실행될 동작
             onDone = {

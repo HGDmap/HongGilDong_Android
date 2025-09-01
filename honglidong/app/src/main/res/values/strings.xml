@@ -7,4 +7,5 @@
     <string name="delete_all">전체 삭제</string>
     <string name="delete_item">%1$s 삭제하기</string>
     <string name="search_button">검색하기</string>
+    <string name="place_recommend">여기는 어때요?</string>
 </resources>

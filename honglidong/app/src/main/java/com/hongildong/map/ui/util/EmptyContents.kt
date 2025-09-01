@@ -29,6 +29,7 @@ fun EmptyContents(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        // 비어있을 때 홍길동 이미지
         Image(
             painter = painterResource(R.drawable.ic_empty_contents),
             contentDescription = null,

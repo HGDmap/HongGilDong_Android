@@ -104,7 +104,7 @@ fun NearbyScreen(
                 horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.Top
             ) {
-                Text("여기는 어때요?", style = MaterialTheme.typography.titleMedium.copy(Black))
+                Text(stringResource(R.string.place_recommend), style = MaterialTheme.typography.titleMedium.copy(Black))
                 Spacer(Modifier.height(20.dp))
                 RecommendPlaces()
             }
