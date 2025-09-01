@@ -25,6 +25,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Black
 import com.hongildong.map.ui.theme.Gray100
 import com.hongildong.map.ui.theme.Gray400
@@ -40,7 +41,7 @@ fun CustomTextField(
     onSearch: (String) -> Unit = {},
     isPassword: Boolean = false,
     maxLength: Int = 20,
-    textStyle: TextStyle = MaterialTheme.typography.labelMedium.copy(color = Black)
+    textStyle: TextStyle = AppTypography.Regular_15.copy(color = Black)
 ) {
     // 키보드를 제어하기 위한 컨트롤러
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -59,7 +60,6 @@ fun CustomTextField(
         decorationBox = { innerTextField ->
             Row(
                 modifier = Modifier
-                    .padding(horizontal = 10.dp)
                     .fillMaxWidth()
                     .background(color = White, shape = RoundedCornerShape(size = 10.dp))
                     .border(1.dp, color = Gray100, shape = RoundedCornerShape(size = 10.dp))
@@ -72,7 +72,7 @@ fun CustomTextField(
                         text = placeholderMessage,
                         color = Gray400,
                         textAlign = TextAlign.Start,
-                        style = MaterialTheme.typography.labelMedium,
+                        style = AppTypography.Regular_15,
                         modifier = Modifier
                             .fillMaxWidth()
                             .align(Alignment.CenterVertically),

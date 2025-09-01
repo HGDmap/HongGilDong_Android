@@ -17,8 +17,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hongildong.map.R
+import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Black
 import com.hongildong.map.ui.theme.White
 
@@ -32,7 +34,8 @@ fun SignupScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(White)
-            .systemBarsPadding(),
+            .systemBarsPadding()
+            .padding(20.dp),
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -40,15 +43,15 @@ fun SignupScreen(
         ) {
             Image(
                 painter = painterResource(R.drawable.ic_back),
-                contentDescription = "go back button",
+                contentDescription = stringResource(R.string.go_back),
                 modifier = Modifier
                     .padding(start = 10.dp)
                     .clickable { onGoBackClick() }
             )
             Spacer(Modifier.width(20.dp))
             Text(
-                "회원가입",
-                style = MaterialTheme.typography.titleLarge.copy(color = Black),
+                stringResource(R.string.signup),
+                style = AppTypography.Bold_22,
             )
         }
         Column(
@@ -58,7 +61,7 @@ fun SignupScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Text("회원가입 페이지", style = MaterialTheme.typography.labelLarge)
+            Text("회원가입 페이지", style = AppTypography.Regular_18)
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.hongildong.map
+package com.hongildong.map.ui
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -19,7 +19,6 @@ import com.hongildong.map.navGraph.AppNavHost
 import com.hongildong.map.navGraph.BottomNavigationBar
 import com.hongildong.map.navGraph.MainNavHost
 import com.hongildong.map.ui.theme.HongildongTheme
-import com.hongildong.map.ui.user.EnterScreen
 import com.hongildong.map.ui.util.MapBackground
 import dagger.hilt.android.AndroidEntryPoint
 

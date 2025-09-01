@@ -30,6 +30,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.hongildong.map.R
 import com.hongildong.map.navGraph.NavRoute
+import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Black
 import com.hongildong.map.ui.theme.Gray400
 import com.hongildong.map.ui.theme.White
@@ -73,7 +74,7 @@ fun NearbyScreen(
             ) {
                 Text(
                     stringResource(R.string.suggest_search),
-                    style = MaterialTheme.typography.labelMedium.copy(color = Gray400)
+                    style = AppTypography.Regular_15.copy(color = Gray400)
                 )
             }
             Spacer(Modifier.width(10.dp))
@@ -104,7 +105,7 @@ fun NearbyScreen(
                 horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.Top
             ) {
-                Text(stringResource(R.string.place_recommend), style = MaterialTheme.typography.titleMedium.copy(Black))
+                Text(stringResource(R.string.place_recommend), style = AppTypography.Bold_20)
                 Spacer(Modifier.height(20.dp))
                 RecommendPlaces()
             }
@@ -115,7 +116,7 @@ fun NearbyScreen(
 
 @Composable
 fun RecommendPlaces() {
-    Text("recommend places", style = MaterialTheme.typography.labelLarge)
+    Text("recommend places", style = AppTypography.Regular_18)
 }
 
 @Composable
