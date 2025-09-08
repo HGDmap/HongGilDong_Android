@@ -36,6 +36,7 @@ import com.hongildong.map.ui.theme.PrimaryMid
 import com.hongildong.map.ui.theme.TypeEvent
 import com.hongildong.map.ui.theme.White
 import com.hongildong.map.ui.util.CustomTextField
+import com.hongildong.map.ui.util.HeaderWithGoBack
 
 @Composable
 fun LoginScreen(
@@ -55,38 +56,26 @@ fun LoginScreen(
         verticalArrangement = Arrangement.SpaceBetween
     ) {
 
-        Row (
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start,
-        ) {
-            Image(
-                painter = painterResource(R.drawable.ic_back),
-                contentDescription = stringResource(R.string.go_back),
-                modifier = Modifier
-                    .clickable { onGoBackClick() }
-            )
-            Spacer(Modifier.width(20.dp))
-            Text(
-                stringResource(R.string.login),
-                style = AppTypography.Bold_22.copy(color = Black),
-            )
-        }
+        HeaderWithGoBack(
+            onGoBackClick = onGoBackClick,
+            stringResource(R.string.login)
+        )
 
         Column(
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
+            Spacer(Modifier.height(50.dp))
+            Text(
+                text = "홍대생 인증을 해주세요!",
+                style = AppTypography.Bold_22
+            )
 
             Column (
                 modifier = Modifier.weight(1f),
                 horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.Center
             ) {
-                Text(
-                    text = "홍대생 인증을 해주세요!",
-                    style = AppTypography.Bold_20
-                )
-                Spacer(Modifier.height(40.dp))
 
                 CustomTextField(
                     placeholderMessage = stringResource(R.string.email_placeholder),

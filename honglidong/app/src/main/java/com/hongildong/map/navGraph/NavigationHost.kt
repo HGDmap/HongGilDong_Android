@@ -13,7 +13,7 @@ import com.hongildong.map.ui.home.ProfileScreen
 import com.hongildong.map.ui.home.search.SearchScreen
 import com.hongildong.map.ui.user.EnterScreen
 import com.hongildong.map.ui.user.LoginScreen
-import com.hongildong.map.ui.user.SignupScreen
+import com.hongildong.map.ui.user.signup.TermsAgreementScreen
 
 // 전체 앱 navhost
 @Composable
@@ -81,12 +81,12 @@ fun EnterNavHost(
                     enterNavController.popBackStack()
                 },
                 onGoSignupClick = {
-                    enterNavController.navigate(NavRoute.Signup.route)
+                    enterNavController.navigate(NavRoute.TermsAgreement.route)
                 }
             )
         }
-        composable(NavRoute.Signup.route) {
-            SignupScreen(
+        composable(NavRoute.TermsAgreement.route) {
+            TermsAgreementScreen (
                 onGoBackClick = {
                     enterNavController.popBackStack()
                 },
@@ -139,6 +139,5 @@ sealed class NavRoute(val route: String) {
     // user
     object Enter: NavRoute("enter")
     object Login: NavRoute("login")
-    object Signup: NavRoute("signup")
-
+    object TermsAgreement: NavRoute("terms_agreement")
 }
