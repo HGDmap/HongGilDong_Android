@@ -14,6 +14,7 @@ import com.hongildong.map.ui.home.search.SearchScreen
 import com.hongildong.map.ui.user.EnterScreen
 import com.hongildong.map.ui.user.LoginScreen
 import com.hongildong.map.ui.user.signup.TermsAgreementScreen
+import com.hongildong.map.ui.user.signup.TermsDetailScreen
 
 // 전체 앱 navhost
 @Composable
@@ -81,7 +82,9 @@ fun EnterNavHost(
                     enterNavController.popBackStack()
                 },
                 onGoSignupClick = {
-                    enterNavController.navigate(NavRoute.TermsAgreement.route)
+                    // 변경: 선택 약관 삭제되며 1개의 약관 전체를 보여주는 것으로 플로우 변경
+                    //enterNavController.navigate(NavRoute.TermsAgreement.route)
+                    enterNavController.navigate(NavRoute.TermsDetail.route + "/0")
                 }
             )
         }
@@ -90,8 +93,22 @@ fun EnterNavHost(
                 onGoBackClick = {
                     enterNavController.popBackStack()
                 },
-                onSignupClick = {
+                onNextClick = {
                     enterNavController.popBackStack()
+                },
+                onShowDetailClick = {
+                    enterNavController.navigate(NavRoute.TermsDetail.route + "/${it}")
+                }
+            )
+        }
+        composable(NavRoute.TermsDetail.route + "/{termId}") { backStackEntry ->
+            TermsDetailScreen(
+                termId = backStackEntry.arguments?.getInt("termId") ?: 0,
+                onGoBackClick = {
+                    enterNavController.popBackStack()
+                },
+                onAgreeClick = {
+                    //enterNavController.popBackStack()
                 }
             )
         }
@@ -140,4 +157,5 @@ sealed class NavRoute(val route: String) {
     object Enter: NavRoute("enter")
     object Login: NavRoute("login")
     object TermsAgreement: NavRoute("terms_agreement")
+    object TermsDetail: NavRoute("terms_detail")
 }

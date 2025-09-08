@@ -21,8 +21,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TriStateCheckbox
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -37,16 +37,20 @@ import com.hongildong.map.ui.theme.PrimaryMid
 import com.hongildong.map.ui.theme.White
 import com.hongildong.map.ui.util.HeaderWithGoBack
 
+// 약관 1개로 바뀌며 사용하지 않도록 바뀜.
+// 추후 약관 개수가 늘면 detail과 viewmodel 공유하게 변경
 @Composable
 fun TermsAgreementScreen(
-    onSignupClick: () -> Unit,
+    onNextClick: () -> Unit,
     onGoBackClick: () -> Unit,
+    onShowDetailClick: (Int) -> Unit,
     viewmodel: TermsViewmodel = viewModel()
 ) {
-    val childCheckedStates = remember { mutableStateListOf(false, false) }
+    val terms by viewmodel.terms.collectAsState()
+    val childCheckedStates by viewmodel.checkedState.collectAsState()
     val parentState = when {
-        childCheckedStates.all { it } -> ToggleableState.On
-        childCheckedStates.none { it } -> ToggleableState.Off
+        childCheckedStates.all { it.value } -> ToggleableState.On
+        childCheckedStates.none { it.value } -> ToggleableState.Off
         else -> ToggleableState.Off
     }
 
@@ -85,8 +89,8 @@ fun TermsAgreementScreen(
                         onClick = {
                             // Determine new state based on current state
                             val newState = parentState != ToggleableState.On
-                            childCheckedStates.forEachIndexed { index, _ ->
-                                childCheckedStates[index] = newState
+                            childCheckedStates.values.forEachIndexed { index, _ ->
+                                viewmodel.onTermCheckedChange(index, newState)
                             }
                         },
                         colors = CheckboxColors(
@@ -114,15 +118,15 @@ fun TermsAgreementScreen(
                 Spacer(Modifier.height(10.dp))
 
                 // Child Checkboxes
-                childCheckedStates.forEachIndexed { index, checked ->
+                terms.forEach { term ->
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Checkbox(
-                            checked = checked,
+                            checked = childCheckedStates[term.id] ?: false,
                             onCheckedChange = { isChecked ->
                                 // Update the individual child state
-                                childCheckedStates[index] = isChecked
+                                viewmodel.onTermCheckedChange(term.id, isChecked)
                             },
                             colors = CheckboxColors(
                                 checkedCheckmarkColor = White,
@@ -143,17 +147,18 @@ fun TermsAgreementScreen(
                             modifier = Modifier
                                 .clickable {
                                     // todo: 약관 확인하기 연결
+                                    onShowDetailClick(term.id)
                                 },
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = terms[index].title,
+                                text = term.title,
                                 style = AppTypography.Medium_15,
                                 modifier = Modifier.weight(1f)
                             )
                             Image(
                                 painter = painterResource(R.drawable.ic_next),
-                                contentDescription = terms[index].title + "약관 확인하기"
+                                contentDescription = term.title + "약관 확인하기"
                             )
                         }
                     }
@@ -173,6 +178,7 @@ fun TermsAgreementScreen(
                 ),
                 onClick = {
                     // todo: 회원 정보 입력 화면 연결
+                    onNextClick()
                 }
             ) {
                 Text(
@@ -191,6 +197,7 @@ data class Term(
     val title: String,
     val content: String
 )
+/*
 
 val terms = listOf(
     Term(
@@ -237,4 +244,4 @@ val terms = listOf(
                 "\n" +
                 "위 사항에 동의하지 않더라도 서비스 이용에는 제한이 없습니다."
     )
-)
+)*/
