@@ -106,7 +106,7 @@ fun CustomUnderLineTextField(
     onEditDone: (String) -> Unit = {},
     isPassword: Boolean = false,
     maxLength: Int = 20,
-    textStyle: TextStyle = AppTypography.Medium_18.copy(color = Black),
+    textStyle: TextStyle = AppTypography.Medium_15.copy(color = Black),
     suffix: String = ""
 ) {
     // 키보드를 제어하기 위한 컨트롤러
@@ -136,8 +136,8 @@ fun CustomUnderLineTextField(
             focusedPlaceholderColor = Gray300,
             unfocusedPlaceholderColor = Gray300,
             errorPlaceholderColor = TypeEvent,
-            focusedSuffixColor = Gray400,
-            unfocusedSuffixColor = Gray400,
+            focusedSuffixColor = Black,
+            unfocusedSuffixColor = Black,
         ),
         textStyle = textStyle,
         placeholder = {

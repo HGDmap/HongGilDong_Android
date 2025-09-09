@@ -90,7 +90,7 @@ fun LoginScreen(
                     isPassword = true,
                     onEditDone = {
                         focusManager.clearFocus()
-                        // todo: 여기에 로그인 로직 추가 - 키보드 완료 버튼으로도 로그인 가능하게
+                        onLoginSuccess()
                     }
                 )
                 // todo: api 연결시 로그인 오류 메시지 추가

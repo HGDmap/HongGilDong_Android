@@ -58,6 +58,12 @@ object AppTypography {
         fontSize = 18.sp,
         lineHeight = 20.sp,
     )
+    val Bold_15 = TextStyle(
+        fontFamily = Pretendard,
+        fontWeight = FontWeight.Bold,
+        fontSize = 15.sp,
+        lineHeight = 18.sp,
+    )
 
     val Bold_13 = TextStyle(
         fontFamily = Pretendard,

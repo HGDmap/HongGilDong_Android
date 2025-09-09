@@ -54,7 +54,7 @@ fun TermsDetailScreen(
         }
 
         BottomButton(
-            buttonText = "동의하고 가입하기",
+            buttonText = "동의하기",
             isButtonEnabled = true,
             onClick = {
                 viewmodel.onTermCheckedChange(termId, true)

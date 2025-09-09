@@ -13,8 +13,11 @@ import com.hongildong.map.ui.home.ProfileScreen
 import com.hongildong.map.ui.home.search.SearchScreen
 import com.hongildong.map.ui.user.EnterScreen
 import com.hongildong.map.ui.user.LoginScreen
+import com.hongildong.map.ui.user.signup.EmailEnterScreen
+import com.hongildong.map.ui.user.signup.PasswordEnterScreen
 import com.hongildong.map.ui.user.signup.TermsAgreementScreen
 import com.hongildong.map.ui.user.signup.TermsDetailScreen
+import com.hongildong.map.ui.user.signup.UserInfoEnterScreen
 
 // 전체 앱 navhost
 @Composable
@@ -109,6 +112,41 @@ fun EnterNavHost(
                 },
                 onAgreeClick = {
                     //enterNavController.popBackStack()
+                    enterNavController.navigate(NavRoute.EmailEnter.route)
+                }
+            )
+        }
+        composable(NavRoute.EmailEnter.route) {
+            EmailEnterScreen(
+                onGoBackClick = {
+                    enterNavController.popBackStack()
+                },
+                onNextClick = {
+                    enterNavController.navigate(NavRoute.PasswordEnter.route)
+                }
+            )
+        }
+        composable(NavRoute.PasswordEnter.route) {
+            PasswordEnterScreen(
+                onGoBackClick = {
+                    enterNavController.popBackStack()
+                },
+                onNextClick = {
+                    enterNavController.navigate(NavRoute.UserInfoEnter.route)
+                }
+            )
+        }
+        composable(NavRoute.UserInfoEnter.route) {
+            UserInfoEnterScreen(
+                onGoBackClick = {
+                    enterNavController.popBackStack()
+                },
+                onSignupClick = {
+                    // todo: 회원 가입 후 자동로그인 할건지? 아니면 로그인으로 돌아갈지?
+                    // 일단 로그인으로 돌아가게 만듦
+                    enterNavController.navigate(NavRoute.Login.route) {
+                        popUpTo(NavRoute.Login.route) { inclusive = true }
+                    }
                 }
             )
         }
@@ -158,4 +196,8 @@ sealed class NavRoute(val route: String) {
     object Login: NavRoute("login")
     object TermsAgreement: NavRoute("terms_agreement")
     object TermsDetail: NavRoute("terms_detail")
+    object EmailEnter: NavRoute("email_enter")
+
+    object PasswordEnter: NavRoute("password_enter")
+    object UserInfoEnter: NavRoute("user_info_enter")
 }
