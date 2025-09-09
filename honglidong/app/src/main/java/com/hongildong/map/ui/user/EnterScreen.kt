@@ -12,9 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,8 +23,8 @@ import com.hongildong.map.R
 import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Gray500
 import com.hongildong.map.ui.theme.Gray600
-import com.hongildong.map.ui.theme.PrimaryMid
 import com.hongildong.map.ui.theme.White
+import com.hongildong.map.ui.util.BottomButton
 
 @Composable
 fun EnterScreen(
@@ -71,24 +68,11 @@ fun EnterScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Button(
-                modifier = Modifier
-                    .padding(horizontal = 10.dp)
-                    .fillMaxWidth(),
-                shape = RoundedCornerShape(10.dp),
-                colors = ButtonColors(
-                    containerColor = PrimaryMid,
-                    disabledContainerColor = PrimaryMid,
-                    contentColor = White,
-                    disabledContentColor = White
-                ),
-                onClick = { onLoginClick() }
-            ) {
-                Text(
-                    "홍대생으로 시작하기",
-                    style = AppTypography.Bold_18.copy(color = White)
-                )
-            }
+            BottomButton(
+                buttonText = "홍대생으로 시작하기",
+                isButtonEnabled = true,
+                onClick = onLoginClick
+            )
             Spacer(Modifier.height(10.dp))
             Text(
                 "비회원으로 계속하기",

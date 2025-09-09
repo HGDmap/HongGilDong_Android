@@ -10,25 +10,27 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Black
 import com.hongildong.map.ui.theme.Gray100
+import com.hongildong.map.ui.theme.Gray300
 import com.hongildong.map.ui.theme.Gray400
+import com.hongildong.map.ui.theme.PrimaryLight
+import com.hongildong.map.ui.theme.TypeEvent
 import com.hongildong.map.ui.theme.White
 
 
@@ -92,5 +94,65 @@ fun CustomTextField(
                 keyboardController?.hide()
             }
         )
+    )
+}
+
+@Composable
+fun CustomUnderLineTextField(
+    modifier: Modifier = Modifier,
+    placeholderMessage: String,
+    textState: String,
+    onTextChange: (String) -> Unit,
+    onEditDone: (String) -> Unit = {},
+    isPassword: Boolean = false,
+    maxLength: Int = 20,
+    textStyle: TextStyle = AppTypography.Medium_18.copy(color = Black),
+    suffix: String = ""
+) {
+    // 키보드를 제어하기 위한 컨트롤러
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    TextField(
+        value = textState,
+        modifier = modifier.fillMaxWidth(),
+        singleLine = true,
+        onValueChange = {
+            if (it.length <= maxLength) onTextChange(it)
+        },
+        visualTransformation = if (isPassword) {
+            PasswordVisualTransformation()
+        } else {
+            VisualTransformation.None
+        },
+        colors = TextFieldDefaults.colors(
+            focusedTextColor = Black,
+            errorTextColor = TypeEvent,
+            focusedContainerColor = Color.Transparent,
+            unfocusedContainerColor = Color.Transparent,
+            errorContainerColor = Color.Transparent,
+            focusedIndicatorColor = PrimaryLight,
+            unfocusedIndicatorColor = Gray400,
+            errorIndicatorColor = TypeEvent,
+            focusedPlaceholderColor = Gray300,
+            unfocusedPlaceholderColor = Gray300,
+            errorPlaceholderColor = TypeEvent,
+            focusedSuffixColor = Gray400,
+            unfocusedSuffixColor = Gray400,
+        ),
+        textStyle = textStyle,
+        placeholder = {
+            Text(placeholderMessage, style = textStyle.copy(color = Gray300))
+        },
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+        keyboardActions = KeyboardActions(
+            // 완료 버튼을 눌렀을 때 실행될 동작
+            onDone = {
+                // onDone 콜백 함수 실행
+                onEditDone(textState)
+                // 검색 실행 후 키보드 숨기기
+                keyboardController?.hide()
+            }
+        ),
+        suffix = { if (suffix.isNotEmpty()) Text(suffix, style = AppTypography.Medium_15) }
     )
 }

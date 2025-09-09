@@ -1,22 +1,14 @@
 package com.hongildong.map.ui.user
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,17 +17,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hongildong.map.R
 import com.hongildong.map.ui.theme.AppTypography
-import com.hongildong.map.ui.theme.Black
 import com.hongildong.map.ui.theme.Gray500
-import com.hongildong.map.ui.theme.PrimaryMid
-import com.hongildong.map.ui.theme.TypeEvent
 import com.hongildong.map.ui.theme.White
-import com.hongildong.map.ui.util.CustomTextField
+import com.hongildong.map.ui.util.BottomButton
+import com.hongildong.map.ui.util.CustomUnderLineTextField
 import com.hongildong.map.ui.util.HeaderWithGoBack
 
 @Composable
@@ -46,6 +38,9 @@ fun LoginScreen(
 ) {
     var emailState by remember { mutableStateOf("") }
     var passwordState by remember { mutableStateOf("") }
+
+    val focusManager = LocalFocusManager.current
+    val passwordFocusRequester = remember { FocusRequester() }
 
     Column(
         modifier = Modifier
@@ -77,17 +72,26 @@ fun LoginScreen(
                 verticalArrangement = Arrangement.Center
             ) {
 
-                CustomTextField(
+                CustomUnderLineTextField(
                     placeholderMessage = stringResource(R.string.email_placeholder),
                     textState = emailState,
-                    onTextChange = { emailState = it }
+                    onTextChange = { emailState = it },
+                    onEditDone = {
+                        passwordFocusRequester.requestFocus()
+                    },
+                    suffix = "@g.hongik.ac.kr"
                 )
                 Spacer(Modifier.height(20.dp))
-                CustomTextField(
+                CustomUnderLineTextField(
+                    modifier = Modifier.focusRequester(passwordFocusRequester),
                     placeholderMessage = stringResource(R.string.password_placeholder),
                     textState = passwordState,
                     onTextChange = { passwordState = it },
-                    isPassword = true
+                    isPassword = true,
+                    onEditDone = {
+                        focusManager.clearFocus()
+                        // todo: 여기에 로그인 로직 추가 - 키보드 완료 버튼으로도 로그인 가능하게
+                    }
                 )
                 // todo: api 연결시 로그인 오류 메시지 추가
                 /*Spacer(Modifier.height(8.dp))
@@ -101,27 +105,11 @@ fun LoginScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Button(
-                    modifier = Modifier
-                        .padding(horizontal = 10.dp)
-                        .fillMaxWidth(),
-                    shape = RoundedCornerShape(10.dp),
-                    colors = ButtonColors(
-                        containerColor = PrimaryMid,
-                        disabledContainerColor = PrimaryMid,
-                        contentColor = White,
-                        disabledContentColor = White
-                    ),
-                    onClick = {
-                        /* todo: api 연결시 로그인 api 호출 */
-                        onLoginSuccess()
-                    }
-                ) {
-                    Text(
-                        stringResource(R.string.login),
-                        style = AppTypography.Bold_18.copy(color = White)
-                    )
-                }
+                BottomButton(
+                    buttonText = stringResource(R.string.login),
+                    isButtonEnabled = (emailState.isNotEmpty()) and (passwordState.isNotEmpty()),
+                    onClick = onLoginSuccess
+                )
                 Spacer(Modifier.height(10.dp))
                 Text(
                     stringResource(R.string.signup),
@@ -133,4 +121,6 @@ fun LoginScreen(
         }
     }
 }
+
+
 
