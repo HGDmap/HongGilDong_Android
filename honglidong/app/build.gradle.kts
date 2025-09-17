@@ -82,4 +82,19 @@ dependencies {
     implementation("com.google.dagger:hilt-android:$hilt_version")
     ksp("com.google.dagger:hilt-android-compiler:$hilt_version")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+
+    // retrofit2
+    val retrofit_version = "2.9.0"
+    implementation("com.squareup.retrofit2:retrofit:$retrofit_version")
+    implementation("com.squareup.retrofit2:converter-moshi:$retrofit_version")
+    implementation("com.squareup.retrofit2:converter-scalars:$retrofit_version")
+    implementation("com.google.code.gson:gson:2.10.1")
+
+    // okhttp
+    val okhttp_version = "4.12.0"
+
+    implementation("com.squareup.okhttp3:logging-interceptor:$okhttp_version")
+    implementation("com.squareup.okhttp3:okhttp:$okhttp_version")
+
+
 }
