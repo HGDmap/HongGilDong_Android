@@ -17,6 +17,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.hongildong.map.R
+import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Gray400
 import com.hongildong.map.ui.theme.PrimaryMid
 import com.hongildong.map.ui.theme.White
@@ -73,16 +74,20 @@ fun BottomNavigationBar(navController: NavHostController) {
                     Icon(painterResource(navItem.icon), contentDescription = navItem.label)
                 },
                 label = {
-                    Text(navItem.label, style = MaterialTheme.typography.labelSmall)
+                    Text(
+                        text = navItem.label,
+                        style = AppTypography.Bold_13
+                            .copy(color = if (currentRoute == navItem.route) PrimaryMid else Gray400)
+                    )
                 },
                 colors = NavigationBarItemColors(
                     selectedIconColor = PrimaryMid,
                     selectedTextColor = PrimaryMid,
                     unselectedIconColor = Gray400,
                     unselectedTextColor = Gray400,
-                    selectedIndicatorColor = Color.Transparent,
+                    selectedIndicatorColor = White,
                     disabledIconColor = Gray400,
-                    disabledTextColor = Gray400
+                    disabledTextColor = Gray400,
                 )
             )
         }

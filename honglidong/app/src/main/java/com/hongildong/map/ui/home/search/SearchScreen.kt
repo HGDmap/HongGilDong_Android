@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
@@ -31,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.hongildong.map.R
+import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.White
 import com.hongildong.map.ui.util.CustomTextField
 import com.hongildong.map.ui.util.EmptyContents
@@ -64,6 +66,9 @@ fun SearchScreen(
                         navController.popBackStack()
                     }
             )
+            Spacer(
+                modifier = Modifier.width(15.dp)
+            )
             CustomTextField(
                 placeholderMessage = stringResource(R.string.suggest_search),
                 textState = textState,
@@ -89,12 +94,12 @@ fun SearchScreen(
         ) {
             Text(
                 text = stringResource(R.string.recently_searched_title),
-                style = MaterialTheme.typography.titleSmall
+                style = AppTypography.Bold_18
             )
 
             Text(
                 text = stringResource(R.string.delete_all),
-                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Normal),
+                style = AppTypography.Regular_13,
                 modifier = Modifier
                     .padding(horizontal = 10.dp, vertical = 5.dp)
                     .clickable {

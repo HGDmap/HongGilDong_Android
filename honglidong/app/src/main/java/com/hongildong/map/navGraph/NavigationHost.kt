@@ -6,14 +6,18 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
-import com.hongildong.map.MainScreen
+import com.hongildong.map.ui.MainScreen
 import com.hongildong.map.ui.home.BookmarkScreen
 import com.hongildong.map.ui.home.NearbyScreen
 import com.hongildong.map.ui.home.ProfileScreen
 import com.hongildong.map.ui.home.search.SearchScreen
 import com.hongildong.map.ui.user.EnterScreen
 import com.hongildong.map.ui.user.LoginScreen
-import com.hongildong.map.ui.user.SignupScreen
+import com.hongildong.map.ui.user.signup.EmailEnterScreen
+import com.hongildong.map.ui.user.signup.PasswordEnterScreen
+import com.hongildong.map.ui.user.signup.TermsAgreementScreen
+import com.hongildong.map.ui.user.signup.TermsDetailScreen
+import com.hongildong.map.ui.user.signup.UserInfoEnterScreen
 
 // 전체 앱 navhost
 @Composable
@@ -81,17 +85,68 @@ fun EnterNavHost(
                     enterNavController.popBackStack()
                 },
                 onGoSignupClick = {
-                    enterNavController.navigate(NavRoute.Signup.route)
+                    // 변경: 선택 약관 삭제되며 1개의 약관 전체를 보여주는 것으로 플로우 변경
+                    //enterNavController.navigate(NavRoute.TermsAgreement.route)
+                    enterNavController.navigate(NavRoute.TermsDetail.route + "/0")
                 }
             )
         }
-        composable(NavRoute.Signup.route) {
-            SignupScreen(
+        composable(NavRoute.TermsAgreement.route) {
+            TermsAgreementScreen (
+                onGoBackClick = {
+                    enterNavController.popBackStack()
+                },
+                onNextClick = {
+                    enterNavController.popBackStack()
+                },
+                onShowDetailClick = {
+                    enterNavController.navigate(NavRoute.TermsDetail.route + "/${it}")
+                }
+            )
+        }
+        composable(NavRoute.TermsDetail.route + "/{termId}") { backStackEntry ->
+            TermsDetailScreen(
+                termId = backStackEntry.arguments?.getInt("termId") ?: 0,
+                onGoBackClick = {
+                    enterNavController.popBackStack()
+                },
+                onAgreeClick = {
+                    //enterNavController.popBackStack()
+                    enterNavController.navigate(NavRoute.EmailEnter.route)
+                }
+            )
+        }
+        composable(NavRoute.EmailEnter.route) {
+            EmailEnterScreen(
+                onGoBackClick = {
+                    enterNavController.popBackStack()
+                },
+                onNextClick = {
+                    enterNavController.navigate(NavRoute.PasswordEnter.route)
+                }
+            )
+        }
+        composable(NavRoute.PasswordEnter.route) {
+            PasswordEnterScreen(
+                onGoBackClick = {
+                    enterNavController.popBackStack()
+                },
+                onNextClick = {
+                    enterNavController.navigate(NavRoute.UserInfoEnter.route)
+                }
+            )
+        }
+        composable(NavRoute.UserInfoEnter.route) {
+            UserInfoEnterScreen(
                 onGoBackClick = {
                     enterNavController.popBackStack()
                 },
                 onSignupClick = {
-                    enterNavController.popBackStack()
+                    // todo: 회원 가입 후 자동로그인 할건지? 아니면 로그인으로 돌아갈지?
+                    // 일단 로그인으로 돌아가게 만듦
+                    enterNavController.navigate(NavRoute.Login.route) {
+                        popUpTo(NavRoute.Login.route) { inclusive = true }
+                    }
                 }
             )
         }
@@ -139,6 +194,10 @@ sealed class NavRoute(val route: String) {
     // user
     object Enter: NavRoute("enter")
     object Login: NavRoute("login")
-    object Signup: NavRoute("signup")
+    object TermsAgreement: NavRoute("terms_agreement")
+    object TermsDetail: NavRoute("terms_detail")
+    object EmailEnter: NavRoute("email_enter")
 
+    object PasswordEnter: NavRoute("password_enter")
+    object UserInfoEnter: NavRoute("user_info_enter")
 }

@@ -30,6 +30,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.hongildong.map.R
 import com.hongildong.map.navGraph.NavRoute
+import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Black
 import com.hongildong.map.ui.theme.Gray400
 import com.hongildong.map.ui.theme.White
@@ -74,7 +75,7 @@ fun BookmarkScreen(
             ) {
                 Text(
                     stringResource(R.string.suggest_search),
-                    style = MaterialTheme.typography.labelMedium.copy(color = Gray400)
+                    style = AppTypography.Regular_15.copy(color = Gray400)
                 )
             }
             Spacer(Modifier.width(10.dp))
@@ -105,7 +106,7 @@ fun BookmarkScreen(
                 horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.Top
             ) {
-                Text("리스트 1", style = MaterialTheme.typography.titleMedium.copy(Black))
+                Text("리스트 1", style = AppTypography.Bold_20)
                 Spacer(Modifier.height(20.dp))
                 BookmarkList()
             }
@@ -115,5 +116,5 @@ fun BookmarkScreen(
 
 @Composable
 fun BookmarkList() {
-    Text("bookmark list", style = MaterialTheme.typography.labelLarge)
+    Text("bookmark list", style = AppTypography.Regular_18)
 }

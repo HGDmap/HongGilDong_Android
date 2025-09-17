@@ -20,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hongildong.map.R
+import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Gray200
 import com.hongildong.map.ui.theme.HongildongTheme
 
@@ -50,7 +51,7 @@ fun RecentlySearchedItem(
                 // 최근 검색된 검색어
                 Text(
                     text = itemName,
-                    style = MaterialTheme.typography.labelMedium
+                    style = AppTypography.Regular_15
                 )
             }
             // 삭제 버튼

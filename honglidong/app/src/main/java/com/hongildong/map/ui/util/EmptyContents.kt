@@ -17,6 +17,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hongildong.map.R
+import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Gray500
 import com.hongildong.map.ui.theme.HongildongTheme
 
@@ -38,7 +39,7 @@ fun EmptyContents(
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = message,
-            style = MaterialTheme.typography.labelSmall.copy(color = Gray500),
+            style = AppTypography.Bold_13.copy(color = Gray500),
             textAlign = TextAlign.Center
         )
     }
