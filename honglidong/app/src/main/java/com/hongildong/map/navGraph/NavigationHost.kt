@@ -10,6 +10,7 @@ import com.hongildong.map.ui.MainScreen
 import com.hongildong.map.ui.home.BookmarkScreen
 import com.hongildong.map.ui.home.NearbyScreen
 import com.hongildong.map.ui.home.ProfileScreen
+import com.hongildong.map.ui.home.location_detail.LocationDetailScreen
 import com.hongildong.map.ui.home.search.SearchScreen
 import com.hongildong.map.ui.user.EnterScreen
 import com.hongildong.map.ui.user.LoginScreen
@@ -176,6 +177,9 @@ fun MainNavHost(
         composable(route = NavRoute.Search.route) {
             SearchScreen(mainNavController)
         }
+        composable(route = NavRoute.LocationDetail.route) {
+            LocationDetailScreen()
+        }
     }
 }
 
@@ -200,4 +204,5 @@ sealed class NavRoute(val route: String) {
 
     object PasswordEnter: NavRoute("password_enter")
     object UserInfoEnter: NavRoute("user_info_enter")
+    object LocationDetail: NavRoute("location_detail")
 }
