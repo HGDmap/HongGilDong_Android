@@ -1,27 +1,28 @@
 package com.hongildong.map.data.util
 
 
+import com.hongildong.map.data.util.ApiResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 
 suspend inline fun <reified T> safeApiCall(
-    crossinline apiCall: suspend () -> RawDefaultResponse<T>
+    crossinline apiCall: suspend () -> ApiResponse<T>
 ): DefaultResponse<T> = withContext(Dispatchers.IO) {
     try {
         //api 호출
         val rawResponse = apiCall()
 
         // 성공시 응답값 저장
-        if (rawResponse.success) {
+        if (rawResponse.isSuccess) {
             DefaultResponse.Success(
-                rawResponse.data ?: throw IllegalStateException("Success response should contain data"),
-                rawResponse.timestamp)
+                message = rawResponse.message,
+                data = rawResponse.result ?: throw IllegalStateException("Success response should contain data")
+            )
         } else {
             DefaultResponse.Error(
-                code = rawResponse.error?.code,
-                message = rawResponse.error?.message ?: "알 수 없는 오류",
-                timestamp = rawResponse.timestamp
+                code = rawResponse.code,
+                message = rawResponse.message ?: "알 수 없는 오류"
             )
         }
 
@@ -30,9 +31,8 @@ suspend inline fun <reified T> safeApiCall(
         val code = http.code()
         val parsed = ErrorParser.parseHttpException(http)
         DefaultResponse.Error(
-            code = parsed.code ?: code.toString(),
+            code = parsed.code,
             message = parsed.message,
-            timestamp = parsed.timestamp
         )
     } catch (e: Exception) {
         // api 요청 실패

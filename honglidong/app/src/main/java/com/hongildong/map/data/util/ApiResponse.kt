@@ -1,4 +1,4 @@
-package com.hongildong.map.data.remote.response
+package com.hongildong.map.data.util
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass

@@ -1,7 +1,7 @@
 package com.hongildong.map.ui.user.signup
 
 import androidx.lifecycle.ViewModel
-import com.hongildong.map.data.repository.SignupRepository
+import com.hongildong.map.data.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.asStateFlow
 
 @HiltViewModel
 class SignupViewmodel @Inject constructor(
-    private val signupRepository: SignupRepository
+    private val authRepository: AuthRepository
 ): ViewModel() {
     // 이메일 상태
     private val _emailInfo = MutableStateFlow<String>("")

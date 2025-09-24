@@ -1,6 +1,7 @@
 package com.hongildong.map.data.util
 
 import com.google.gson.Gson
+import com.hongildong.map.data.util.ApiResponse
 import retrofit2.HttpException
 
 object ErrorParser {
@@ -12,11 +13,10 @@ object ErrorParser {
             if (errorBody.isNullOrEmpty()) {
                 DefaultResponse.Error(message = "서버 오류 발생")
             } else {
-                val json = gson.fromJson(errorBody, RawDefaultResponse::class.java)
+                val json = gson.fromJson(errorBody, ApiResponse::class.java)
                 DefaultResponse.Error(
-                    code = json.error?.code,
-                    message = json.error?.message ?: "서버 오류 발생",
-                    timestamp = json.timestamp
+                    code = json.code,
+                    message = json.message ?: "서버 오류 발생"
                 )
             }
         } catch (e: Exception) {
