@@ -40,6 +40,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -54,6 +55,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.lifecycle.process)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -85,10 +87,16 @@ dependencies {
 
     // retrofit2
     val retrofit_version = "2.9.0"
+
     implementation("com.squareup.retrofit2:retrofit:$retrofit_version")
-    implementation("com.squareup.retrofit2:converter-moshi:$retrofit_version")
     implementation("com.squareup.retrofit2:converter-scalars:$retrofit_version")
-    implementation("com.google.code.gson:gson:2.10.1")
+
+    // moshi - json with kotlin
+    val moshiVersion = "1.15.0"
+
+    implementation("com.squareup.retrofit2:converter-moshi:${retrofit_version}")
+    implementation("com.squareup.moshi:moshi-kotlin:${moshiVersion}")
+    ksp("com.squareup.moshi:moshi-kotlin-codegen:$moshiVersion") // 코드 생성을 위한 어노테이션 프로세서
 
     // okhttp
     val okhttp_version = "4.12.0"
