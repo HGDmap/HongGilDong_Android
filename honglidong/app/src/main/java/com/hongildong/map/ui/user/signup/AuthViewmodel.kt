@@ -53,25 +53,7 @@ class AuthViewmodel @Inject constructor(
         return sharedPreferences.getString("access_token", null)
     }
 
-    fun signin(body: SigninRequest) {
-        viewModelScope.launch {
-            val response = authRepository.signin(body)
-            when (response) {
-                is DefaultResponse.Success -> {
-                    Log.d(TAG, "응답 성공: $response")
-                    sharedPreferences.edit {
-                        putString("access_token", "Bearer " + response.data?.accessToken)
-                        putString("refresh_token", "Bearer " + response.data?.refreshToken)
-                    }
-                    _isSuccess.value = true
-                }
-                is DefaultResponse.Error -> {
-                    Log.d(TAG, "응답 실패: $response")
-                    _isSuccess.value = false
-                }
-            }
-        }
-    }
+
 
     // 이메일 상태 변경
     fun onEmailInfoChange(newState: String) {
@@ -98,15 +80,35 @@ class AuthViewmodel @Inject constructor(
         _buildingInfo.value = newState
     }
 
-    fun signup() {
-        val body = SignupRequest(
-            email = _emailInfo.value,
-            fullName = _nameInfo.value,
-            nickname = _nicknameInfo.value,
-            password = _passwordInfo.value
-        )
-
+    fun signin(body: SigninRequest) {
         viewModelScope.launch {
+            val response = authRepository.signin(body)
+            when (response) {
+                is DefaultResponse.Success -> {
+                    Log.d(TAG, "응답 성공: $response")
+                    sharedPreferences.edit {
+                        putString("access_token", "Bearer " + response.data?.accessToken)
+                        putString("refresh_token", "Bearer " + response.data?.refreshToken)
+                    }
+                    _isSuccess.value = true
+                }
+                is DefaultResponse.Error -> {
+                    Log.d(TAG, "응답 실패: $response")
+                    _isSuccess.value = false
+                }
+            }
+        }
+    }
+
+    fun signup() {
+        viewModelScope.launch {
+            val body = SignupRequest(
+                email = _emailInfo.value,
+                fullName = _nameInfo.value,
+                nickname = _nicknameInfo.value,
+                password = _passwordInfo.value
+            )
+
             val response = authRepository.signup(body)
             when (response) {
                 is DefaultResponse.Success -> {

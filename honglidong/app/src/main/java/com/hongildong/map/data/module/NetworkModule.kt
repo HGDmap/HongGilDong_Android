@@ -31,6 +31,7 @@ object NetworkModule {
 
     @Provides
     @Singleton
+    @BaseRetrofit
     fun provideOKHttpClient(): OkHttpClient {
         val logger = HttpLoggingInterceptor().apply {
             level = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY
