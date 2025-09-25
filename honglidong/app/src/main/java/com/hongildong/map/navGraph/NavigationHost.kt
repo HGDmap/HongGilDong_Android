@@ -1,6 +1,8 @@
 package com.hongildong.map.navGraph
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -14,6 +16,7 @@ import com.hongildong.map.ui.home.location_detail.LocationDetailScreen
 import com.hongildong.map.ui.home.search.SearchScreen
 import com.hongildong.map.ui.user.EnterScreen
 import com.hongildong.map.ui.user.LoginScreen
+import com.hongildong.map.ui.user.signup.AuthViewmodel
 import com.hongildong.map.ui.user.signup.EmailEnterScreen
 import com.hongildong.map.ui.user.signup.PasswordEnterScreen
 import com.hongildong.map.ui.user.signup.TermsAgreementScreen
@@ -50,6 +53,8 @@ fun AppNavHost() {
         }
     }
 }
+
+private const val SIGNUP_GRAPH_ROUTE = "signup_graph"
 
 // 로그인/회원가입 부분 navhost
 @Composable
@@ -117,27 +122,44 @@ fun EnterNavHost(
                 }
             )
         }
-        composable(NavRoute.EmailEnter.route) {
+        composable(NavRoute.EmailEnter.route) { backStackEntry ->
+            val parentEntry = remember(backStackEntry) {
+                enterNavController.getBackStackEntry(SIGNUP_GRAPH_ROUTE)
+            }
+            val authViewmodel: AuthViewmodel = hiltViewModel(parentEntry)
+
             EmailEnterScreen(
                 onGoBackClick = {
                     enterNavController.popBackStack()
                 },
                 onNextClick = {
                     enterNavController.navigate(NavRoute.PasswordEnter.route)
-                }
+                },
+                authViewmodel = authViewmodel,
             )
         }
-        composable(NavRoute.PasswordEnter.route) {
+        composable(NavRoute.PasswordEnter.route) { backStackEntry ->
+            val parentEntry = remember(backStackEntry) {
+                enterNavController.getBackStackEntry(SIGNUP_GRAPH_ROUTE)
+            }
+            val authViewmodel: AuthViewmodel = hiltViewModel(parentEntry)
+
             PasswordEnterScreen(
                 onGoBackClick = {
                     enterNavController.popBackStack()
                 },
                 onNextClick = {
                     enterNavController.navigate(NavRoute.UserInfoEnter.route)
-                }
+                },
+                authViewmodel = authViewmodel,
             )
         }
-        composable(NavRoute.UserInfoEnter.route) {
+        composable(NavRoute.UserInfoEnter.route) { backStackEntry ->
+            val parentEntry = remember(backStackEntry) {
+                enterNavController.getBackStackEntry(SIGNUP_GRAPH_ROUTE)
+            }
+            val authViewmodel: AuthViewmodel = hiltViewModel(parentEntry)
+
             UserInfoEnterScreen(
                 onGoBackClick = {
                     enterNavController.popBackStack()
@@ -148,7 +170,8 @@ fun EnterNavHost(
                     enterNavController.navigate(NavRoute.Login.route) {
                         popUpTo(NavRoute.Login.route) { inclusive = true }
                     }
-                }
+                },
+                authViewmodel = authViewmodel,
             )
         }
     }

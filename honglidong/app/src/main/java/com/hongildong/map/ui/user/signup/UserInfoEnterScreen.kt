@@ -36,11 +36,11 @@ import com.hongildong.map.ui.util.SmallButton
 fun UserInfoEnterScreen(
     onGoBackClick: () -> Unit,
     onSignupClick: () -> Unit,
-    signupViewmodel: SignupViewmodel = hiltViewModel()
+    authViewmodel: AuthViewmodel
 ) {
-    val nameState by signupViewmodel.nameInfo.collectAsState()
-    val nicknameState by signupViewmodel.nicknameInfo.collectAsState()
-    val buildingState by signupViewmodel.buildingInfo.collectAsState()
+    val nameState by authViewmodel.nameInfo.collectAsState()
+    val nicknameState by authViewmodel.nicknameInfo.collectAsState()
+    val buildingState by authViewmodel.buildingInfo.collectAsState()
 
     val focusManager = LocalFocusManager.current
     val nicknameFocusRequester = remember { FocusRequester() }
@@ -72,7 +72,7 @@ fun UserInfoEnterScreen(
             CustomUnderLineTextField(
                 placeholderMessage = "성을 포함한 본명을 입력해주세요.",
                 textState = nameState,
-                onTextChange = { signupViewmodel.onNameInfoChange(it) },
+                onTextChange = { authViewmodel.onNameInfoChange(it) },
                 onEditDone = {
                     nicknameFocusRequester.requestFocus()
                 },
@@ -85,7 +85,7 @@ fun UserInfoEnterScreen(
                     modifier = Modifier.weight(1f).focusRequester(nicknameFocusRequester),
                     placeholderMessage = "사용할 닉네임을 입력해주세요.",
                     textState = nicknameState,
-                    onTextChange = { signupViewmodel.onNicknameInfoChange(it) },
+                    onTextChange = { authViewmodel.onNicknameInfoChange(it) },
                     onEditDone = {
                         buildingFocusRequester.requestFocus()
                     },
@@ -105,7 +105,7 @@ fun UserInfoEnterScreen(
                 modifier = Modifier.focusRequester(buildingFocusRequester),
                 placeholderMessage = "전공 강의동을 입력해주세요.",
                 textState = buildingState ?: "",
-                onTextChange = { signupViewmodel.onBuildingInfoChange(it.ifEmpty { null }) },
+                onTextChange = { authViewmodel.onBuildingInfoChange(it.ifEmpty { null }) },
                 onEditDone = {
                     focusManager.clearFocus()
                     onSignupClick()
@@ -117,6 +117,7 @@ fun UserInfoEnterScreen(
             buttonText = "회원 가입하기",
             isButtonEnabled = (nameState.isNotEmpty()) and (nicknameState.isNotEmpty()),
             onClick = {
+                authViewmodel.signup()
                 onSignupClick()
             }
         )

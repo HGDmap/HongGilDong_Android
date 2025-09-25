@@ -22,10 +22,14 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.hongildong.map.R
+import com.hongildong.map.data.remote.request.SigninRequest
 import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Gray500
+import com.hongildong.map.ui.theme.TypeEvent
 import com.hongildong.map.ui.theme.White
+import com.hongildong.map.ui.user.signup.AuthViewmodel
 import com.hongildong.map.ui.util.BottomButton
 import com.hongildong.map.ui.util.CustomUnderLineTextField
 import com.hongildong.map.ui.util.HeaderWithGoBack
@@ -34,7 +38,8 @@ import com.hongildong.map.ui.util.HeaderWithGoBack
 fun LoginScreen(
     onLoginSuccess: () -> Unit,
     onGoSignupClick: () -> Unit,
-    onGoBackClick: () -> Unit
+    onGoBackClick: () -> Unit,
+    authViewmodel: AuthViewmodel = hiltViewModel()
 ) {
     var emailState by remember { mutableStateOf("") }
     var passwordState by remember { mutableStateOf("") }
@@ -90,10 +95,9 @@ fun LoginScreen(
                     isPassword = true,
                     onEditDone = {
                         focusManager.clearFocus()
-                        onLoginSuccess()
+                        //onLoginSuccess()
                     }
                 )
-                // todo: api 연결시 로그인 오류 메시지 추가
                 /*Spacer(Modifier.height(8.dp))
                 Text(
                     text = "올바르지 않은 회원 정보입니다.",
@@ -108,7 +112,14 @@ fun LoginScreen(
                 BottomButton(
                     buttonText = stringResource(R.string.login),
                     isButtonEnabled = (emailState.isNotEmpty()) and (passwordState.isNotEmpty()),
-                    onClick = onLoginSuccess
+                    onClick =  {
+                        val body = SigninRequest(
+                            email = emailState,
+                            password = passwordState
+                        )
+                        authViewmodel.signin(body)
+                        //onLoginSuccess
+                    }
                 )
                 Spacer(Modifier.height(10.dp))
                 Text(

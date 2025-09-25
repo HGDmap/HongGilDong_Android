@@ -3,6 +3,7 @@ package com.hongildong.map.data.repository
 import android.content.Context
 import com.hongildong.map.data.remote.api.AuthService
 import com.hongildong.map.data.remote.request.SigninRequest
+import com.hongildong.map.data.remote.request.SignupRequest
 import com.hongildong.map.data.remote.response.SigninResponse
 import com.hongildong.map.data.util.DefaultResponse
 import com.hongildong.map.data.util.safeApiCall
@@ -19,10 +20,15 @@ class AuthRepositoryImpl @Inject constructor(
         return safeApiCall { api.test(accessToken) }
     }
 
+    override suspend fun signup(
+        body: SignupRequest
+    ): DefaultResponse<SigninResponse?> {
+        return safeApiCall { api.signup(body) }
+    }
+
     override suspend fun signin(
-        accessToken: String,
         body: SigninRequest
     ): DefaultResponse<SigninResponse?> {
-        return safeApiCall { api.signin(accessToken, body) }
+        return safeApiCall { api.signin(body) }
     }
 }
