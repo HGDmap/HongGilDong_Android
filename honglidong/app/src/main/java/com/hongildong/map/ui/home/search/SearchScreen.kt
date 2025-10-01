@@ -40,7 +40,8 @@ import com.hongildong.map.ui.util.EmptyContents
 @Composable
 fun SearchScreen(
     navController: NavHostController,
-    viewModel: SearchKeywordViewmodel = hiltViewModel<SearchKeywordViewmodel>()
+    viewModel: SearchKeywordViewmodel = hiltViewModel<SearchKeywordViewmodel>(),
+    onSearch: () -> Unit
 ) {
     var textState by remember { mutableStateOf("") }
     val recentlySearchedKeywords by viewModel.recentKeywords.collectAsState()
@@ -76,6 +77,7 @@ fun SearchScreen(
                 onSearch = {
                     viewModel.onSearch(it)
                     textState = ""
+                    onSearch()
                 },
                 maxLength = 15
             )

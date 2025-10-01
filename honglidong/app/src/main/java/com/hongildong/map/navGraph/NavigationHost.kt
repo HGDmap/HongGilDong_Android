@@ -208,7 +208,14 @@ fun MainNavHost(
             ProfileScreen()
         }
         composable(route = NavRoute.Search.route) {
-            SearchScreen(mainNavController)
+            SearchScreen(
+                mainNavController,
+                onSearch = {
+                    mainNavController.navigate(NavRoute.LocationDetail.route)  {
+                        popUpTo(NavRoute.Login.route) { inclusive = true }
+                    }
+                }
+            )
         }
         composable(route = NavRoute.LocationDetail.route) {
             LocationDetailScreen()
