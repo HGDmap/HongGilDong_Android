@@ -36,6 +36,7 @@ import com.hongildong.map.ui.user.signup.AuthViewmodel
 import com.hongildong.map.ui.util.BottomButton
 import com.hongildong.map.ui.util.CustomUnderLineTextField
 import com.hongildong.map.ui.util.HeaderWithGoBack
+import com.hongildong.map.ui.util.UiState
 
 @Composable
 fun LoginScreen(
@@ -48,9 +49,13 @@ fun LoginScreen(
     var passwordState by remember { mutableStateOf("") }
 
     // 뷰모델에서 로그인 상태 가져오기
-    val isLoginSuccess by authViewmodel.isSignInSuccess.collectAsState()
-    LaunchedEffect(key1 = isLoginSuccess) {
-        if (isLoginSuccess) onLoginSuccess()
+    val loginState by authViewmodel.isSignInSuccess.collectAsState()
+    LaunchedEffect(key1 = loginState) {
+        when (loginState) {
+            is UiState.Success -> onLoginSuccess()
+            is UiState.Loading -> {} // todo: 로딩 프로그래스를 넣자
+            else -> {}
+        }
     }
 
     // 키보드 다음 버튼 눌렀을 때 다음 텍스트 입력으로 넘어가기
@@ -114,11 +119,13 @@ fun LoginScreen(
                         authViewmodel.signin(body)
                     }
                 )
-                /*Spacer(Modifier.height(8.dp))
-                Text(
-                    text = "올바르지 않은 회원 정보입니다.",
-                    style = AppTypography.Medium_11.copy(TypeEvent)
-                )*/
+                if (loginState is UiState.Error) {
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        text = "올바르지 않은 회원 정보입니다.",
+                        style = AppTypography.Medium_11.copy(TypeEvent)
+                    )
+                }
             }
 
             Column (

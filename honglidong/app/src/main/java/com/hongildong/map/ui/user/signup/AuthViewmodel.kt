@@ -9,6 +9,7 @@ import com.hongildong.map.data.remote.request.SigninRequest
 import com.hongildong.map.data.remote.request.SignupRequest
 import com.hongildong.map.data.repository.AuthRepository
 import com.hongildong.map.data.util.DefaultResponse
+import com.hongildong.map.ui.util.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -45,8 +46,8 @@ class AuthViewmodel @Inject constructor(
     private val _buildingInfo = MutableStateFlow<String?>(null)
     val buildingInfo: StateFlow<String?> = _buildingInfo.asStateFlow()
 
-    private val _isSignInSuccess = MutableStateFlow<Boolean>(false)
-    val isSignInSuccess: StateFlow<Boolean> = _isSignInSuccess.asStateFlow()
+    private val _isSignInSuccess = MutableStateFlow<UiState>(UiState.Initial)
+    val isSignInSuccess: StateFlow<UiState> = _isSignInSuccess.asStateFlow()
 
     private val _isSignUpSuccess = MutableStateFlow<Boolean>(false)
     val isSignUpSuccess: StateFlow<Boolean> = _isSignUpSuccess.asStateFlow()
@@ -90,18 +91,18 @@ class AuthViewmodel @Inject constructor(
                     Log.d(TAG, "응답 성공: $response")
                     if (response.data == null) {
                         Log.d(TAG, "유효하지 않은 토큰입니다.")
-                        _isSignInSuccess.value = false
+                        _isSignInSuccess.value = UiState.Error("유효하지 않은 토큰입니다.")
                         return@launch
                     }
                     sharedPreferences.edit {
                         putString("access_token", "Bearer " + response.data.accessToken)
                         putString("refresh_token", "Bearer " + response.data.refreshToken)
                     }
-                    _isSignInSuccess.value = true
+                    _isSignInSuccess.value = UiState.Success
                 }
                 is DefaultResponse.Error -> {
                     Log.d(TAG, "응답 실패: $response")
-                    _isSignInSuccess.value = false
+                    _isSignInSuccess.value = UiState.Error("유효하지 않은 회원입니다.")
                 }
             }
         }
