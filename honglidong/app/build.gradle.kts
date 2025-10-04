@@ -101,7 +101,7 @@ dependencies {
     // okhttp
     val okhttp_version = "4.12.0"
 
-    implementation("com.squareup.okhttp3:logging-interceptor:$okhttp_version")
+    debugImplementation("com.squareup.okhttp3:logging-interceptor:$okhttp_version")
     implementation("com.squareup.okhttp3:okhttp:$okhttp_version")
 
 

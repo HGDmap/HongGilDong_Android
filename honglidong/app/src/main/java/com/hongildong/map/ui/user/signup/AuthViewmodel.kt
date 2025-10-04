@@ -45,9 +45,11 @@ class AuthViewmodel @Inject constructor(
     private val _buildingInfo = MutableStateFlow<String?>(null)
     val buildingInfo: StateFlow<String?> = _buildingInfo.asStateFlow()
 
-    private val _isSuccess = MutableStateFlow<Boolean>(false)
-    val isSuccess: StateFlow<Boolean> = _isSuccess.asStateFlow()
+    private val _isSignInSuccess = MutableStateFlow<Boolean>(false)
+    val isSignInSuccess: StateFlow<Boolean> = _isSignInSuccess.asStateFlow()
 
+    private val _isSignUpSuccess = MutableStateFlow<Boolean>(false)
+    val isSignUpSuccess: StateFlow<Boolean> = _isSignUpSuccess.asStateFlow()
     private val sharedPreferences = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
     fun getToken(): String? {
         return sharedPreferences.getString("access_token", null)
@@ -86,15 +88,20 @@ class AuthViewmodel @Inject constructor(
             when (response) {
                 is DefaultResponse.Success -> {
                     Log.d(TAG, "응답 성공: $response")
-                    sharedPreferences.edit {
-                        putString("access_token", "Bearer " + response.data?.accessToken)
-                        putString("refresh_token", "Bearer " + response.data?.refreshToken)
+                    if (response.data == null) {
+                        Log.d(TAG, "유효하지 않은 토큰입니다.")
+                        _isSignInSuccess.value = false
+                        return@launch
                     }
-                    _isSuccess.value = true
+                    sharedPreferences.edit {
+                        putString("access_token", "Bearer " + response.data.accessToken)
+                        putString("refresh_token", "Bearer " + response.data.refreshToken)
+                    }
+                    _isSignInSuccess.value = true
                 }
                 is DefaultResponse.Error -> {
                     Log.d(TAG, "응답 실패: $response")
-                    _isSuccess.value = false
+                    _isSignInSuccess.value = false
                 }
             }
         }
@@ -113,11 +120,11 @@ class AuthViewmodel @Inject constructor(
             when (response) {
                 is DefaultResponse.Success -> {
                     Log.d(TAG, "응답 성공: $response")
-                    _isSuccess.value = true
+                    _isSignUpSuccess.value = true
                 }
                 is DefaultResponse.Error -> {
                     Log.d(TAG, "응답 실패: $response")
-                    _isSuccess.value = false
+                    _isSignUpSuccess.value = false
                 }
             }
         }
