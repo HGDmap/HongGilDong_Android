@@ -1,5 +1,6 @@
 package com.hongildong.map.ui.user
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -11,6 +12,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,6 +47,13 @@ fun LoginScreen(
     var emailState by remember { mutableStateOf("") }
     var passwordState by remember { mutableStateOf("") }
 
+    // 뷰모델에서 로그인 상태 가져오기
+    val isLoginSuccess by authViewmodel.isSignInSuccess.collectAsState()
+    LaunchedEffect(key1 = isLoginSuccess) {
+        if (isLoginSuccess) onLoginSuccess()
+    }
+
+    // 키보드 다음 버튼 눌렀을 때 다음 텍스트 입력으로 넘어가기
     val focusManager = LocalFocusManager.current
     val passwordFocusRequester = remember { FocusRequester() }
 
@@ -95,7 +105,13 @@ fun LoginScreen(
                     isPassword = true,
                     onEditDone = {
                         focusManager.clearFocus()
-                        //onLoginSuccess()
+
+                        val body = SigninRequest(
+                            email = emailState,
+                            password = passwordState
+                        )
+
+                        authViewmodel.signin(body)
                     }
                 )
                 /*Spacer(Modifier.height(8.dp))
@@ -118,7 +134,6 @@ fun LoginScreen(
                             password = passwordState
                         )
                         authViewmodel.signin(body)
-                        //onLoginSuccess
                     }
                 )
                 Spacer(Modifier.height(10.dp))
