@@ -13,13 +13,15 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.hongildong.map.navGraph.AppNavHost
 import com.hongildong.map.navGraph.BottomNavigationBar
 import com.hongildong.map.navGraph.MainNavHost
 import com.hongildong.map.ui.theme.HongildongTheme
-import com.hongildong.map.ui.util.MapBackground
+import com.hongildong.map.ui.util.map.MapBackground
+import com.hongildong.map.ui.util.map.MapViewmodel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -46,12 +48,15 @@ fun MainScreen(
     rootNavController: NavHostController
 ) {
     val navController = rememberNavController()
+    val mapViewmodel: MapViewmodel = hiltViewModel()
 
     Scaffold(
         bottomBar = { BottomNavigationBar(navController) },
         modifier = Modifier.fillMaxSize()
     ) { paddingValues ->
-        MapBackground()
+        MapBackground(
+            viewModel = mapViewmodel
+        )
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -60,7 +65,8 @@ fun MainScreen(
         ) {
             MainNavHost(
                 rootNavController = rootNavController,
-                mainNavController = navController
+                mainNavController = navController,
+                mapViewmodel = mapViewmodel
             )
         }
     }

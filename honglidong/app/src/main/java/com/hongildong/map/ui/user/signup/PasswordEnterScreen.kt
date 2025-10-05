@@ -36,9 +36,9 @@ import com.hongildong.map.ui.util.HeaderWithGoBack
 fun PasswordEnterScreen (
     onGoBackClick: () -> Unit,
     onNextClick: () -> Unit,
-    signupViewmodel: SignupViewmodel = hiltViewModel()
+    authViewmodel: AuthViewmodel
 ) {
-    val passwordState by signupViewmodel.passwordInfo.collectAsState()
+    val passwordState by authViewmodel.passwordInfo.collectAsState()
     var passwordCheckState by remember { mutableStateOf("") }
 
     val focusManager = LocalFocusManager.current
@@ -67,7 +67,7 @@ fun PasswordEnterScreen (
             CustomUnderLineTextField(
                 placeholderMessage = "사용할 비밀번호를 입력해주세요.",
                 textState = passwordState,
-                onTextChange = { signupViewmodel.onPasswordInfoChange(it) },
+                onTextChange = { authViewmodel.onPasswordInfoChange(it) },
                 onEditDone = {
                     checkFocusRequester.requestFocus()
                 },

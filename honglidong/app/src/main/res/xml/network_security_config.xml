@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!--
+    특정 도메인(또는 IP)에 대해서만 암호화되지 않은 HTTP 통신을 허용합니다.
+    가장 안전한 예외 처리 방법입니다.
+    -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">43.202.107.20</domain>
+        <!-- 다른 도메인이 필요하다면 여기에 추가할 수 있습니다. -->
+    </domain-config>
+</network-security-config>

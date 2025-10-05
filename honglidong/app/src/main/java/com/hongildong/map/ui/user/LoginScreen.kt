@@ -1,5 +1,6 @@
 package com.hongildong.map.ui.user
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -11,6 +12,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,23 +25,40 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.hongildong.map.R
+import com.hongildong.map.data.remote.request.SigninRequest
 import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Gray500
+import com.hongildong.map.ui.theme.TypeEvent
 import com.hongildong.map.ui.theme.White
+import com.hongildong.map.ui.user.signup.AuthViewmodel
 import com.hongildong.map.ui.util.BottomButton
 import com.hongildong.map.ui.util.CustomUnderLineTextField
 import com.hongildong.map.ui.util.HeaderWithGoBack
+import com.hongildong.map.ui.util.UiState
 
 @Composable
 fun LoginScreen(
     onLoginSuccess: () -> Unit,
     onGoSignupClick: () -> Unit,
-    onGoBackClick: () -> Unit
+    onGoBackClick: () -> Unit,
+    authViewmodel: AuthViewmodel = hiltViewModel()
 ) {
     var emailState by remember { mutableStateOf("") }
     var passwordState by remember { mutableStateOf("") }
 
+    // 뷰모델에서 로그인 상태 가져오기
+    val loginState by authViewmodel.isSignInSuccess.collectAsState()
+    LaunchedEffect(key1 = loginState) {
+        when (loginState) {
+            is UiState.Success -> onLoginSuccess()
+            is UiState.Loading -> {} // todo: 로딩 프로그래스를 넣자
+            else -> {}
+        }
+    }
+
+    // 키보드 다음 버튼 눌렀을 때 다음 텍스트 입력으로 넘어가기
     val focusManager = LocalFocusManager.current
     val passwordFocusRequester = remember { FocusRequester() }
 
@@ -90,15 +110,22 @@ fun LoginScreen(
                     isPassword = true,
                     onEditDone = {
                         focusManager.clearFocus()
-                        onLoginSuccess()
+
+                        val body = SigninRequest(
+                            email = emailState,
+                            password = passwordState
+                        )
+
+                        authViewmodel.signin(body)
                     }
                 )
-                // todo: api 연결시 로그인 오류 메시지 추가
-                /*Spacer(Modifier.height(8.dp))
-                Text(
-                    text = "올바르지 않은 회원 정보입니다.",
-                    style = AppTypography.Medium_11.copy(TypeEvent)
-                )*/
+                if (loginState is UiState.Error) {
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        text = "올바르지 않은 회원 정보입니다.",
+                        style = AppTypography.Medium_11.copy(TypeEvent)
+                    )
+                }
             }
 
             Column (
@@ -108,7 +135,13 @@ fun LoginScreen(
                 BottomButton(
                     buttonText = stringResource(R.string.login),
                     isButtonEnabled = (emailState.isNotEmpty()) and (passwordState.isNotEmpty()),
-                    onClick = onLoginSuccess
+                    onClick =  {
+                        val body = SigninRequest(
+                            email = emailState,
+                            password = passwordState
+                        )
+                        authViewmodel.signin(body)
+                    }
                 )
                 Spacer(Modifier.height(10.dp))
                 Text(

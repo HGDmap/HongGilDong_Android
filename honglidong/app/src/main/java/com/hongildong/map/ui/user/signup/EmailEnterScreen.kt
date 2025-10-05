@@ -36,9 +36,9 @@ import com.hongildong.map.ui.util.SmallButton
 fun EmailEnterScreen (
     onGoBackClick: () -> Unit,
     onNextClick: () -> Unit,
-    signupViewmodel: SignupViewmodel = hiltViewModel()
+    authViewmodel: AuthViewmodel
 ) {
-    val emailState by signupViewmodel.emailInfo.collectAsState()
+    val emailState by authViewmodel.emailInfo.collectAsState()
     var numberState by remember { mutableStateOf("") }
 
     val focusManager = LocalFocusManager.current
@@ -69,7 +69,7 @@ fun EmailEnterScreen (
                     modifier = Modifier.weight(1f),
                     placeholderMessage = "이메일",
                     textState = emailState,
-                    onTextChange = { signupViewmodel.onEmailInfoChange(it) },
+                    onTextChange = { authViewmodel.onEmailInfoChange(it) },
                     onEditDone = {
                         numberFocusRequester.requestFocus()
                     },
