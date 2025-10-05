@@ -126,6 +126,7 @@ fun SearchScreen(
                         onClickItem = {
                             textState = ""
                             viewModel.onSearch(keyword.keyword)
+                            onSearch()
                         },
                         onDeleteItem = {
                             viewModel.deleteKeyword(keyword.keyword)

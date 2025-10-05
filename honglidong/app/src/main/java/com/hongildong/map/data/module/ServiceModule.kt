@@ -1,6 +1,7 @@
 package com.hongildong.map.data.module
 
 import com.hongildong.map.data.remote.api.AuthService
+import com.hongildong.map.data.remote.api.SearchService
 import com.hongildong.map.data.util.safeApiCall
 import dagger.Module
 import dagger.Provides
@@ -19,6 +20,12 @@ object ServiceModule {
     @Provides
     @Singleton
     fun authApi(@NetworkModule.BaseRetrofit retrofit: Retrofit): AuthService {
+        return retrofit.buildService()
+    }
+
+    @Provides
+    @Singleton
+    fun searchApi(@NetworkModule.BaseRetrofit retrofit: Retrofit): SearchService {
         return retrofit.buildService()
     }
 }
