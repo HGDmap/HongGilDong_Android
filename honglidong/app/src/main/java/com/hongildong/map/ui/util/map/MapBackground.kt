@@ -22,13 +22,13 @@ fun MapBackground(
     viewModel: MapViewmodel
 ) {
     val markers by viewModel.markers.collectAsState()
+    val locationTrackingMode by viewModel.locationTrackingMode.collectAsState()
 
     NaverMap(
         modifier = Modifier.fillMaxSize(),
         locationSource = rememberFusedLocationSource(),
         properties = MapProperties(
-            //locationTrackingMode = LocationTrackingMode.Follow,
-            locationTrackingMode = LocationTrackingMode.None
+            locationTrackingMode = locationTrackingMode
         ),
         uiSettings = MapUiSettings(
             isLocationButtonEnabled = true,

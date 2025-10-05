@@ -68,7 +68,12 @@ class SearchKeywordViewmodel @Inject constructor(
                 return@launch
             }
 
-            val response = searchRepository.searchWithId(token, keyword.toLong())
+            val keywordValue = keyword.trim().toLongOrNull()
+            if (keywordValue == null) {
+                _isSearchSuccess.value = UiState.Error("유효하지 않은 검색어입니다.")
+                return@launch
+            }
+            val response = searchRepository.searchWithId(token, keywordValue)
             when (response) {
                 is DefaultResponse.Success -> {
                     Log.d(TAG, "응답 성공: $response")

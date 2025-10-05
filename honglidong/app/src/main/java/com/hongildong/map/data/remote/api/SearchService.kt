@@ -1,6 +1,5 @@
 package com.hongildong.map.data.remote.api
 
-import androidx.room.Query
 import com.hongildong.map.data.entity.NodeInfo
 import com.hongildong.map.data.util.ApiResponse
 import retrofit2.http.GET

@@ -1,6 +1,5 @@
 package com.hongildong.map.ui.util.map
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.naver.maps.geometry.LatLng
@@ -9,6 +8,7 @@ import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.compose.CameraPositionState
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
+import com.naver.maps.map.compose.LocationTrackingMode
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -32,9 +32,15 @@ class MapViewmodel @Inject constructor(
     private val _markers = MutableStateFlow<List<MarkerInfo>>(emptyList())
     val markers = _markers.asStateFlow()
 
+    // 카메라 따라가기 옵션을 뷰모델에서 관리 - 검색시 끄고 취소시 다시 켜는 용도
+    private val _locationTrackingMode = MutableStateFlow(LocationTrackingMode.Follow)
+    val locationTrackingMode = _locationTrackingMode.asStateFlow()
+
     @OptIn(ExperimentalNaverMapApi::class)
     fun showMarkerAndMoveCamera(position: LatLng, name: String) {
         viewModelScope.launch {
+            // 카메라 이동 전 화면 위치 사용자 따라가는 옵션 삭제
+            _locationTrackingMode.value = LocationTrackingMode.NoFollow
             // 마커 목록 업데이트
             _markers.value = listOf(MarkerInfo(0, position, name))
 
@@ -51,6 +57,7 @@ class MapViewmodel @Inject constructor(
 
     fun clearMarker() {
         viewModelScope.launch {
+            _locationTrackingMode.value = LocationTrackingMode.Follow
             _markers.value = listOf()
         }
     }
