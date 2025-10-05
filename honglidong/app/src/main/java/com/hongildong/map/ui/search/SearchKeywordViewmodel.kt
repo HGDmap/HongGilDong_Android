@@ -1,4 +1,4 @@
-package com.hongildong.map.ui.home.search
+package com.hongildong.map.ui.search
 
 import android.content.Context
 import android.util.Log

@@ -10,9 +10,9 @@ import androidx.navigation.navigation
 import com.hongildong.map.ui.home.BookmarkScreen
 import com.hongildong.map.ui.home.NearbyScreen
 import com.hongildong.map.ui.home.ProfileScreen
-import com.hongildong.map.ui.home.location_detail.LocationDetailScreen
-import com.hongildong.map.ui.home.search.SearchKeywordViewmodel
-import com.hongildong.map.ui.home.search.SearchScreen
+import com.hongildong.map.ui.search.location_detail.LocationDetailScreen
+import com.hongildong.map.ui.search.SearchKeywordViewmodel
+import com.hongildong.map.ui.search.SearchScreen
 import com.hongildong.map.ui.util.map.MapViewmodel
 
 private const val SEARCH_GRAPH_ROUTE = "search_graph"

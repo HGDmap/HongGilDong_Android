@@ -1,6 +1,5 @@
-package com.hongildong.map.ui.home.location_detail
+package com.hongildong.map.ui.search.location_detail
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,7 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
-import com.hongildong.map.ui.home.search.SearchKeywordViewmodel
+import com.hongildong.map.ui.search.SearchKeywordViewmodel
 import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.util.FlexibleBottomSheet
 import com.hongildong.map.ui.util.map.MapViewmodel
