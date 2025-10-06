@@ -36,7 +36,8 @@ fun NearbyScreen(
     ) {
         Column {
             SearchBar(navController)
-            Tags()
+            Spacer(Modifier.height(5.dp))
+            FacilityTypeTags()
         }
 
         FlexibleBottomSheet(
