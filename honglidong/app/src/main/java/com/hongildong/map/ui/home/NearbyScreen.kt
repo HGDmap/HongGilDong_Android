@@ -1,11 +1,9 @@
 package com.hongildong.map.ui.home
 
-import android.view.View
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,13 +15,10 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ScrollableTabRow
-import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
@@ -31,18 +26,16 @@ import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.hongildong.map.R
@@ -53,7 +46,6 @@ import com.hongildong.map.ui.theme.Gray500
 import com.hongildong.map.ui.theme.Gray600
 import com.hongildong.map.ui.theme.White
 import com.hongildong.map.ui.util.FlexibleBottomSheet
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,6 +53,7 @@ fun NearbyScreen(
     navController: NavHostController,
 ) {
     val sheetScaffoldState = rememberBottomSheetScaffoldState()
+    val nestedScrollConnection = rememberNestedScrollInteropConnection()
 
     Box(
         modifier = Modifier
@@ -75,6 +68,10 @@ fun NearbyScreen(
         }
 
         FlexibleBottomSheet(
+            modifier = Modifier
+                .nestedScroll(
+                    nestedScrollConnection
+                ),
             sheetScaffoldState = sheetScaffoldState
         ) {
             Column(
@@ -93,7 +90,9 @@ fun NearbyScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RecommendPlaces() {
+fun RecommendPlaces(
+    modifier: Modifier = Modifier
+) {
     val pages = listOf("쉬기 좋은", "공부하기 좋은", "경치 좋은", "회의하기 좋은", "맛있는")
     var tabState by remember { mutableIntStateOf(0) }
 
@@ -137,7 +136,7 @@ fun RecommendPlaces() {
             }
         }
         LazyColumn(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxWidth()
                 .weight(1f),
         ) {
