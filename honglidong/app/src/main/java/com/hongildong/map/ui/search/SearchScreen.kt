@@ -89,7 +89,7 @@ fun SearchScreen(
         Spacer(
             modifier = Modifier.height(15.dp)
         )
-        
+
         if (textState.isEmpty()) {
             Row(
                 modifier = Modifier
