@@ -1,5 +1,6 @@
 package com.hongildong.map.ui.search
 
+import android.widget.AutoCompleteTextView
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -29,6 +30,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
 import com.hongildong.map.R
 import com.hongildong.map.ui.theme.AppTypography
@@ -71,7 +73,10 @@ fun SearchScreen(
             CustomTextField(
                 placeholderMessage = stringResource(R.string.suggest_search),
                 textState = textState,
-                onTextChange = { textState = it },
+                onTextChange = {
+                    textState = it
+                    viewModel.autoCompleteSearch(it)
+                },
                 onSearch = {
                     viewModel.onSearch(it)
                     textState = ""
@@ -84,32 +89,34 @@ fun SearchScreen(
         Spacer(
             modifier = Modifier.height(15.dp)
         )
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 6.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = stringResource(R.string.recently_searched_title),
-                style = AppTypography.Bold_18
-            )
-
-            Text(
-                text = stringResource(R.string.delete_all),
-                style = AppTypography.Regular_13,
+        
+        if (textState.isEmpty()) {
+            Row(
                 modifier = Modifier
-                    .padding(horizontal = 10.dp, vertical = 5.dp)
-                    .clickable {
-                        // 최근 검색 기록 전체 삭제
-                        viewModel.clearAllKeyword()
-                    }
-            )
-        }
+                    .fillMaxWidth()
+                    .padding(horizontal = 6.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = stringResource(R.string.recently_searched_title),
+                    style = AppTypography.Bold_18
+                )
 
-        Spacer(modifier = Modifier.height(10.dp))
+                Text(
+                    text = stringResource(R.string.delete_all),
+                    style = AppTypography.Regular_13,
+                    modifier = Modifier
+                        .padding(horizontal = 10.dp, vertical = 5.dp)
+                        .clickable {
+                            // 최근 검색 기록 전체 삭제
+                            viewModel.clearAllKeyword()
+                        }
+                )
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+        }
 
         if (textState.isEmpty()) {
             RecentlySearchedKeywords(
@@ -120,7 +127,35 @@ fun SearchScreen(
                 }
             )
         } else {
-            // todo: 검색어 자동완성 화면
+            AutoCompleteSearchedKeyword(
+                viewModel = viewModel,
+                onSearch = {
+                    onSearch()
+                    textState = ""
+                }
+            )
+        }
+    }
+}
+
+@Composable
+fun AutoCompleteSearchedKeyword(
+    viewModel: SearchKeywordViewmodel = hiltViewModel<SearchKeywordViewmodel>(),
+    onSearch: () -> Unit
+) {
+    val autoCompleteResult by viewModel.autoCompleteResult.collectAsState()
+
+    LazyColumn {
+        items(autoCompleteResult) { searchedResult ->
+            SearchedItem(
+                itemName = searchedResult.name,
+                onClickItem = {
+                    viewModel.onSearch(searchedResult.id.toString())
+                    onSearch()
+                },
+                onDeleteItem = { },
+                isRecentlySearched = false
+            )
         }
     }
 }
@@ -140,7 +175,7 @@ fun RecentlySearchedKeywords(
         // 검색기록 보여주기
         LazyColumn {
             items(recentlySearchedKeywords) { keyword ->
-                RecentlySearchedItem(
+                SearchedItem(
                     itemName = keyword.keyword,
                     onClickItem = {
                         viewModel.onSearch(keyword.keyword)
@@ -148,7 +183,8 @@ fun RecentlySearchedKeywords(
                     },
                     onDeleteItem = {
                         viewModel.deleteKeyword(keyword.keyword)
-                    }
+                    },
+                    isRecentlySearched = true
                 )
             }
         }
