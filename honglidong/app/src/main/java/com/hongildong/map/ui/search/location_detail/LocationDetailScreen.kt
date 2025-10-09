@@ -1,9 +1,11 @@
 package com.hongildong.map.ui.search.location_detail
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
@@ -28,7 +30,6 @@ fun LocationDetailScreen(
     searchViewmodel: SearchKeywordViewmodel,
     mapViewmodel: MapViewmodel
 ) {
-
     val searchResult by searchViewmodel.searchResult.collectAsState()
     LaunchedEffect(key1 = searchResult) {
         // searchResult가 null이 아닐 때만 실행
@@ -48,16 +49,11 @@ fun LocationDetailScreen(
         modifier = Modifier.fillMaxSize()
     ) {
         FlexibleBottomSheet(
-            sheetScaffoldState = sheetScaffoldState
+            sheetScaffoldState = sheetScaffoldState,
+            isFullscreen = false
         ) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.Start,
-                verticalArrangement = Arrangement.Top
-            ) {
-                Text(searchResult?.name ?: "건물명과 좌표 입력", style = AppTypography.Medium_15)
-                Text("위도: ${searchResult?.latitude} / 경도: ${searchResult?.longitude}", style = AppTypography.Medium_15)
-            }
+            Text(searchResult?.name ?: "건물명과 좌표 입력", style = AppTypography.Medium_15)
+            Text("위도: ${searchResult?.latitude} / 경도: ${searchResult?.longitude}", style = AppTypography.Medium_15)
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.hongildong.map.ui.home
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -72,7 +73,8 @@ fun NearbyScreen(
                 .nestedScroll(
                     nestedScrollConnection
                 ),
-            sheetScaffoldState = sheetScaffoldState
+            sheetScaffoldState = sheetScaffoldState,
+            isFullscreen = false
         ) {
             Column(
                 modifier = Modifier.fillMaxSize(),
@@ -179,6 +181,10 @@ fun RecommendPlaceItem(
                     id = if (place.isBookmarked) R.drawable.ic_bookmark_true else R.drawable.ic_bookmark_false,
                 ),
                 contentDescription = "",
+                modifier = Modifier
+                    .clickable {
+                        place.isBookmarked = !place.isBookmarked
+                    }
             )
         }
         Spacer(Modifier.height(12.dp))
@@ -206,7 +212,7 @@ fun RecommendPlaceItem(
 data class Place(
     val name: String = "멀티미디어실",
     val location: String = "제4공학관 T동 605호",
-    val isBookmarked: Boolean = false,
+    var isBookmarked: Boolean = false,
     val images: List<Int> = listOf(R.drawable.img_blank * 15)
 )
 

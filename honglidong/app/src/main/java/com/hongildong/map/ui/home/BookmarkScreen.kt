@@ -39,7 +39,8 @@ fun BookmarkScreen(
         }
 
         FlexibleBottomSheet(
-            sheetScaffoldState = sheetScaffoldState
+            sheetScaffoldState = sheetScaffoldState,
+            isFullscreen = false
         ) {
             Column(
                 modifier = Modifier.fillMaxSize(),

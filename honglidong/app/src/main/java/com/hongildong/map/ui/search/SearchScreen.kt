@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,7 +43,6 @@ fun SearchScreen(
     onSearch: () -> Unit
 ) {
     var textState by remember { mutableStateOf("") }
-    val recentlySearchedKeywords by viewModel.recentKeywords.collectAsState()
 
     Column(
         modifier = Modifier
@@ -111,26 +111,45 @@ fun SearchScreen(
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        // 검색기록 없을 때는 검색기록이 없다 문구 / 검색기록 있을 때는 검색기록 보여주기
-        if (recentlySearchedKeywords.isEmpty()) {
-            // 검색기록 없음 문구
-            EmptyContents(stringResource(R.string.empty_search_keyword))
-        } else {
-            // 검색기록 보여주기
-            LazyColumn {
-                items(recentlySearchedKeywords) { keyword ->
-                    RecentlySearchedItem(
-                        itemName = keyword.keyword,
-                        onClickItem = {
-                            textState = ""
-                            viewModel.onSearch(keyword.keyword)
-                            onSearch()
-                        },
-                        onDeleteItem = {
-                            viewModel.deleteKeyword(keyword.keyword)
-                        }
-                    )
+        if (textState.isEmpty()) {
+            RecentlySearchedKeywords(
+                viewModel = viewModel,
+                onSearch = {
+                    onSearch()
+                    textState = ""
                 }
+            )
+        } else {
+            // todo: 검색어 자동완성 화면
+        }
+    }
+}
+
+@Composable
+fun RecentlySearchedKeywords(
+    viewModel: SearchKeywordViewmodel = hiltViewModel<SearchKeywordViewmodel>(),
+    onSearch: () -> Unit,
+) {
+    val recentlySearchedKeywords by viewModel.recentKeywords.collectAsState()
+
+    // 검색기록 없을 때는 검색기록이 없다 문구 / 검색기록 있을 때는 검색기록 보여주기
+    if (recentlySearchedKeywords.isEmpty()) {
+        // 검색기록 없음 문구
+        EmptyContents(stringResource(R.string.empty_search_keyword))
+    } else {
+        // 검색기록 보여주기
+        LazyColumn {
+            items(recentlySearchedKeywords) { keyword ->
+                RecentlySearchedItem(
+                    itemName = keyword.keyword,
+                    onClickItem = {
+                        viewModel.onSearch(keyword.keyword)
+                        onSearch()
+                    },
+                    onDeleteItem = {
+                        viewModel.deleteKeyword(keyword.keyword)
+                    }
+                )
             }
         }
     }
