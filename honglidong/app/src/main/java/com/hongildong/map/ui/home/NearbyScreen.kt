@@ -1,16 +1,25 @@
 package com.hongildong.map.ui.home
 
+import android.view.View
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ScrollableTabRow
@@ -28,13 +37,18 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.hongildong.map.R
 import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Black
+import com.hongildong.map.ui.theme.Gray300
 import com.hongildong.map.ui.theme.Gray500
 import com.hongildong.map.ui.theme.Gray600
 import com.hongildong.map.ui.theme.White
@@ -102,7 +116,7 @@ fun RecommendPlaces() {
             },
 
             // 3. 탭 하단의 기본 회색 구분선을 제거합니다.
-            divider = {}
+            divider = {},
         ) {
             pages.forEachIndexed { index, title ->
                 Tab(
@@ -122,19 +136,72 @@ fun RecommendPlaces() {
                 )
             }
         }
-        Text(
-            "${pages[tabState]} 페이지",
-            style = AppTypography.Regular_13.copy(color = Gray600)
-        )
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+        ) {
+            items(places) { place ->
+                RecommendPlaceItem(place)
+            }
+        }
     }
 
 }
 
 @Composable
-fun RecommendPlaceItem(place: Place) {
-    Box(
-        modifier = Modifier.fillMaxWidth()
-    )
+fun RecommendPlaceItem(
+    place: Place
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth(),
+
+    ) {
+        Spacer(Modifier.height(12.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column {
+                Text(
+                    place.name,
+                    style = AppTypography.Medium_18.copy(color = Black)
+                )
+                Spacer(Modifier.height(3.dp))
+                Text(
+                    place.location,
+                    style = AppTypography.Medium_13.copy(color = Gray600)
+                )
+            }
+            Image(
+                painterResource(
+                    id = if (place.isBookmarked) R.drawable.ic_bookmark_true else R.drawable.ic_bookmark_false,
+                ),
+                contentDescription = "",
+            )
+        }
+        Spacer(Modifier.height(12.dp))
+        LazyRow (
+            modifier = Modifier
+                .height(120.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(place.images) { image ->
+                Image(
+                    painterResource(image ?: R.drawable.img_blank),
+                    contentDescription = "",
+                    modifier = Modifier
+                        .size(width = 110.dp, height = 90.dp)
+                        .clip(RoundedCornerShape(12.dp)),
+                    contentScale = ContentScale.Crop
+                )
+            }
+        }
+        //Spacer(Modifier.height(8.dp))
+        HorizontalDivider(Modifier.height(1.dp), color = Gray300)
+    }
 }
 
 data class Place(
@@ -142,4 +209,31 @@ data class Place(
     val location: String = "제4공학관 T동 605호",
     val isBookmarked: Boolean = false,
     val images: List<Int> = listOf(R.drawable.img_blank * 15)
+)
+
+val places = listOf<Place>(
+    Place(
+        name = "도서관",
+        location = "본관 H동 2,3층",
+        isBookmarked = true,
+        images = listOf(R.drawable.img_blank, R.drawable.img_blank, R.drawable.img_blank, R.drawable.img_blank)
+    ),
+    Place(
+        name = "도서관",
+        location = "본관 H동 2,3층",
+        isBookmarked = false,
+        images = listOf(R.drawable.img_blank,)
+    ),
+    Place(
+        name = "도서관",
+        location = "본관 H동 2,3층",
+        isBookmarked = true,
+        images = listOf(R.drawable.img_blank, R.drawable.img_blank)
+    ),
+    Place(
+        name = "도서관",
+        location = "본관 H동 2,3층",
+        isBookmarked = false,
+        images = listOf(R.drawable.img_blank, R.drawable.img_blank, R.drawable.img_blank)
+    ),
 )

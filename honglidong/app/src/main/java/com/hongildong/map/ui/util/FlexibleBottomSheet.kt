@@ -28,6 +28,7 @@ import com.hongildong.map.ui.theme.White
 fun FlexibleBottomSheet(
     modifier: Modifier = Modifier,
     sheetScaffoldState: BottomSheetScaffoldState,
+    enableSwipe: Boolean = true,
     content: @Composable (() -> Unit)
 ) {
     BottomSheetScaffold(
@@ -37,6 +38,7 @@ fun FlexibleBottomSheet(
         sheetContainerColor = White,
         sheetContentColor = White,
         sheetTonalElevation = 6.dp,
+        sheetSwipeEnabled = enableSwipe,
         sheetDragHandle = {
             BottomSheetDefaults.DragHandle(
                 color = Gray300,
