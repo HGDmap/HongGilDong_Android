@@ -62,8 +62,8 @@ fun FacilityTypeTagItem(
     Box(
         modifier = Modifier
             .padding(5.dp)
+            .shadow(6.dp, shape = RoundedCornerShape(20.dp))
             .wrapContentSize()
-            .shadow(6.dp)
             .clickable {}
             .background(color = White, shape = RoundedCornerShape(size = 20.dp))
             .padding(vertical = 5.dp, horizontal = 10.dp)

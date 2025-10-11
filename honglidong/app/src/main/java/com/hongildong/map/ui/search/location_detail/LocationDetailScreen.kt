@@ -28,6 +28,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -62,9 +63,6 @@ fun LocationDetailScreen(
         }
     }
 
-    // todo: 건물 정보에서 건물명, 좌표 추출해서
-    // 1. 네이버 맵 api 호출해 마커 띄우기
-    // 2. 건물 정보 바텀 시트에 텍스트로 띄우기
     Box (
         Modifier.background(Color.Transparent)
     ) {
@@ -100,6 +98,7 @@ fun SearchBarWithGoBack(
 ) {
     Row(
         modifier = Modifier
+            .shadow(3.dp)
             .background(White)
             .fillMaxWidth()
             .windowInsetsPadding(WindowInsets.statusBars)
