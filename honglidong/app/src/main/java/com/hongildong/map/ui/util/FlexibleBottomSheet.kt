@@ -1,60 +1,47 @@
 package com.hongildong.map.ui.util
 
-import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.rememberSplineBasedDecay
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.AnchoredDraggableState
+import androidx.compose.foundation.gestures.DraggableAnchors
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.anchoredDraggable
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.BottomSheetScaffoldState
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.ModalBottomSheetDefaults
-import androidx.compose.material3.ModalBottomSheetProperties
-import androidx.compose.material3.SheetState
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.rememberBottomSheetScaffoldState
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.input.pointer.util.VelocityTracker
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.hongildong.map.ui.theme.Gray300
 import com.hongildong.map.ui.theme.White
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -158,6 +145,82 @@ fun FreeDragBottomSheet(
                 Spacer(Modifier.height(10.dp))
                 content()
             }
+        }
+    }
+}
+
+
+// 1. 바텀 시트가 가질 수 있는 3가지 상태를 명확하게 정의합니다.
+enum class BottomSheetState {
+    Collapsed,
+    PartiallyExpanded,
+    Expanded
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AnchoredDraggableBottomSheet(
+    modifier: Modifier = Modifier,
+    isFullScreen: Boolean = false,
+    maxHeight: Float,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    val density = LocalDensity.current
+
+    val collapsedHeight = with(density) { 40.dp.toPx() }
+    val partialHeight = with(density) { 350.dp.toPx() }
+
+    val anchors = DraggableAnchors {
+        BottomSheetState.Collapsed at maxHeight - collapsedHeight
+        BottomSheetState.PartiallyExpanded at maxHeight - partialHeight
+        BottomSheetState.Expanded at if (isFullScreen) maxHeight * 0f else maxHeight * 0.2f // 화면의 80% 높이 (상단에서 20% 지점)
+    }
+
+    val decayAnimationSpec = rememberSplineBasedDecay<Float>()
+    val state = remember {
+        AnchoredDraggableState(
+            initialValue = BottomSheetState.PartiallyExpanded,
+            anchors = anchors,
+            positionalThreshold = { distance -> distance * 0.2f },
+            velocityThreshold = { with(density) { 100.dp.toPx() } },
+            snapAnimationSpec = spring(stiffness = Spring.StiffnessLow),
+            decayAnimationSpec = decayAnimationSpec
+        )
+    }
+
+    Surface(
+        modifier = modifier
+            .fillMaxWidth()
+            // 2. state가 알려주는 현재 Y축 오프셋 값만큼 Surface를 이동시킵니다.
+            .offset {
+                IntOffset(
+                    x = 0,
+                    y = state
+                        .requireOffset()
+                        .roundToInt()
+                )
+            }
+            // 3. 이 Modifier가 드래그 제스처를 감지하고 state를 업데이트하여 스냅 동작을 처리합니다.
+            .anchoredDraggable(state, orientation = Orientation.Vertical),
+        shape = RoundedCornerShape(topStart = 22.dp, topEnd = 22.dp),
+        tonalElevation = 8.dp
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(start = 20.dp, end = 20.dp)
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            if (!(isFullScreen and (state.currentValue == BottomSheetState.Expanded))) {
+                BottomSheetDefaults.DragHandle(
+                    color = Gray300,
+                    width = 60.dp
+                )
+                Spacer(Modifier.height(10.dp))
+            } else {
+                Spacer(Modifier.systemBarsPadding())
+            }
+            content()
         }
     }
 }
