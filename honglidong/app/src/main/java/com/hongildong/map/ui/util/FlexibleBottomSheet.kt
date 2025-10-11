@@ -92,64 +92,6 @@ fun FlexibleBottomSheet(
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun FreeDragBottomSheet(
-    modifier: Modifier = Modifier,
-    peekHeight: Dp = 40.dp, // 2. 최저 높이를 40dp로 변경
-    initialVisibleHeight: Dp = 350.dp, // 1. 초기 높이를 350dp로 설정
-    content: @Composable ColumnScope.() -> Unit
-) {
-    val density = LocalDensity.current // dp를 px로 변환하기 위해 density를 가져옵니다.
-
-    BoxWithConstraints(modifier = modifier) {
-        val fullHeight = constraints.maxHeight.toFloat()
-
-        // dp 단위를 px 단위로 변환합니다.
-        val peekHeightPx = with(density) { peekHeight.toPx() }
-        val initialVisibleHeightPx = with(density) { initialVisibleHeight.toPx() }
-
-        // 초기 Y축 위치(offset)를 계산합니다.
-        val initialOffsetY = fullHeight - initialVisibleHeightPx
-
-        var offsetY by remember { mutableFloatStateOf(initialOffsetY) }
-
-        Surface(
-            modifier = modifier
-                .fillMaxWidth()
-                // 2. Animatable의 현재 값(.value)을 오프셋으로 사용합니다.
-                .offset { IntOffset(0, offsetY.roundToInt()) }
-                .pointerInput(Unit) {
-                    detectVerticalDragGestures { change, dragAmount ->
-                        change.consume()
-                        // 드래그 경계를 계산합니다.
-                        val maxOffsetY = fullHeight - peekHeightPx // 최저 높이 지점
-                        val minOffsetY = 0f                   // 최고 높이 지점 (화면 상단)
-                        offsetY = (offsetY + dragAmount).coerceIn(minOffsetY, maxOffsetY)
-                    }
-                },
-            color = White,
-            shape = RoundedCornerShape(topStart = 22.dp, topEnd = 22.dp),
-            tonalElevation = 8.dp
-        ) {
-            Column(
-                modifier = Modifier
-                    .padding(start = 20.dp, end=20.dp)
-                    .fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                BottomSheetDefaults.DragHandle(
-                    color = Gray300,
-                    width = 60.dp
-                )
-                Spacer(Modifier.height(10.dp))
-                content()
-            }
-        }
-    }
-}
-
-
 // 1. 바텀 시트가 가질 수 있는 3가지 상태를 명확하게 정의합니다.
 enum class BottomSheetState {
     Collapsed,
@@ -168,7 +110,7 @@ fun AnchoredDraggableBottomSheet(
     val density = LocalDensity.current
 
     val collapsedHeight = with(density) { 40.dp.toPx() }
-    val partialHeight = with(density) { 350.dp.toPx() }
+    val partialHeight = with(density) { 300.dp.toPx() }
 
     val anchors = DraggableAnchors {
         BottomSheetState.Collapsed at maxHeight - collapsedHeight
@@ -203,7 +145,8 @@ fun AnchoredDraggableBottomSheet(
             // 3. 이 Modifier가 드래그 제스처를 감지하고 state를 업데이트하여 스냅 동작을 처리합니다.
             .anchoredDraggable(state, orientation = Orientation.Vertical),
         shape = RoundedCornerShape(topStart = 22.dp, topEnd = 22.dp),
-        tonalElevation = 8.dp
+        tonalElevation = 8.dp,
+        color = White
     ) {
         Column(
             modifier = Modifier
