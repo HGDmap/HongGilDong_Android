@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.hongildong.map.R
 import com.hongildong.map.data.entity.NodeInfo
+import com.hongildong.map.ui.direction.directions
 import com.hongildong.map.ui.search.SearchKeywordViewmodel
 import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Black
@@ -56,7 +57,8 @@ fun LocationDetailScreen(
     searchedWord: String = "",
     mainNavController: NavController,
     searchViewmodel: SearchKeywordViewmodel,
-    mapViewmodel: MapViewmodel
+    mapViewmodel: MapViewmodel,
+    onDepart: () -> Unit
 ) {
     val searchResult by searchViewmodel.searchResult.collectAsState()
     LaunchedEffect(key1 = searchResult) {
@@ -89,7 +91,11 @@ fun LocationDetailScreen(
             ) {
                 LocationDetailInfo(
                     modifier = Modifier.nestedScroll(nestedScrollConnection),
-                    searchResult = searchResult ?: NodeInfo(0.0,0.0,"temp", "", 0)
+                    searchResult = searchResult ?: NodeInfo(0.0,0.0,"temp", "", 0),
+                    onDepart = {
+                        mapViewmodel.showPath(directions)
+                    },
+                    onArrival = {}
                 )
             }
         }

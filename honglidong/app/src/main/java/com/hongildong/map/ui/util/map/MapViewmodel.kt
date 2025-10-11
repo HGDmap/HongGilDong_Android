@@ -2,6 +2,7 @@ package com.hongildong.map.ui.util.map
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hongildong.map.data.entity.NodeInfo
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraAnimation
 import com.naver.maps.map.CameraPosition
@@ -32,6 +33,9 @@ class MapViewmodel @Inject constructor(
     private val _markers = MutableStateFlow<List<MarkerInfo>>(emptyList())
     val markers = _markers.asStateFlow()
 
+    private val _pathNodes = MutableStateFlow<List<NodeInfo>>(emptyList())
+    val pathNodes = _pathNodes.asStateFlow()
+
     // 카메라 따라가기 옵션을 뷰모델에서 관리 - 검색시 끄고 취소시 다시 켜는 용도
     private val _locationTrackingMode = MutableStateFlow(LocationTrackingMode.Follow)
     val locationTrackingMode = _locationTrackingMode.asStateFlow()
@@ -52,6 +56,13 @@ class MapViewmodel @Inject constructor(
                 CameraPosition(position, targetZoom)
                 ).animate(CameraAnimation.Easing)
             cameraPositionState.move(cameraUpdate)
+        }
+    }
+
+    fun showPath(nodes: List<NodeInfo>) {
+        viewModelScope.launch {
+            _locationTrackingMode.value = LocationTrackingMode.NoFollow
+            _pathNodes.value = nodes
         }
     }
 

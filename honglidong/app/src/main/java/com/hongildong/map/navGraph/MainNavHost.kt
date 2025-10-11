@@ -68,7 +68,8 @@ fun MainNavHost(
                     searchedWord = searchedWord,
                     mainNavController = mainNavController,
                     searchViewmodel = searchKeywordViewmodel,
-                    mapViewmodel = mapViewmodel
+                    mapViewmodel = mapViewmodel,
+                    onDepart = {}
                 )
             }
         }

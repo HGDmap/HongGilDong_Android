@@ -1,7 +1,5 @@
 package com.hongildong.map.ui.search.location_detail
 
-import android.location.Location
-import android.view.View
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -27,17 +25,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hongildong.map.R
 import com.hongildong.map.data.entity.NodeInfo
-import com.hongildong.map.ui.home.FacilityTypeTagItem
-import com.hongildong.map.ui.home.FacilityTypeTags
 import com.hongildong.map.ui.home.RecommendPlaceItem
 import com.hongildong.map.ui.home.places
 import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Black
-import com.hongildong.map.ui.theme.Gray300
 import com.hongildong.map.ui.theme.Gray500
 import com.hongildong.map.ui.theme.Gray600
 import com.hongildong.map.ui.theme.PrimaryMid
@@ -48,13 +42,19 @@ import com.hongildong.map.ui.util.ButtonWithIcon
 @Composable
 fun LocationDetailInfo(
     searchResult: NodeInfo,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onDepart: () -> Unit,
+    onArrival: () -> Unit
 ) {
     val pages = listOf("시설 정보", "리뷰", "사진")
     var tabState by remember { mutableIntStateOf(0) }
 
     Column {
-        LocationDetailHeader(searchResult)
+        LocationDetailHeader(
+            searchResult,
+            onDepart = onDepart,
+            onArrival = onArrival
+        )
         Spacer(Modifier.height(16.dp))
         ScrollableTabRow (
             // 1. 현재 선택된 탭의 인덱스
@@ -107,7 +107,9 @@ fun LocationDetailInfo(
 
 @Composable
 fun LocationDetailHeader(
-    searchResult: NodeInfo
+    searchResult: NodeInfo,
+    onDepart: () -> Unit,
+    onArrival: () -> Unit
 ) {
 
     Column(
@@ -172,13 +174,13 @@ fun LocationDetailHeader(
             ButtonWithIcon(
                 icon = R.drawable.ic_departure,
                 title = "출발",
-                onClick = { }
+                onClick = { onDepart() }
             )
             Spacer(Modifier.width(10.dp))
             ButtonWithIcon(
                 icon = R.drawable.ic_arrival,
                 title = "도착",
-                onClick = { }
+                onClick = { onArrival() }
             )
         }
     }
