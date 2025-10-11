@@ -83,7 +83,7 @@ fun FlexibleBottomSheet(
                 content()
             }
         },
-        sheetPeekHeight = 40.dp,
+        sheetPeekHeight = 90.dp,
     ) {
         Box(
             modifier = Modifier.background(Color.Transparent),
@@ -92,7 +92,6 @@ fun FlexibleBottomSheet(
 }
 
 
-// 1. 바텀 시트가 가질 수 있는 3가지 상태를 명확하게 정의합니다.
 enum class BottomSheetState {
     Collapsed,
     PartiallyExpanded,
@@ -103,7 +102,7 @@ enum class BottomSheetState {
 @Composable
 fun AnchoredDraggableBottomSheet(
     modifier: Modifier = Modifier,
-    isFullScreen: Boolean = false,
+    isFullScreen: Boolean = true,
     maxHeight: Float,
     content: @Composable ColumnScope.() -> Unit
 ) {
@@ -133,7 +132,6 @@ fun AnchoredDraggableBottomSheet(
     Surface(
         modifier = modifier
             .fillMaxWidth()
-            // 2. state가 알려주는 현재 Y축 오프셋 값만큼 Surface를 이동시킵니다.
             .offset {
                 IntOffset(
                     x = 0,
@@ -142,7 +140,6 @@ fun AnchoredDraggableBottomSheet(
                         .roundToInt()
                 )
             }
-            // 3. 이 Modifier가 드래그 제스처를 감지하고 state를 업데이트하여 스냅 동작을 처리합니다.
             .anchoredDraggable(state, orientation = Orientation.Vertical),
         shape = RoundedCornerShape(topStart = 22.dp, topEnd = 22.dp),
         tonalElevation = 8.dp,
@@ -162,6 +159,7 @@ fun AnchoredDraggableBottomSheet(
                 Spacer(Modifier.height(10.dp))
             } else {
                 Spacer(Modifier.systemBarsPadding())
+
             }
             content()
         }

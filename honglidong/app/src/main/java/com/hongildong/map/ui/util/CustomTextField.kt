@@ -64,7 +64,7 @@ fun CustomTextField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(color = White, shape = RoundedCornerShape(size = 10.dp))
-                    .border(1.dp, color = Gray100, shape = RoundedCornerShape(size = 10.dp))
+                    .border(1.dp, color = Gray400, shape = RoundedCornerShape(size = 10.dp))
                     .padding(all = 16.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
