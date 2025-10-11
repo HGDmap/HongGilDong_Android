@@ -30,11 +30,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.hongildong.map.R
+import com.hongildong.map.data.entity.NodeInfo
 import com.hongildong.map.ui.search.SearchKeywordViewmodel
 import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Black
@@ -63,6 +67,8 @@ fun LocationDetailScreen(
         }
     }
 
+    val nestedScrollConnection = rememberNestedScrollInteropConnection()
+
     Box (
         Modifier.background(Color.Transparent)
     ) {
@@ -76,20 +82,20 @@ fun LocationDetailScreen(
         ) {
             val fullHeight = constraints.maxHeight.toFloat()
             AnchoredDraggableBottomSheet (
-                modifier = Modifier,
+                modifier = Modifier
+                    .nestedScroll(nestedScrollConnection),
                 maxHeight = fullHeight,
                 isFullScreen = true
             ) {
-                Column (
-                    modifier = Modifier.fillMaxSize().weight(1f)
-                ) {
-                    Text(searchResult?.name ?: "건물명과 좌표 입력", style = AppTypography.Medium_15)
-                    Text("위도: ${searchResult?.latitude} / 경도: ${searchResult?.longitude}", style = AppTypography.Medium_15)
-                }
+                LocationDetailInfo(
+                    modifier = Modifier.nestedScroll(nestedScrollConnection),
+                    searchResult = searchResult ?: NodeInfo(0.0,0.0,"temp", "", 0)
+                )
             }
         }
     }
 }
+
 
 @Composable
 fun SearchBarWithGoBack(

@@ -161,13 +161,7 @@ fun AnchoredDraggableBottomSheet(
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if (!(isFullScreen and (state.currentValue == BottomSheetState.Expanded))) {
-                BottomSheetDefaults.DragHandle(
-                    color = Gray300,
-                    width = 60.dp
-                )
-                Spacer(Modifier.height(10.dp))
-            } else {
+            if (isFullScreen and (state.currentValue == BottomSheetState.Expanded)) {
                 Spacer(Modifier.windowInsetsPadding(WindowInsets.statusBars))
                 Image(
                     painter = painterResource(R.drawable.ic_back),
@@ -177,6 +171,12 @@ fun AnchoredDraggableBottomSheet(
                         .padding(vertical = 10.dp)
                         .rotate(-90f)
                 )
+            } else {
+                BottomSheetDefaults.DragHandle(
+                    color = Gray300,
+                    width = 60.dp
+                )
+                Spacer(Modifier.height(10.dp))
             }
             content()
         }

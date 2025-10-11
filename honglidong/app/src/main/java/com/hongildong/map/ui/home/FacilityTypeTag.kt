@@ -20,10 +20,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.hongildong.map.R
 import com.hongildong.map.ui.theme.AppTypography
+import com.hongildong.map.ui.theme.Black
 import com.hongildong.map.ui.theme.White
 
 enum class FacilityType(
@@ -58,13 +60,14 @@ fun FacilityTypeTags() {
 fun FacilityTypeTagItem(
     tagIcon: Int,
     tagTitle: String,
+    onClick: () -> Unit = {}
 ) {
     Box(
         modifier = Modifier
             .padding(5.dp)
             .shadow(6.dp, shape = RoundedCornerShape(20.dp))
             .wrapContentSize()
-            .clickable {}
+            .clickable {onClick()}
             .background(color = White, shape = RoundedCornerShape(size = 20.dp))
             .padding(vertical = 5.dp, horizontal = 10.dp)
     ) {
@@ -79,7 +82,7 @@ fun FacilityTypeTagItem(
             Spacer(Modifier.width(6.dp))
             Text(
                 tagTitle,
-                style = AppTypography.Regular_13
+                style = AppTypography.Regular_13.copy(color = Black)
             )
         }
     }
