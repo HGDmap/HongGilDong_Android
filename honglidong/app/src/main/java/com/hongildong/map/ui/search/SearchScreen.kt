@@ -1,6 +1,5 @@
 package com.hongildong.map.ui.search
 
-import android.widget.AutoCompleteTextView
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,7 +17,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,7 +28,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
 import com.hongildong.map.R
 import com.hongildong.map.ui.theme.AppTypography
@@ -42,7 +39,7 @@ import com.hongildong.map.ui.util.EmptyContents
 fun SearchScreen(
     navController: NavHostController,
     viewModel: SearchKeywordViewmodel = hiltViewModel<SearchKeywordViewmodel>(),
-    onSearch: () -> Unit
+    onSearch: (String) -> Unit
 ) {
     var textState by remember { mutableStateOf("") }
 
@@ -80,7 +77,7 @@ fun SearchScreen(
                 onSearch = {
                     viewModel.onSearch(it)
                     textState = ""
-                    onSearch()
+                    onSearch(it)
                 },
                 maxLength = 15
             )
@@ -122,7 +119,7 @@ fun SearchScreen(
             RecentlySearchedKeywords(
                 viewModel = viewModel,
                 onSearch = {
-                    onSearch()
+                    onSearch(it)
                     textState = ""
                 }
             )
@@ -130,7 +127,7 @@ fun SearchScreen(
             AutoCompleteSearchedKeyword(
                 viewModel = viewModel,
                 onSearch = {
-                    onSearch()
+                    onSearch(it)
                     textState = ""
                 }
             )
@@ -141,7 +138,7 @@ fun SearchScreen(
 @Composable
 fun AutoCompleteSearchedKeyword(
     viewModel: SearchKeywordViewmodel = hiltViewModel<SearchKeywordViewmodel>(),
-    onSearch: () -> Unit
+    onSearch: (String) -> Unit
 ) {
     val autoCompleteResult by viewModel.autoCompleteResult.collectAsState()
 
@@ -151,7 +148,7 @@ fun AutoCompleteSearchedKeyword(
                 itemName = searchedResult.name,
                 onClickItem = {
                     viewModel.onSearch(searchedResult.id.toString())
-                    onSearch()
+                    onSearch(searchedResult.name)
                 },
                 onDeleteItem = { },
                 isRecentlySearched = false
@@ -163,7 +160,7 @@ fun AutoCompleteSearchedKeyword(
 @Composable
 fun RecentlySearchedKeywords(
     viewModel: SearchKeywordViewmodel = hiltViewModel<SearchKeywordViewmodel>(),
-    onSearch: () -> Unit,
+    onSearch: (String) -> Unit,
 ) {
     val recentlySearchedKeywords by viewModel.recentKeywords.collectAsState()
 
@@ -179,7 +176,7 @@ fun RecentlySearchedKeywords(
                     itemName = keyword.keyword,
                     onClickItem = {
                         viewModel.onSearch(keyword.keyword)
-                        onSearch()
+                        onSearch(keyword.keyword)
                     },
                     onDeleteItem = {
                         viewModel.deleteKeyword(keyword.keyword)

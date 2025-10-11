@@ -26,7 +26,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Black
-import com.hongildong.map.ui.theme.Gray100
 import com.hongildong.map.ui.theme.Gray300
 import com.hongildong.map.ui.theme.Gray400
 import com.hongildong.map.ui.theme.PrimaryLight

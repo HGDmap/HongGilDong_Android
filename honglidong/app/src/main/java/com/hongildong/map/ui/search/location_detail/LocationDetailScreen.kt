@@ -1,7 +1,6 @@
 package com.hongildong.map.ui.search.location_detail
 
 import android.annotation.SuppressLint
-import android.view.View
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -18,7 +17,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -33,14 +31,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.hongildong.map.R
 import com.hongildong.map.ui.search.SearchKeywordViewmodel
 import com.hongildong.map.ui.theme.AppTypography
-import com.hongildong.map.ui.theme.Gray100
+import com.hongildong.map.ui.theme.Black
 import com.hongildong.map.ui.theme.Gray400
 import com.hongildong.map.ui.theme.White
 import com.hongildong.map.ui.util.AnchoredDraggableBottomSheet
@@ -132,7 +128,7 @@ fun SearchBarWithGoBack(
         ) {
             Text(
                 text = searchedWord,
-                color = Gray400,
+                color = Black,
                 style = AppTypography.Regular_15,
                 modifier = Modifier.padding(start = 16.dp)
             )
