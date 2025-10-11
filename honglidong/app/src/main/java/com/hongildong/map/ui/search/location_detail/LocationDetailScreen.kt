@@ -54,9 +54,9 @@ import com.naver.maps.map.compose.ExperimentalNaverMapApi
 @Composable
 fun LocationDetailScreen(
     searchedWord: String = "",
-    mainNavController: NavController,
     searchViewmodel: SearchKeywordViewmodel,
     mapViewmodel: MapViewmodel,
+    onGoBack: () -> Unit,
     onDepart: () -> Unit
 ) {
     val searchResult by searchViewmodel.searchResult.collectAsState()
@@ -75,7 +75,7 @@ fun LocationDetailScreen(
     ) {
         SearchBarWithGoBack(
             searchedWord = searchedWord,
-            onGoBack = {mainNavController.popBackStack()}
+            onGoBack = {onGoBack()}
         )
 
         BoxWithConstraints (

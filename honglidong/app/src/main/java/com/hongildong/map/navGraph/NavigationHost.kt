@@ -6,6 +6,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import com.hongildong.map.ui.MainScreen
+import com.hongildong.map.ui.search.SearchRootScreen
+import com.hongildong.map.ui.search.SearchScreen
 
 // 전체 앱 navhost
 @Composable
@@ -31,6 +33,17 @@ fun AppNavHost() {
         ) {
             composable(NavRoute.Main.route) {
                 MainScreen(
+                    rootNavController = rootNavController
+                )
+            }
+        }
+
+        navigation(
+            route = NavRoute.SearchFlow.route,
+            startDestination = NavRoute.SearchRoot.route
+        ) {
+            composable(NavRoute.SearchRoot.route) {
+                SearchRootScreen(
                     rootNavController = rootNavController
                 )
             }
