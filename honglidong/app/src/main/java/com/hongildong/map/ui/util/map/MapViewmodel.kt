@@ -66,6 +66,8 @@ class MapViewmodel @Inject constructor(
             _locationTrackingMode.value = LocationTrackingMode.NoFollow
             _pathNodes.value = nodes.map { it -> LatLng(it.latitude, it.longitude) }
 
+            if (_pathNodes.value.isEmpty()) return@launch
+
             val lat = _pathNodes.value.map { it.latitude }.average()
             val lng = _pathNodes.value.map { it.longitude }.average()
             val position = LatLng(lat, lng)
