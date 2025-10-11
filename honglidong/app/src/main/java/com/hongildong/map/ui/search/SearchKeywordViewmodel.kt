@@ -1,10 +1,12 @@
-package com.hongildong.map.ui.home.search
+package com.hongildong.map.ui.search
 
 import android.content.Context
 import android.util.Log
+import androidx.compose.runtime.key
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hongildong.map.data.dao.SearchKeywordDao
+import com.hongildong.map.data.entity.AutoCompleteSearchKeyword
 import com.hongildong.map.data.entity.NodeInfo
 import com.hongildong.map.data.entity.SearchKeyword
 import com.hongildong.map.data.repository.SearchRepository
@@ -43,6 +45,9 @@ class SearchKeywordViewmodel @Inject constructor(
     private val _searchResult = MutableStateFlow<NodeInfo?>(null)
     val searchResult: StateFlow<NodeInfo?> = _searchResult.asStateFlow()
 
+    private val _autoCompleteResult = MutableStateFlow<List<AutoCompleteSearchKeyword>>(listOf())
+    val autoCompleteResult: StateFlow<List<AutoCompleteSearchKeyword>> = _autoCompleteResult.asStateFlow()
+
     private val sharedPreferences = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
     fun getToken(): String? {
         return sharedPreferences.getString("access_token", null)
@@ -79,6 +84,27 @@ class SearchKeywordViewmodel @Inject constructor(
                     Log.d(TAG, "응답 성공: $response")
                     _searchResult.value = response.data
                     Log.d(TAG, "searchResult: ${searchResult.value}l")
+                    _isSearchSuccess.value = UiState.Success
+                }
+                is DefaultResponse.Error -> {
+                    Log.d(TAG, "응답 실패: $response")
+                    _isSearchSuccess.value = UiState.Error("유효하지 않은 검색어입니다.")
+                }
+            }
+        }
+    }
+
+    // 검색 자동완성 로직
+    fun autoCompleteSearch(keyword: String) {
+        if (keyword.isEmpty()) return
+
+        viewModelScope.launch {
+            val response = searchRepository.autoCompleteSearch(keyword)
+            when (response) {
+                is DefaultResponse.Success -> {
+                    Log.d(TAG, "응답 성공: $response")
+                    _autoCompleteResult.value = response.data
+                    Log.d(TAG, "searchResult: ${searchResult.value}")
                     _isSearchSuccess.value = UiState.Success
                 }
                 is DefaultResponse.Error -> {

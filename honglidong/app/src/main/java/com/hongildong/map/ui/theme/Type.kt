@@ -88,6 +88,14 @@ object AppTypography {
         lineHeight = 17.sp,
     )
 
+    val Medium_13 = TextStyle(
+        fontFamily = Pretendard,
+        fontWeight = FontWeight.Medium,
+        fontSize = 13.sp,
+        lineHeight = 15.sp,
+        letterSpacing = -(0.2).sp,
+    )
+
     val Medium_11 = TextStyle(
         fontFamily = Pretendard,
         fontWeight = FontWeight.Medium,

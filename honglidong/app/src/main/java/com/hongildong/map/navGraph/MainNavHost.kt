@@ -10,9 +10,9 @@ import androidx.navigation.navigation
 import com.hongildong.map.ui.home.BookmarkScreen
 import com.hongildong.map.ui.home.NearbyScreen
 import com.hongildong.map.ui.home.ProfileScreen
-import com.hongildong.map.ui.home.location_detail.LocationDetailScreen
-import com.hongildong.map.ui.home.search.SearchKeywordViewmodel
-import com.hongildong.map.ui.home.search.SearchScreen
+import com.hongildong.map.ui.search.location_detail.LocationDetailScreen
+import com.hongildong.map.ui.search.SearchKeywordViewmodel
+import com.hongildong.map.ui.search.SearchScreen
 import com.hongildong.map.ui.util.map.MapViewmodel
 
 private const val SEARCH_GRAPH_ROUTE = "search_graph"
@@ -52,21 +52,24 @@ fun MainNavHost(
                 SearchScreen(
                     mainNavController,
                     onSearch = {
-                        mainNavController.navigate(NavRoute.LocationDetail.route)
+                        mainNavController.navigate(NavRoute.LocationDetail.route + "/$it")
                     },
                     viewModel = searchKeywordViewmodel
                 )
             }
-            composable(route = NavRoute.LocationDetail.route) { backStackEntry ->
+            composable(route = NavRoute.LocationDetail.route + "/{searchedWord}") { backStackEntry ->
                 val parentEntry = remember(backStackEntry) {
                     mainNavController.getBackStackEntry(SEARCH_GRAPH_ROUTE)
                 }
                 val searchKeywordViewmodel: SearchKeywordViewmodel = hiltViewModel(parentEntry)
+                val searchedWord = backStackEntry.arguments?.getString("searchedWord") ?: ""
 
                 LocationDetailScreen(
+                    searchedWord = searchedWord,
                     mainNavController = mainNavController,
                     searchViewmodel = searchKeywordViewmodel,
-                    mapViewmodel = mapViewmodel
+                    mapViewmodel = mapViewmodel,
+                    onDepart = {}
                 )
             }
         }
