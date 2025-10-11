@@ -21,7 +21,7 @@ import com.hongildong.map.ui.util.FlexibleBottomSheet
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookmarkScreen(
-    navController: NavHostController
+    onSearch: () -> Unit
 ) {
 
     val sheetScaffoldState = rememberBottomSheetScaffoldState()
@@ -33,7 +33,7 @@ fun BookmarkScreen(
         contentAlignment = Alignment.TopCenter
     ) {
         Column {
-            SearchBar(navController)
+            SearchBar(onSearch)
             Spacer(Modifier.height(5.dp))
             FacilityTypeTags()
         }

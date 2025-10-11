@@ -35,7 +35,7 @@ import com.hongildong.map.ui.theme.White
 
 @Composable
 fun SearchBar(
-    navController: NavHostController,
+    onSearch: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -50,13 +50,7 @@ fun SearchBar(
                 .shadow(6.dp, shape = RoundedCornerShape(10.dp))
                 .weight(1f)
                 .clickable {
-                    navController.navigate(NavRoute.Search.route) {
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
-                        }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
+                    onSearch()
                 }
                 .background(color = White, shape = RoundedCornerShape(size = 10.dp))
                 .padding(all = 15.dp)
@@ -74,13 +68,7 @@ fun SearchBar(
                 .shadow(4.dp, shape = RoundedCornerShape(10.dp))
                 .height(56.dp)
                 .clickable {
-                    navController.navigate(NavRoute.Search.route) {
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
-                        }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
+                    onSearch()
                 }
         )
     }

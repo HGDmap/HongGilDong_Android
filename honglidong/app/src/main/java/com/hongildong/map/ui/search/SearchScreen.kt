@@ -40,9 +40,9 @@ import com.hongildong.map.ui.util.EmptyContents
 
 @Composable
 fun SearchScreen(
-    navController: NavHostController,
     viewModel: SearchKeywordViewmodel = hiltViewModel<SearchKeywordViewmodel>(),
-    onSearch: (String) -> Unit
+    onSearch: (String) -> Unit,
+    onGoBack: () -> Unit
 ) {
     var textState by remember { mutableStateOf("") }
 
@@ -64,7 +64,7 @@ fun SearchScreen(
                 contentDescription = stringResource(R.string.go_back),
                 modifier = Modifier
                     .clickable {
-                        navController.popBackStack()
+                        onGoBack()
                     }
             )
             Spacer(
