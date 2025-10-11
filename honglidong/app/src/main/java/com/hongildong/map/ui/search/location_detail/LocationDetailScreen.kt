@@ -50,7 +50,6 @@ import com.hongildong.map.ui.util.map.MapViewmodel
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
 
-@SuppressLint("UnusedBoxWithConstraintsScope")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalNaverMapApi::class)
 @Composable
 fun LocationDetailScreen(
@@ -93,6 +92,7 @@ fun LocationDetailScreen(
                     modifier = Modifier.nestedScroll(nestedScrollConnection),
                     searchResult = searchResult ?: NodeInfo(0.0,0.0,"temp", "", 0),
                     onDepart = {
+                        mapViewmodel.clearMarker()
                         mapViewmodel.showPath(directions)
                     },
                     onArrival = {}

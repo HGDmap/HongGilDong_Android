@@ -52,12 +52,12 @@ fun MainNavHost(
                 SearchScreen(
                     mainNavController,
                     onSearch = {
-                        mainNavController.navigate(NavRoute.LocationDetail.route + it)
+                        mainNavController.navigate(NavRoute.LocationDetail.route + "/$it")
                     },
                     viewModel = searchKeywordViewmodel
                 )
             }
-            composable(route = NavRoute.LocationDetail.route + "{searchedWord}") { backStackEntry ->
+            composable(route = NavRoute.LocationDetail.route + "/{searchedWord}") { backStackEntry ->
                 val parentEntry = remember(backStackEntry) {
                     mainNavController.getBackStackEntry(SEARCH_GRAPH_ROUTE)
                 }

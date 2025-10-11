@@ -213,7 +213,7 @@ data class Place(
     val name: String = "멀티미디어실",
     val location: String = "제4공학관 T동 605호",
     var isBookmarked: Boolean = false,
-    val images: List<Int> = listOf(R.drawable.img_blank * 15)
+    val images: List<Int> = listOf(R.drawable.img_blank)
 )
 
 val places = listOf<Place>(

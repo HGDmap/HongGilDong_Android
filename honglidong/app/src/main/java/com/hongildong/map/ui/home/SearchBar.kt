@@ -48,7 +48,7 @@ fun SearchBar(
         Box(
             modifier = Modifier
                 .shadow(6.dp, shape = RoundedCornerShape(10.dp))
-                .fillMaxWidth(0.8f)
+                .weight(1f)
                 .clickable {
                     navController.navigate(NavRoute.Search.route) {
                         popUpTo(navController.graph.findStartDestination().id) {
@@ -71,8 +71,7 @@ fun SearchBar(
             painter = painterResource(R.drawable.ic_search_route),
             contentDescription = stringResource(R.string.search_button),
             modifier = Modifier
-                .shadow(6.dp, shape = RoundedCornerShape(10.dp))
-                .fillMaxWidth(1f)
+                .shadow(4.dp, shape = RoundedCornerShape(10.dp))
                 .height(56.dp)
                 .clickable {
                     navController.navigate(NavRoute.Search.route) {
