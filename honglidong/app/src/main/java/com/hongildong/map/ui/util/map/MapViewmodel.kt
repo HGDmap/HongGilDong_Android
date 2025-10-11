@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.collections.map
 
 data class MarkerInfo(
     val key: Long,
@@ -33,7 +34,7 @@ class MapViewmodel @Inject constructor(
     private val _markers = MutableStateFlow<List<MarkerInfo>>(emptyList())
     val markers = _markers.asStateFlow()
 
-    private val _pathNodes = MutableStateFlow<List<NodeInfo>>(emptyList())
+    private val _pathNodes = MutableStateFlow<List<LatLng>>(emptyList())
     val pathNodes = _pathNodes.asStateFlow()
 
     // 카메라 따라가기 옵션을 뷰모델에서 관리 - 검색시 끄고 취소시 다시 켜는 용도
@@ -59,10 +60,21 @@ class MapViewmodel @Inject constructor(
         }
     }
 
+    @OptIn(ExperimentalNaverMapApi::class)
     fun showPath(nodes: List<NodeInfo>) {
         viewModelScope.launch {
             _locationTrackingMode.value = LocationTrackingMode.NoFollow
-            _pathNodes.value = nodes
+            _pathNodes.value = nodes.map { it -> LatLng(it.latitude, it.longitude) }
+
+            val lat = _pathNodes.value.map { it.latitude }.average()
+            val lng = _pathNodes.value.map { it.longitude }.average()
+            val position = LatLng(lat, lng)
+            val targetZoom = 18.0
+            val cameraUpdate = CameraUpdate
+                .toCameraPosition(
+                    CameraPosition(position, targetZoom)
+                ).animate(CameraAnimation.Easing)
+            cameraPositionState.move(cameraUpdate)
         }
     }
 
