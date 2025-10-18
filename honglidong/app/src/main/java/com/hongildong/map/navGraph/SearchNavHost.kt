@@ -31,7 +31,7 @@ fun SearchNavHost(
             startDestination = NavRoute.Search.route
         ) {
             composable(route = NavRoute.Search.route) { backStackEntry ->
-                // 부모 그래프(SEARCH_GRAPH_ROUTE)를 찾아 ViewModel을 공유합니다.
+                // SEARCH_GRAPH_ROUTE를 찾아 ViewModel을 공유
                 val parentEntry = remember(backStackEntry) {
                     searchNavController.getBackStackEntry(SEARCH_GRAPH_ROUTE)
                 }
