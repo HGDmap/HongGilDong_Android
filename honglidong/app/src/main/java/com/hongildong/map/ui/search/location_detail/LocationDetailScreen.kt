@@ -1,6 +1,7 @@
 package com.hongildong.map.ui.search.location_detail
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -60,11 +61,16 @@ fun LocationDetailScreen(
     onDepart: () -> Unit
 ) {
     val searchResult by searchViewmodel.searchResult.collectAsState()
-    LaunchedEffect(key1 = searchResult) {
+    val directionResult by searchViewmodel.directionResult.collectAsState()
+    LaunchedEffect(key1 = searchResult, key2 = directionResult) {
         // searchResult가 null이 아닐 때만 실행
         searchResult?.let { result ->
             val newPosition = LatLng(result.latitude, result.longitude)
-            mapViewmodel.showMarkerAndMoveCamera(newPosition, result.name)
+            mapViewmodel.showMarkerAndMoveCamera(newPosition, result.name ?: "")
+        }
+
+        directionResult?.let { response ->
+            mapViewmodel.showPath(directionResult!!.nodes)
         }
     }
 
@@ -90,10 +96,10 @@ fun LocationDetailScreen(
             ) {
                 LocationDetailInfo(
                     modifier = Modifier.nestedScroll(nestedScrollConnection),
-                    searchResult = searchResult ?: NodeInfo(0.0,0.0,"temp", "", 0),
+                    searchResult = searchResult ?: NodeInfo(0.0,0.0,"temp", "", "",0),
                     onDepart = {
                         mapViewmodel.clearMarker()
-                        mapViewmodel.showPath(directions)
+                        searchViewmodel.direct()
                     },
                     onArrival = {}
                 )

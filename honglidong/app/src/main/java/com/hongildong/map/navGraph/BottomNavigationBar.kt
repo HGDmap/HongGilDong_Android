@@ -34,17 +34,17 @@ object BottomNavItems {
         BottomNavItem(
             label = "즐겨찾기",
             icon = R.drawable.ic_bookmark,
-            route = "bookmark"
+            route = NavRoute.Bookmark.route
         ),
         BottomNavItem(
             label = "주변",
             icon = R.drawable.ic_nearby,
-            route = "nearby"
+            route = NavRoute.Nearby.route
         ),
         BottomNavItem(
             label = "마이",
             icon = R.drawable.ic_profile,
-            route = "profile"
+            route = NavRoute.Profile.route
         ),
     )
 }

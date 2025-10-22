@@ -9,6 +9,7 @@ import com.hongildong.map.data.dao.SearchKeywordDao
 import com.hongildong.map.data.entity.AutoCompleteSearchKeyword
 import com.hongildong.map.data.entity.NodeInfo
 import com.hongildong.map.data.entity.SearchKeyword
+import com.hongildong.map.data.remote.response.DirectionResponse
 import com.hongildong.map.data.repository.SearchRepository
 import com.hongildong.map.data.util.DefaultResponse
 import com.hongildong.map.ui.util.UiState
@@ -47,6 +48,9 @@ class SearchKeywordViewmodel @Inject constructor(
 
     private val _autoCompleteResult = MutableStateFlow<List<AutoCompleteSearchKeyword>>(listOf())
     val autoCompleteResult: StateFlow<List<AutoCompleteSearchKeyword>> = _autoCompleteResult.asStateFlow()
+
+    private val _directionResult = MutableStateFlow<DirectionResponse?>(null)
+    val directionResult: StateFlow<DirectionResponse?> = _directionResult.asStateFlow()
 
     private val sharedPreferences = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
     fun getToken(): String? {
@@ -126,6 +130,25 @@ class SearchKeywordViewmodel @Inject constructor(
     fun clearAllKeyword() {
         viewModelScope.launch {
             searchKeywordDao.clearAllKeywords()
+        }
+    }
+
+    // 길찾기 api 임시 연결
+    fun direct() {
+        viewModelScope.launch {
+            val response = searchRepository.direct(20, 40)
+            when (response) {
+                is DefaultResponse.Success -> {
+                    Log.d(TAG, "응답 성공: $response")
+                    _directionResult.value = response.data
+                    Log.d(TAG, "directionResult: ${directionResult.value}")
+                    _isSearchSuccess.value = UiState.Success
+                }
+                is DefaultResponse.Error -> {
+                    Log.d(TAG, "응답 실패: $response")
+                    _isSearchSuccess.value = UiState.Error(response.message)
+                }
+            }
         }
     }
 }
