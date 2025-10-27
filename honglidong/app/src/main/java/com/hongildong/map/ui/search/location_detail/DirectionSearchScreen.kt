@@ -48,9 +48,11 @@ fun DirectionSearchScreen(
     val arrivalInfo by searchViewmodel.arrivalPlaceInfo.collectAsState()
     LaunchedEffect(key1 = departInfo, key2 = arrivalInfo) {
         // 두개 모두 채워질 경우 바로 direct 후 화면 이동
+        // 이동 후에는 출발, 도착지 정보 삭제 - 뒤로가기시 무한경로검색을 막음
         if ((departInfo != null) and (arrivalInfo != null)) {
             searchViewmodel.direct()
             onDirect()
+            searchViewmodel.deleteDepartAndArrivalData()
         }
     }
 
@@ -64,7 +66,10 @@ fun DirectionSearchScreen(
         DirectionHeader(
             depart = departInfo?.nodeName ?: "",
             arrival = arrivalInfo?.nodeName ?: "",
-            onGoBack = onGoBack,
+            onGoBack = {
+                onGoBack()
+                searchViewmodel.deleteDepartAndArrivalData()
+            },
         )
 
         Row(

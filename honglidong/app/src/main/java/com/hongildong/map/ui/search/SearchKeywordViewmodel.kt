@@ -75,11 +75,10 @@ class SearchKeywordViewmodel @Inject constructor(
         }
     }
 
-    fun deleteAllDirectionResults() {
+    fun deleteDepartAndArrivalData() {
         viewModelScope.launch {
             _departPlaceInfo.value = null
             _arrivalPlaceInfo.value = null
-            _directionResult.value = null
         }
     }
 
