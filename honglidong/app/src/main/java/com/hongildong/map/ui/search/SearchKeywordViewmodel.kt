@@ -66,12 +66,14 @@ class SearchKeywordViewmodel @Inject constructor(
     fun setDepart(place: SearchKeyword) {
         viewModelScope.launch {
             _departPlaceInfo.value = place
+            Log.d(TAG, "depart set: ${_departPlaceInfo.value}")
         }
     }
 
     fun setArrival(place: SearchKeyword) {
         viewModelScope.launch {
             _arrivalPlaceInfo.value = place
+            Log.d(TAG, "arrival set: ${_arrivalPlaceInfo.value}")
         }
     }
 
@@ -115,10 +117,10 @@ class SearchKeywordViewmodel @Inject constructor(
 
                     searchKeywordDao.insertKeyword(
                         SearchKeyword(
-                            nodeName = response.data.nodeName ?: "",
+                            nodeName = response.data.name ?: "temp",
                             nodeId = response.data.nodeId,
                             nodeCode = response.data.nodeCode,
-                            id = response.data.id
+                            id = response.data.nodeId
                         )
                     )
                 }

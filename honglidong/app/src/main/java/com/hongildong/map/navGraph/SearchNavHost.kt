@@ -40,7 +40,7 @@ fun SearchNavHost(
 
                 SearchScreen(
                     onSearch = { keyword ->
-                        searchNavController.navigate(NavRoute.LocationDetail.route + "/$keyword")
+                        searchNavController.navigate(NavRoute.LocationDetail.route + "/${keyword.nodeName}")
                     },
                     onGoBack = {
                         rootNavController.navigate(NavRoute.MainFlow.route) {

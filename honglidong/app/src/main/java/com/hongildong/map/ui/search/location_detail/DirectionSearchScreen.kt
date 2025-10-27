@@ -71,6 +71,7 @@ fun DirectionSearchScreen(
                 searchViewmodel.deleteDepartAndArrivalData()
             },
         )
+        Spacer(Modifier.height(16.dp))
 
         Row(
             modifier = Modifier
@@ -178,7 +179,7 @@ fun IconWithNodeName(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
+            .padding(vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
@@ -189,7 +190,6 @@ fun IconWithNodeName(
         )
         Text(
             text = title.ifEmpty { titlePlaceholder },
-            color = Black,
             style = AppTypography.Medium_18
                 .copy(color = if (title.isEmpty()) Gray400 else Black),
             modifier = Modifier

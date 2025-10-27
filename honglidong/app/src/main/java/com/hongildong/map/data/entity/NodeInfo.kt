@@ -6,7 +6,7 @@ data class NodeInfo(
     val name: String? = "",
     val nodeName: String? = "",
     val nodeCode: String,
-    val id: Int, // 시설, 건물, 이벤트 id
+    val id: Int? = 0, // 시설, 건물, 이벤트 id
     val nodeId: Int, // 연결된 노드 id (길찾기용)
     val image: String? = "",
 )

@@ -97,15 +97,18 @@ fun LocationDetailScreen(
                     searchResult = searchResult ?: NodeInfo(0.0,0.0,"temp", "", "",0, nodeId = 0),
                     onDepart = {
                         if (searchResult != null) {
+                            // 검색 결과를 바탕으로 출발지 설정
                             val keyword = SearchKeyword(
-                                nodeName = searchResult!!.nodeName ?: "temp",
-                                id = searchResult!!.id,
+                                nodeName = searchResult!!.name ?: "temp",
+                                id = searchResult?.id ?: searchResult!!.nodeId,
                                 nodeId = searchResult!!.nodeId,
                                 nodeCode = searchResult!!.nodeCode,
                             )
 
-                            onSearchDirection()
+                            // 출발지 설정
                             searchViewmodel.setDepart(keyword)
+                            // 경로 검색 화면으로 화면 전환
+                            onSearchDirection()
                         }
                         else Toast.makeText(context, "유효하지 않은 장소입니다.", Toast.LENGTH_SHORT).show()
 
@@ -114,15 +117,18 @@ fun LocationDetailScreen(
                     },
                     onArrival = {
                         if (searchResult != null) {
+                            // 검색 결과를 바탕으로 도착지 설정
                             val keyword = SearchKeyword(
-                                nodeName = searchResult!!.nodeName ?: "temp",
-                                id = searchResult!!.id,
+                                nodeName = searchResult!!.name ?: "temp",
+                                id = searchResult?.id ?: searchResult!!.nodeId,
                                 nodeId = searchResult!!.nodeId,
                                 nodeCode = searchResult!!.nodeCode,
                             )
 
-                            onSearchDirection()
+                            // 도착지 설정
                             searchViewmodel.setArrival(keyword)
+                            // 경로 검색 화면으로 화면 전환
+                            onSearchDirection()
                         }
                         else Toast.makeText(context, "유효하지 않은 장소입니다.", Toast.LENGTH_SHORT).show()
                     }

@@ -70,7 +70,6 @@ object AppTypography {
         fontWeight = FontWeight.Bold,
         fontSize = 13.sp,
         lineHeight = 15.sp,
-        color = Black
     )
 
     val Medium_18 = TextStyle(
@@ -78,7 +77,6 @@ object AppTypography {
         fontWeight = FontWeight.Medium,
         fontSize = 18.sp,
         lineHeight = 20.sp,
-        color = Black
     )
 
     val Medium_15 = TextStyle(
