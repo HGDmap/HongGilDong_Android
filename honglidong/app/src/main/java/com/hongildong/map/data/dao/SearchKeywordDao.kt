@@ -18,8 +18,8 @@ interface SearchKeywordDao {
     suspend fun insertKeyword(keyword: SearchKeyword)
 
     // 특정 검색어 삭제
-    @Query("DELETE FROM search_keywords WHERE keyword = :keyword")
-    suspend fun deleteKeyword(keyword: String)
+    @Query("DELETE FROM search_keywords WHERE node_id = :nodeId and node_code = :nodeCode")
+    suspend fun deleteKeyword(nodeId: Int, nodeCode: String)
 
     // 전체 검색어 삭제
     @Query("DELETE FROM search_keywords")

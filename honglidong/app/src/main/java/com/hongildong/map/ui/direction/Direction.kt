@@ -9,7 +9,8 @@ val directions = listOf<NodeInfo>(
         longitude = 126.924863,
         name = "",
         nodeCode = "FLOOR",
-        nodeId = 20
+        nodeId = 20,
+        id = 0
     ),
     NodeInfo(
         latitude = 37.552288,
@@ -17,6 +18,7 @@ val directions = listOf<NodeInfo>(
         name = "",
         nodeCode = "ENTRANCE",
         nodeId = 43,
+        id = 0
     ),
     NodeInfo(
         latitude = 37.55222679039269,
@@ -24,6 +26,7 @@ val directions = listOf<NodeInfo>(
         name = "",
         nodeCode = "OUTDOOR",
         nodeId = 303,
+        id = 0
     ),
     NodeInfo(
         latitude = 37.55226278124672,
@@ -31,6 +34,7 @@ val directions = listOf<NodeInfo>(
         name = "",
         nodeCode = "OUTDOOR",
         nodeId = 304,
+        id = 0
     ),
     NodeInfo(
         latitude = 37.55230204384725,
@@ -38,6 +42,7 @@ val directions = listOf<NodeInfo>(
         name = "",
         nodeCode = "OUTDOOR",
         nodeId = 308,
+        id = 0
     ),
     NodeInfo(
         latitude = 37.5524009,
@@ -45,5 +50,6 @@ val directions = listOf<NodeInfo>(
         name = "",
         nodeCode = "ENTRANCE",
         nodeId = 40,
+        id = 0
     ),
 )

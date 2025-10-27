@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -31,8 +30,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import com.hongildong.map.R
+import com.hongildong.map.data.entity.SearchKeyword
 import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.White
 import com.hongildong.map.ui.util.CustomTextField
@@ -41,7 +40,7 @@ import com.hongildong.map.ui.util.EmptyContents
 @Composable
 fun SearchScreen(
     viewModel: SearchKeywordViewmodel = hiltViewModel<SearchKeywordViewmodel>(),
-    onSearch: (String) -> Unit,
+    onSearch: (SearchKeyword) -> Unit,
     onGoBack: () -> Unit
 ) {
     var textState by remember { mutableStateOf("") }
@@ -78,9 +77,10 @@ fun SearchScreen(
                     viewModel.autoCompleteSearch(it)
                 },
                 onSearch = {
-                    viewModel.onSearch(it)
+                    // todo: 텍스트박스에 직접 입력후 search 하는 경우 -> 따로 만들것!!
+                    //viewModel.onSearch(it)
+                    //onSearch(it)
                     textState = ""
-                    onSearch(it)
                 },
                 maxLength = 15
             )
@@ -141,17 +141,24 @@ fun SearchScreen(
 @Composable
 fun AutoCompleteSearchedKeyword(
     viewModel: SearchKeywordViewmodel = hiltViewModel<SearchKeywordViewmodel>(),
-    onSearch: (String) -> Unit
+    onSearch: (SearchKeyword) -> Unit
 ) {
     val autoCompleteResult by viewModel.autoCompleteResult.collectAsState()
 
     LazyColumn {
         items(autoCompleteResult) { searchedResult ->
+            val keyword = SearchKeyword(
+                nodeName = searchedResult.name,
+                nodeId = searchedResult.nodeId,
+                id = searchedResult.id,
+                nodeCode = searchedResult.type,
+            )
+
             SearchedItem(
-                itemName = searchedResult.name,
+                itemName = keyword.nodeName,
                 onClickItem = {
-                    viewModel.onSearch(searchedResult.id.toString())
-                    onSearch(searchedResult.name)
+                    viewModel.onSearch(keyword)
+                    onSearch(keyword)
                 },
                 onDeleteItem = { },
                 isRecentlySearched = false
@@ -163,7 +170,7 @@ fun AutoCompleteSearchedKeyword(
 @Composable
 fun RecentlySearchedKeywords(
     viewModel: SearchKeywordViewmodel = hiltViewModel<SearchKeywordViewmodel>(),
-    onSearch: (String) -> Unit,
+    onSearch: (SearchKeyword) -> Unit,
 ) {
     val recentlySearchedKeywords by viewModel.recentKeywords.collectAsState()
 
@@ -176,13 +183,13 @@ fun RecentlySearchedKeywords(
         LazyColumn {
             items(recentlySearchedKeywords) { keyword ->
                 SearchedItem(
-                    itemName = keyword.keyword,
+                    itemName = keyword.nodeName,
                     onClickItem = {
-                        viewModel.onSearch(keyword.keyword)
-                        onSearch(keyword.keyword)
+                        viewModel.onSearch(keyword)
+                        onSearch(keyword)
                     },
                     onDeleteItem = {
-                        viewModel.deleteKeyword(keyword.keyword)
+                        viewModel.deleteKeyword(keyword)
                     },
                     isRecentlySearched = true
                 )

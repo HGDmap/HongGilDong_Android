@@ -9,7 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.hongildong.map.ui.search.SearchKeywordViewmodel
 import com.hongildong.map.ui.search.SearchScreen
-import com.hongildong.map.ui.search.location_detail.DirectionScreen
+import com.hongildong.map.ui.search.location_detail.DirectionSearchScreen
 import com.hongildong.map.ui.search.location_detail.LocationDetailScreen
 import com.hongildong.map.ui.util.map.MapViewmodel
 
@@ -64,27 +64,21 @@ fun SearchNavHost(
                     onGoBack = {
                         searchNavController.popBackStack()
                     },
-                    onDepart = {
-                        searchNavController.navigate(NavRoute.Direction.route + "/from:$it&to:")
+                    onSearchDirection = {
+                        searchNavController.navigate(NavRoute.DirectionSearch.route)
                     },
-                    onArrival = {
-                        searchNavController.navigate(NavRoute.Direction.route + "/from:&to:$it")
-                    }
                 )
             }
-            composable(route = NavRoute.Direction.route + "/from:{depart}&to:{arrival}") { backStackEntry ->
+            composable(route = NavRoute.DirectionSearch.route) { backStackEntry ->
                 val parentEntry = remember(backStackEntry) {
                     searchNavController.getBackStackEntry(SEARCH_GRAPH_ROUTE)
                 }
                 val searchKeywordViewmodel: SearchKeywordViewmodel = hiltViewModel(parentEntry)
-                val departPlace = backStackEntry.arguments?.get("depart") ?: ""
-                val arrivalPlace = backStackEntry.arguments?.getString("arrival") ?: ""
 
-                DirectionScreen(
-                    departPlace = departPlace,
-                    arrivalPlace = arrivalPlace,
+                DirectionSearchScreen(
                     searchViewmodel = searchKeywordViewmodel,
-                    onGoBack = {searchNavController.popBackStack()}
+                    onGoBack = {searchNavController.popBackStack()},
+                    onDirect = {}
                 )
             }
         }

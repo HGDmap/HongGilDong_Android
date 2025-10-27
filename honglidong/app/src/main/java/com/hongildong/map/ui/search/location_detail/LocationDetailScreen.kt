@@ -1,8 +1,5 @@
 package com.hongildong.map.ui.search.location_detail
 
-import android.annotation.SuppressLint
-import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -11,7 +8,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -38,12 +34,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.hongildong.map.R
 import com.hongildong.map.data.entity.NodeInfo
-import com.hongildong.map.ui.direction.directions
+import com.hongildong.map.data.entity.SearchKeyword
 import com.hongildong.map.ui.search.SearchKeywordViewmodel
 import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Black
@@ -61,8 +55,7 @@ fun LocationDetailScreen(
     searchViewmodel: SearchKeywordViewmodel,
     mapViewmodel: MapViewmodel,
     onGoBack: () -> Unit,
-    onDepart: (NodeInfo) -> Unit,
-    onArrival: (NodeInfo) -> Unit
+    onSearchDirection: () -> Unit,
 ) {
     val context = LocalContext.current
     val searchResult by searchViewmodel.searchResult.collectAsState()
@@ -101,16 +94,36 @@ fun LocationDetailScreen(
             ) {
                 LocationDetailInfo(
                     modifier = Modifier.nestedScroll(nestedScrollConnection),
-                    searchResult = searchResult ?: NodeInfo(0.0,0.0,"temp", "", "",0),
+                    searchResult = searchResult ?: NodeInfo(0.0,0.0,"temp", "", "",0, nodeId = 0),
                     onDepart = {
-                        if (searchResult != null) onDepart(searchResult!!)
+                        if (searchResult != null) {
+                            val keyword = SearchKeyword(
+                                nodeName = searchResult!!.nodeName ?: "temp",
+                                id = searchResult!!.id,
+                                nodeId = searchResult!!.nodeId,
+                                nodeCode = searchResult!!.nodeCode,
+                            )
+
+                            onSearchDirection()
+                            searchViewmodel.setDepart(keyword)
+                        }
                         else Toast.makeText(context, "유효하지 않은 장소입니다.", Toast.LENGTH_SHORT).show()
 
                         /*mapViewmodel.clearMarker()
                         searchViewmodel.direct()*/
                     },
                     onArrival = {
-                        if (searchResult != null) onArrival(searchResult!!)
+                        if (searchResult != null) {
+                            val keyword = SearchKeyword(
+                                nodeName = searchResult!!.nodeName ?: "temp",
+                                id = searchResult!!.id,
+                                nodeId = searchResult!!.nodeId,
+                                nodeCode = searchResult!!.nodeCode,
+                            )
+
+                            onSearchDirection()
+                            searchViewmodel.setArrival(keyword)
+                        }
                         else Toast.makeText(context, "유효하지 않은 장소입니다.", Toast.LENGTH_SHORT).show()
                     }
                 )
