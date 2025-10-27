@@ -44,7 +44,6 @@ fun MapBackground(
     ) {
         // 마커
         markers.forEach { markerInfo ->
-            Log.d("mapviewmodel", "$markerInfo")
             Marker(
                 state = MarkerState(position = markerInfo.position),
                 captionText = markerInfo.name

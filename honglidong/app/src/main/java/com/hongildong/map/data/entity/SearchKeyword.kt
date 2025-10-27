@@ -7,5 +7,7 @@ import androidx.room.PrimaryKey
 data class SearchKeyword (
     @PrimaryKey
     val keyword: String,
+    val nodeId: Int,
+    val nodeCode: String,
     val timestamp: Long = System.currentTimeMillis()
 )

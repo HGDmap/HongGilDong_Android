@@ -1,7 +1,9 @@
 package com.hongildong.map.ui.search.location_detail
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -32,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -58,8 +61,10 @@ fun LocationDetailScreen(
     searchViewmodel: SearchKeywordViewmodel,
     mapViewmodel: MapViewmodel,
     onGoBack: () -> Unit,
-    onDepart: () -> Unit
+    onDepart: (NodeInfo) -> Unit,
+    onArrival: (NodeInfo) -> Unit
 ) {
+    val context = LocalContext.current
     val searchResult by searchViewmodel.searchResult.collectAsState()
     val directionResult by searchViewmodel.directionResult.collectAsState()
     LaunchedEffect(key1 = searchResult, key2 = directionResult) {
@@ -98,10 +103,16 @@ fun LocationDetailScreen(
                     modifier = Modifier.nestedScroll(nestedScrollConnection),
                     searchResult = searchResult ?: NodeInfo(0.0,0.0,"temp", "", "",0),
                     onDepart = {
-                        mapViewmodel.clearMarker()
-                        searchViewmodel.direct()
+                        if (searchResult != null) onDepart(searchResult!!)
+                        else Toast.makeText(context, "유효하지 않은 장소입니다.", Toast.LENGTH_SHORT).show()
+
+                        /*mapViewmodel.clearMarker()
+                        searchViewmodel.direct()*/
                     },
-                    onArrival = {}
+                    onArrival = {
+                        if (searchResult != null) onArrival(searchResult!!)
+                        else Toast.makeText(context, "유효하지 않은 장소입니다.", Toast.LENGTH_SHORT).show()
+                    }
                 )
             }
         }

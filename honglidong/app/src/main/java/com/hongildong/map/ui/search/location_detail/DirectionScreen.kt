@@ -26,23 +26,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.hongildong.map.R
-import com.hongildong.map.ui.search.AutoCompleteSearchedKeyword
 import com.hongildong.map.ui.search.RecentlySearchedKeywords
+import com.hongildong.map.ui.search.SearchKeywordViewmodel
 import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Gray300
 import com.hongildong.map.ui.theme.Gray400
 import com.hongildong.map.ui.theme.White
 import com.hongildong.map.ui.util.CustomInfixIconTextField
 
-@Preview
+
 @Composable
-fun DirectionScreen() {
+fun DirectionScreen(
+    departPlace: String = "",
+    arrivalPlace: String = "",
+    searchViewmodel: SearchKeywordViewmodel = hiltViewModel<SearchKeywordViewmodel>(),
+    onGoBack: () -> Unit
+) {
     var departState by remember { mutableStateOf("") }
     var arrivalState by remember { mutableStateOf("") }
-
 
     Column (
         modifier = Modifier
@@ -54,7 +58,7 @@ fun DirectionScreen() {
         Row(
             modifier = Modifier
                 .border(width = 1.dp, shape = RoundedCornerShape(20.dp), color = Gray400)
-                .padding(10.dp),
+                .padding(horizontal = 15.dp, vertical = 5.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
@@ -68,6 +72,7 @@ fun DirectionScreen() {
                     textState = departState,
                     onTextChange = { departState = it },
                     onEditDone = { },
+                    onGoBack = { onGoBack() },
                     icon = R.drawable.ic_location_depart,
                     isWithClose = true
                 )
@@ -82,6 +87,39 @@ fun DirectionScreen() {
             }
         }
 
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = stringResource(R.string.recently_searched_title),
+                style = AppTypography.Bold_18
+            )
+
+            Text(
+                text = stringResource(R.string.delete_all),
+                style = AppTypography.Regular_13,
+                modifier = Modifier
+                    .padding(horizontal = 10.dp, vertical = 5.dp)
+                    .clickable {
+                        // 최근 검색 기록 전체 삭제
+                        searchViewmodel.clearAllKeyword()
+                    }
+            )
+        }
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        RecentlySearchedKeywords(
+            viewModel = searchViewmodel,
+            onSearch = {
+                if (departState.isEmpty()) departState = it
+                else arrivalState = it
+            }
+        )
 
     }
 

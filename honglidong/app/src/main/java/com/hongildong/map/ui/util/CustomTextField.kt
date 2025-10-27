@@ -3,6 +3,7 @@ package com.hongildong.map.ui.util
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -169,6 +170,7 @@ fun CustomInfixIconTextField(
     textState: String,
     onTextChange: (String) -> Unit,
     onEditDone: (String) -> Unit = {},
+    onGoBack: () -> Unit = {},
     icon: Int,
     maxLength: Int = 20,
     textStyle: TextStyle = AppTypography.Medium_18.copy(color = Black),
@@ -178,6 +180,7 @@ fun CustomInfixIconTextField(
     val keyboardController = LocalSoftwareKeyboardController.current
 
     Row(
+        modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
@@ -229,6 +232,7 @@ fun CustomInfixIconTextField(
                 modifier = Modifier
                     .size(30.dp)
                     .padding(horizontal = 5.dp)
+                    .clickable { onGoBack() }
             )
         }
     }
