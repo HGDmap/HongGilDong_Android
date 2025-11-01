@@ -7,7 +7,7 @@ import com.hongildong.map.data.entity.SearchKeyword
 
 @Database(
     entities = [SearchKeyword::class],
-    version = 2,
+    version = 3,
 )
 abstract class SearchDatabase : RoomDatabase() {
     abstract fun searchKeywordDao(): SearchKeywordDao

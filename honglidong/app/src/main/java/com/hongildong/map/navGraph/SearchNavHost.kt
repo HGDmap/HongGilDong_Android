@@ -9,10 +9,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.hongildong.map.ui.search.SearchKeywordViewmodel
 import com.hongildong.map.ui.search.SearchScreen
-import com.hongildong.map.ui.search.location_detail.DirectionSearchScreen
+import com.hongildong.map.ui.direction.DirectionSearchScreen
 import com.hongildong.map.ui.search.location_detail.LocationDetailScreen
 import com.hongildong.map.ui.util.map.MapViewmodel
 
+const val LOCATION_SEARCH_MODE = "location"
+const val DIRECTION_SEARCH_MODE_FROM = "direction_from"
+const val DIRECTION_SEARCH_MODE_TO = "direction_to"
 
 // SearchNavHost 내부에서 사용할 그래프의 route 이름
 private const val SEARCH_GRAPH_ROUTE = "search_graph"
@@ -29,23 +32,46 @@ fun SearchNavHost(
     ) {
         navigation(
             route = SEARCH_GRAPH_ROUTE,
-            startDestination = NavRoute.Search.route
+            startDestination = NavRoute.Search.route + "/$LOCATION_SEARCH_MODE"
         ) {
-            composable(route = NavRoute.Search.route) { backStackEntry ->
+            composable(route = NavRoute.Search.route + "/{searchMode}") { backStackEntry ->
                 // SEARCH_GRAPH_ROUTE를 찾아 ViewModel을 공유
                 val parentEntry = remember(backStackEntry) {
                     searchNavController.getBackStackEntry(SEARCH_GRAPH_ROUTE)
                 }
                 val searchKeywordViewmodel: SearchKeywordViewmodel = hiltViewModel(parentEntry)
+                val searchMode = backStackEntry.arguments?.getString("searchMode") ?: LOCATION_SEARCH_MODE
 
                 SearchScreen(
                     onSearch = { keyword ->
-                        searchNavController.navigate(NavRoute.LocationDetail.route + "/${keyword.nodeName}")
+                        when (searchMode) {
+                            LOCATION_SEARCH_MODE -> {
+                                searchNavController.navigate(NavRoute.LocationDetail.route + "/${keyword.nodeName}")
+                            }
+                            DIRECTION_SEARCH_MODE_FROM -> {
+                                // viewmodel에 출발지 저장
+                                searchKeywordViewmodel.setDepart(keyword)
+                                // 경로 검색화면으로 되돌아가기
+                                searchNavController.navigate(NavRoute.DirectionSearch.route)
+                            }
+                            DIRECTION_SEARCH_MODE_TO -> {
+                                searchKeywordViewmodel.setArrival(keyword)
+                                searchNavController.navigate(NavRoute.DirectionSearch.route)
+                            }
+                        }
                     },
                     onGoBack = {
-                        rootNavController.navigate(NavRoute.MainFlow.route) {
-                            popUpTo(NavRoute.SearchFlow.route) { inclusive = true }
+                        when (searchMode) {
+                            LOCATION_SEARCH_MODE -> {
+                                rootNavController.navigate(NavRoute.MainFlow.route) {
+                                    popUpTo(NavRoute.SearchFlow.route) { inclusive = true }
+                                }
+                            }
+                            else -> {
+                                searchNavController.popBackStack()
+                            }
                         }
+
                     },
                     viewModel = searchKeywordViewmodel
                 )
@@ -77,8 +103,17 @@ fun SearchNavHost(
 
                 DirectionSearchScreen(
                     searchViewmodel = searchKeywordViewmodel,
-                    onGoBack = {searchNavController.popBackStack()},
-                    onDirect = {}
+                    onGoBack = {
+                        searchNavController.popBackStack()
+                        searchKeywordViewmodel.deleteDepartAndArrivalData()
+                    },
+                    onDirect = {},
+                    setDepart = {
+                        searchNavController.navigate(NavRoute.Search.route + "/$DIRECTION_SEARCH_MODE_FROM")
+                    },
+                    setArrival = {
+                        searchNavController.navigate(NavRoute.Search.route + "/$DIRECTION_SEARCH_MODE_TO")
+                    }
                 )
             }
         }

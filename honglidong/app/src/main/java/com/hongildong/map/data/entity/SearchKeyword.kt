@@ -5,7 +5,7 @@ import androidx.room.Entity
 
 @Entity(
     tableName = "search_keywords",
-    primaryKeys = ["node_id", "node_code"]
+    primaryKeys = ["id", "node_code"]
 )
 data class SearchKeyword (
     @ColumnInfo(name = "node_name") val nodeName: String,

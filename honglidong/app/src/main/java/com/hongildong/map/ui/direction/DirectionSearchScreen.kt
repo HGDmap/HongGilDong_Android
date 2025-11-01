@@ -1,4 +1,4 @@
-package com.hongildong.map.ui.search.location_detail
+package com.hongildong.map.ui.direction
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -42,7 +42,9 @@ import com.hongildong.map.ui.theme.White
 fun DirectionSearchScreen(
     searchViewmodel: SearchKeywordViewmodel = hiltViewModel<SearchKeywordViewmodel>(),
     onGoBack: () -> Unit,
-    onDirect: () -> Unit
+    onDirect: () -> Unit,
+    setDepart: () -> Unit,
+    setArrival: () -> Unit,
 ) {
     val departInfo by searchViewmodel.departPlaceInfo.collectAsState()
     val arrivalInfo by searchViewmodel.arrivalPlaceInfo.collectAsState()
@@ -52,7 +54,7 @@ fun DirectionSearchScreen(
         if ((departInfo != null) and (arrivalInfo != null)) {
             searchViewmodel.direct()
             onDirect()
-            searchViewmodel.deleteDepartAndArrivalData()
+            //searchViewmodel.deleteDepartAndArrivalData()
         }
     }
 
@@ -70,6 +72,8 @@ fun DirectionSearchScreen(
                 onGoBack()
                 searchViewmodel.deleteDepartAndArrivalData()
             },
+            onSetDepart = setDepart,
+            onSetArrival = setArrival
         )
         Spacer(Modifier.height(16.dp))
 
@@ -179,7 +183,10 @@ fun IconWithNodeName(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 10.dp),
+            .padding(vertical = 10.dp)
+            .clickable {
+                onChangeTitle()
+            },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
@@ -195,9 +202,6 @@ fun IconWithNodeName(
             modifier = Modifier
                 .padding(start = 16.dp)
                 .weight(1f)
-                .clickable {
-                    onChangeTitle()
-                }
         )
         if (withClose) {
             Image(

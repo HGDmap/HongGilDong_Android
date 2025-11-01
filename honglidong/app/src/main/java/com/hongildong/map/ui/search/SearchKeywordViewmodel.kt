@@ -157,7 +157,7 @@ class SearchKeywordViewmodel @Inject constructor(
     fun deleteKeyword(keyword: SearchKeyword) {
         viewModelScope.launch {
             searchKeywordDao.deleteKeyword(
-                nodeId = keyword.nodeId,
+                id = keyword.nodeId,
                 nodeCode = keyword.nodeCode
             )
         }
