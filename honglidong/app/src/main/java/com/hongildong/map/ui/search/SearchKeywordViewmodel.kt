@@ -63,6 +63,7 @@ class SearchKeywordViewmodel @Inject constructor(
         return sharedPreferences.getString("access_token", null)
     }
 
+    // 출발지 지정
     fun setDepart(place: SearchKeyword) {
         viewModelScope.launch {
             _departPlaceInfo.value = place
@@ -70,6 +71,7 @@ class SearchKeywordViewmodel @Inject constructor(
         }
     }
 
+    // 도착지 지정
     fun setArrival(place: SearchKeyword) {
         viewModelScope.launch {
             _arrivalPlaceInfo.value = place
@@ -77,6 +79,7 @@ class SearchKeywordViewmodel @Inject constructor(
         }
     }
 
+    // 출발지 - 도착지 바꾸기
     fun exchangeDepartAndArrival() {
         viewModelScope.launch {
             val tempData = _departPlaceInfo.value
@@ -85,10 +88,12 @@ class SearchKeywordViewmodel @Inject constructor(
         }
     }
 
-    fun deleteDepartAndArrivalData() {
+    // 출발지, 도착지 데이터 지우기 (direction 화면들에서 벗어날 때 초기화 필요)
+    fun deleteDirectionData() {
         viewModelScope.launch {
             _departPlaceInfo.value = null
             _arrivalPlaceInfo.value = null
+            _directionResult.value = null
         }
     }
 

@@ -87,6 +87,12 @@ class MapViewmodel @Inject constructor(
         }
     }
 
+    fun clearPath() {
+        viewModelScope.launch {
+            _pathNodes.value = listOf()
+        }
+    }
+
     fun clearOverlay() {
         viewModelScope.launch {
             _locationTrackingMode.value = LocationTrackingMode.Follow

@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.hongildong.map.ui.search.SearchKeywordViewmodel
 import com.hongildong.map.ui.search.SearchScreen
+import com.hongildong.map.ui.search.direction.DirectionScreen
 import com.hongildong.map.ui.search.direction.DirectionSearchScreen
 import com.hongildong.map.ui.search.location_detail.LocationDetailScreen
 import com.hongildong.map.ui.util.map.MapViewmodel
@@ -52,11 +53,13 @@ fun SearchNavHost(
                                 // viewmodel에 출발지 저장
                                 searchKeywordViewmodel.setDepart(keyword)
                                 // 경로 검색화면으로 되돌아가기
-                                searchNavController.navigate(NavRoute.DirectionSearch.route)
+                                searchNavController.popBackStack()
                             }
                             DIRECTION_SEARCH_MODE_TO -> {
+                                // viewmodel에 도착지 저장
                                 searchKeywordViewmodel.setArrival(keyword)
-                                searchNavController.navigate(NavRoute.DirectionSearch.route)
+                                // 경로 검색 화면으로 되돌아가기
+                                searchNavController.popBackStack()
                             }
                         }
                     },
@@ -105,14 +108,31 @@ fun SearchNavHost(
                     searchViewmodel = searchKeywordViewmodel,
                     onGoBack = {
                         searchNavController.popBackStack()
-                        searchKeywordViewmodel.deleteDepartAndArrivalData()
+                        searchKeywordViewmodel.deleteDirectionData()
                     },
-                    onDirect = {},
+                    onDirect = {
+                        searchNavController.navigate(NavRoute.Direction.route)
+                    },
                     setDepart = {
                         searchNavController.navigate(NavRoute.Search.route + "/$DIRECTION_SEARCH_MODE_FROM")
                     },
                     setArrival = {
                         searchNavController.navigate(NavRoute.Search.route + "/$DIRECTION_SEARCH_MODE_TO")
+                    }
+                )
+            }
+            composable(route = NavRoute.Direction.route) { backStackEntry ->
+                val parentEntry = remember(backStackEntry) {
+                    searchNavController.getBackStackEntry(SEARCH_GRAPH_ROUTE)
+                }
+                val searchKeywordViewmodel: SearchKeywordViewmodel = hiltViewModel(parentEntry)
+
+                DirectionScreen(
+                    searchViewmodel = searchKeywordViewmodel,
+                    mapViewmodel = mapViewmodel,
+                    onGoBack = {
+                        searchNavController.popBackStack()
+                        searchKeywordViewmodel.deleteDirectionData()
                     }
                 )
             }

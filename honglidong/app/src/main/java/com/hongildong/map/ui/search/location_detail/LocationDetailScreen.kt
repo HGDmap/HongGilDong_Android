@@ -79,7 +79,10 @@ fun LocationDetailScreen(
     ) {
         SearchBarWithGoBack(
             searchedWord = searchedWord,
-            onGoBack = {onGoBack()}
+            onGoBack = {
+                onGoBack()
+                mapViewmodel.clearMarker()
+            }
         )
 
         BoxWithConstraints (

@@ -24,6 +24,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -70,7 +71,6 @@ fun DirectionSearchScreen(
             arrival = arrivalInfo?.nodeName ?: "",
             onGoBack = {
                 onGoBack()
-                searchViewmodel.deleteDepartAndArrivalData()
             },
             onSetDepart = setDepart,
             onSetArrival = setArrival,
@@ -123,37 +123,50 @@ fun DirectionSearchScreen(
 
 @Composable
 fun DirectionHeader(
-    modifier: Modifier = Modifier,
     depart: String = "",
     arrival: String = "",
     onGoBack: () -> Unit,
     onSetDepart: () -> Unit = {},
     onSetArrival: () -> Unit = {},
-    onExchange: () -> Unit
+    onExchange: () -> Unit = {},
+    onClick: () -> Unit = {},
+    isSearchScreen: Boolean = true
 ) {
     Row(
         modifier = Modifier
             .background(White)
             .fillMaxWidth()
             .border(width = 1.dp, shape = RoundedCornerShape(20.dp), color = Gray400)
-            .padding(horizontal = 15.dp, vertical = 5.dp),
+            .padding(horizontal = 15.dp, vertical = 5.dp)
+            .clickable{ onClick() },
         verticalAlignment = Alignment.CenterVertically
 
     ) {
-        Image(
-            painter = painterResource(R.drawable.ic_switch),
-            contentDescription = "switch",
-            modifier = Modifier.clickable {
-                onExchange()
-            }
-        )
+        if (isSearchScreen) {
+            Image(
+                painter = painterResource(R.drawable.ic_switch),
+                contentDescription = "switch",
+                modifier = Modifier.clickable {
+                    onExchange()
+                }
+            )
+
+        } else {
+            Image(
+                painter = painterResource(R.drawable.ic_back),
+                contentDescription = "go back",
+                modifier = Modifier.clickable {
+                    onGoBack()
+                }
+            )
+        }
         Spacer(Modifier.width(10.dp))
         Column {
             IconWithNodeName(
                 icon = R.drawable.ic_location_depart,
                 title = depart,
                 titlePlaceholder = "출발지를 입력하세요",
-                withClose = true,
+                withClose = isSearchScreen,
                 onGoBack = onGoBack,
                 onChangeTitle = onSetDepart
             )
