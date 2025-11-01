@@ -1,4 +1,4 @@
-package com.hongildong.map.ui.direction
+package com.hongildong.map.ui.search.direction
 
 import com.hongildong.map.data.entity.NodeInfo
 

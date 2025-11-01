@@ -77,6 +77,14 @@ class SearchKeywordViewmodel @Inject constructor(
         }
     }
 
+    fun exchangeDepartAndArrival() {
+        viewModelScope.launch {
+            val tempData = _departPlaceInfo.value
+            _departPlaceInfo.value = _arrivalPlaceInfo.value
+            _arrivalPlaceInfo.value = tempData
+        }
+    }
+
     fun deleteDepartAndArrivalData() {
         viewModelScope.launch {
             _departPlaceInfo.value = null

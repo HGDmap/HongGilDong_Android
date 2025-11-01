@@ -9,7 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.hongildong.map.ui.search.SearchKeywordViewmodel
 import com.hongildong.map.ui.search.SearchScreen
-import com.hongildong.map.ui.direction.DirectionSearchScreen
+import com.hongildong.map.ui.search.direction.DirectionSearchScreen
 import com.hongildong.map.ui.search.location_detail.LocationDetailScreen
 import com.hongildong.map.ui.util.map.MapViewmodel
 

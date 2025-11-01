@@ -1,4 +1,4 @@
-package com.hongildong.map.ui.direction
+package com.hongildong.map.ui.search.direction
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -73,7 +73,10 @@ fun DirectionSearchScreen(
                 searchViewmodel.deleteDepartAndArrivalData()
             },
             onSetDepart = setDepart,
-            onSetArrival = setArrival
+            onSetArrival = setArrival,
+            onExchange = {
+                searchViewmodel.exchangeDepartAndArrival()
+            }
         )
         Spacer(Modifier.height(16.dp))
 
@@ -125,7 +128,8 @@ fun DirectionHeader(
     arrival: String = "",
     onGoBack: () -> Unit,
     onSetDepart: () -> Unit = {},
-    onSetArrival: () -> Unit = {}
+    onSetArrival: () -> Unit = {},
+    onExchange: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -139,6 +143,9 @@ fun DirectionHeader(
         Image(
             painter = painterResource(R.drawable.ic_switch),
             contentDescription = "switch",
+            modifier = Modifier.clickable {
+                onExchange()
+            }
         )
         Spacer(Modifier.width(10.dp))
         Column {

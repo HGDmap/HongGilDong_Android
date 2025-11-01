@@ -29,5 +29,5 @@ sealed class NavRoute(val route: String) {
 
     // direct
     object DirectionSearch: NavRoute("direction_search")
-    object DirectionSelect: NavRoute("direction_select")
+    object Direction: NavRoute("direction")
 }
