@@ -122,7 +122,7 @@ fun LocationDetailHeader(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = searchResult.name,
+                text = searchResult.name ?: "",
                 style = AppTypography.Bold_22.copy(color = Black)
             )
             Row(

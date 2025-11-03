@@ -1,4 +1,4 @@
-package com.hongildong.map.ui.direction
+package com.hongildong.map.ui.search.direction
 
 import com.hongildong.map.data.entity.NodeInfo
 
@@ -7,43 +7,49 @@ val directions = listOf<NodeInfo>(
     NodeInfo(
         latitude = 37.552581,
         longitude = 126.924863,
-        name = "",
+        name = "홍문관 1층",
         nodeCode = "FLOOR",
-        nodeId = 20
+        nodeId = 20,
+        id = 0
     ),
     NodeInfo(
         latitude = 37.552288,
         longitude = 126.9252111,
-        name = "",
+        name = "홍문관 2층",
         nodeCode = "ENTRANCE",
         nodeId = 43,
+        id = 0
     ),
     NodeInfo(
         latitude = 37.55222679039269,
         longitude = 126.92541638048668,
-        name = "",
+        name = "홍문관 3층",
         nodeCode = "OUTDOOR",
         nodeId = 303,
+        id = 0
     ),
     NodeInfo(
         latitude = 37.55226278124672,
         longitude = 126.92545145969854,
-        name = "",
+        name = "홍문관 4층",
         nodeCode = "OUTDOOR",
         nodeId = 304,
+        id = 0
     ),
     NodeInfo(
         latitude = 37.55230204384725,
         longitude = 126.92557733433107,
-        name = "",
+        name = "홍문관 5층",
         nodeCode = "OUTDOOR",
         nodeId = 308,
+        id = 0
     ),
     NodeInfo(
         latitude = 37.5524009,
         longitude = 126.9255883,
-        name = "",
+        name = "홍문관 6층",
         nodeCode = "ENTRANCE",
         nodeId = 40,
+        id = 0
     ),
 )

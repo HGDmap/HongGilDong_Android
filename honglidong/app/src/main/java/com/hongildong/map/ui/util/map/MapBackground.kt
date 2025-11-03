@@ -44,14 +44,13 @@ fun MapBackground(
     ) {
         // 마커
         markers.forEach { markerInfo ->
-            Log.d("mapviewmodel", "$markerInfo")
             Marker(
                 state = MarkerState(position = markerInfo.position),
                 captionText = markerInfo.name
             )
         }
         // 길찾기
-        if (pathNodes.isNotEmpty()) {
+        if (pathNodes.size > 2) {
             PathOverlay(
                 coords = pathNodes,
                 width = 6.dp,
