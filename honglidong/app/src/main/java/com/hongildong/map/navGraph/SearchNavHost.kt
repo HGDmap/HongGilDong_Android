@@ -106,11 +106,22 @@ fun SearchNavHost(
                             nodeId = it.nodeId,
                             nodeCode = it.nodeCode ?: "",
                         )
+                        // 길찾기 버튼 클릭시 해당 장소를 도착지로 설정
                         searchKeywordViewmodel.setArrival(target)
+                        // 길찾기 화면으로 이동
                         searchNavController.navigate(NavRoute.DirectionSearch.route)
                     },
                     onClickItem = {
-                        
+                        val target = SearchKeyword(
+                            nodeName = it.name ?: it.nodeName ?: "temp",
+                            id = it.id ?: 0,
+                            nodeId = it.nodeId,
+                            nodeCode = it.nodeCode ?: "",
+                        )
+                        // 아이템 클릭시 해당 장소 상세 정보 검색
+                        searchKeywordViewmodel.onSearch(target)
+                        // 장소 상세 정보 화면으로 이동
+                        searchNavController.navigate(NavRoute.LocationDetail.route + "/${target.nodeName}")
                     },
                     onGoBack = {
                         searchNavController.popBackStack()
