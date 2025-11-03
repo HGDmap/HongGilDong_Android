@@ -7,6 +7,7 @@ import com.hongildong.map.data.util.DefaultResponse
 
 interface SearchRepository {
     suspend fun searchWithId(accessToken: String, nodeId: Long): DefaultResponse<NodeInfo>
+    suspend fun searchRawWord(query: String): DefaultResponse<List<NodeInfo>>
     suspend fun autoCompleteSearch(keyword: String): DefaultResponse<List<AutoCompleteSearchKeyword>>
 
     suspend fun direct(from: Int, to: Int): DefaultResponse<DirectionResponse>

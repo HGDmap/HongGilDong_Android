@@ -18,6 +18,12 @@ class SearchRepositoryImpl @Inject constructor(
         return safeApiCall { api.searchWithId(accessToken, nodeId) }
     }
 
+    override suspend fun searchRawWord(
+        query: String
+    ): DefaultResponse<List<NodeInfo>> {
+        return safeApiCall { api.searchRawWord(query) }
+    }
+
     override suspend fun autoCompleteSearch(
         keyword: String
     ): DefaultResponse<List<AutoCompleteSearchKeyword>> {
