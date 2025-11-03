@@ -26,12 +26,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.hongildong.map.R
 import com.hongildong.map.data.entity.SearchKeyword
+import com.hongildong.map.navGraph.LOCATION_SEARCH_MODE
 import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.White
 import com.hongildong.map.ui.util.CustomTextField
@@ -41,9 +43,12 @@ import com.hongildong.map.ui.util.EmptyContents
 fun SearchScreen(
     viewModel: SearchKeywordViewmodel = hiltViewModel<SearchKeywordViewmodel>(),
     onSearch: (SearchKeyword) -> Unit,
-    onGoBack: () -> Unit
+    onRawSearch: (String) -> Unit,
+    onGoBack: () -> Unit,
+    searchMode: String,
 ) {
     var textState by remember { mutableStateOf("") }
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     Column(
         modifier = Modifier
@@ -77,10 +82,18 @@ fun SearchScreen(
                     viewModel.autoCompleteSearch(it)
                 },
                 onSearch = {
-                    // todo: 텍스트박스에 직접 입력후 search 하는 경우 -> 따로 만들것!!
-                    //viewModel.onSearch(it)
-                    //onSearch(it)
-                    textState = ""
+                    when (searchMode) {
+                        // 장소 검색 모드일 경우 키보드로 직접 검색 -> 검색 호출
+                        LOCATION_SEARCH_MODE -> {
+                            viewModel.onSearchRawWord(textState)
+                            onRawSearch(textState)
+                            textState = ""
+                        }
+                        // 경로 검색 모드일 경우 자동완성된 리스트에서 고르도록 유도 -> 키보드 숨김
+                        else -> {
+                            keyboardController?.hide()
+                        }
+                    }
                 },
                 maxLength = 15
             )

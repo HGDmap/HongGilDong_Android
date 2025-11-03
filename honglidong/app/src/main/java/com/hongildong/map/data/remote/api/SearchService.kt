@@ -3,6 +3,7 @@ package com.hongildong.map.data.remote.api
 import com.hongildong.map.data.entity.AutoCompleteSearchKeyword
 import com.hongildong.map.data.entity.NodeInfo
 import com.hongildong.map.data.remote.response.DirectionResponse
+import com.hongildong.map.data.remote.response.RawSearchResponse
 import com.hongildong.map.data.util.ApiResponse
 import retrofit2.http.GET
 import retrofit2.http.Header
@@ -20,7 +21,7 @@ interface SearchService {
     @GET("search/{query}")
     suspend fun searchRawWord(
         @Path("query") query: String
-    ): ApiResponse<List<NodeInfo>>
+    ): ApiResponse<RawSearchResponse>
 
     // 검색 자동완성 api
     @GET("search/list/{keyword}")

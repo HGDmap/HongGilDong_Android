@@ -105,7 +105,7 @@ fun LocationDetailScreen(
                                 nodeName = searchResult!!.name ?: "temp",
                                 id = searchResult?.id ?: searchResult!!.nodeId,
                                 nodeId = searchResult!!.nodeId,
-                                nodeCode = searchResult!!.nodeCode,
+                                nodeCode = searchResult!!.nodeCode ?: "",
                             )
 
                             // 출발지 설정
@@ -125,7 +125,7 @@ fun LocationDetailScreen(
                                 nodeName = searchResult!!.name ?: "temp",
                                 id = searchResult?.id ?: searchResult!!.nodeId,
                                 nodeId = searchResult!!.nodeId,
-                                nodeCode = searchResult!!.nodeCode,
+                                nodeCode = searchResult!!.nodeCode ?: "",
                             )
 
                             // 도착지 설정

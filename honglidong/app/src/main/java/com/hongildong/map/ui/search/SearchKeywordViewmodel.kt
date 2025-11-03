@@ -112,7 +112,7 @@ class SearchKeywordViewmodel @Inject constructor(
             when (response) {
                 is DefaultResponse.Success -> {
                     Log.d(TAG, "응답 성공: $response")
-                    _searchedList.value = response.data
+                    _searchedList.value = response.data.resultList
                     Log.d(TAG, "searched List: ${_searchedList.value}")
                     _isSearchSuccess.value = UiState.Success
                 }
@@ -160,7 +160,7 @@ class SearchKeywordViewmodel @Inject constructor(
                         SearchKeyword(
                             nodeName = response.data.name ?: "temp",
                             nodeId = response.data.nodeId,
-                            nodeCode = response.data.nodeCode,
+                            nodeCode = response.data.nodeCode ?: "",
                             id = response.data.nodeId
                         )
                     )

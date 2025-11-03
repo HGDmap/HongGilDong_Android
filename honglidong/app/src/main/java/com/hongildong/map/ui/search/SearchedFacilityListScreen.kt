@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,6 +21,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,11 +31,9 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hongildong.map.R
 import com.hongildong.map.data.entity.NodeInfo
-import com.hongildong.map.ui.home.RecommendPlaces
 import com.hongildong.map.ui.search.direction.directions
 import com.hongildong.map.ui.search.location_detail.SearchBarWithGoBack
 import com.hongildong.map.ui.theme.AppTypography
@@ -43,16 +42,18 @@ import com.hongildong.map.ui.theme.Gray300
 import com.hongildong.map.ui.theme.Gray600
 import com.hongildong.map.ui.util.ButtonWithIcon
 import com.hongildong.map.ui.util.FlexibleBottomSheet
-import com.hongildong.map.ui.util.map.MapViewmodel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchedFacilityListScreen(
-    mapViewmodel: MapViewmodel,
+    searchViewmodel: SearchKeywordViewmodel,
     searchedWord: String,
-    onDirect: () -> Unit,
+    onDirectItem: (NodeInfo) -> Unit,
+    onClickItem: (NodeInfo) -> Unit,
     onGoBack: () -> Unit
 ) {
+    val searchResult by searchViewmodel.searchedList.collectAsState()
+
     val sheetScaffoldState = rememberBottomSheetScaffoldState()
     val nestedScrollConnection = rememberNestedScrollInteropConnection()
 
@@ -63,7 +64,6 @@ fun SearchedFacilityListScreen(
             searchedWord = searchedWord,
             onGoBack = {
                 onGoBack()
-                mapViewmodel.clearMarker()
             }
         )
 
@@ -81,7 +81,11 @@ fun SearchedFacilityListScreen(
                 verticalArrangement = Arrangement.Top
             ) {
                 // api 연결하기
-                SearchedPlaces(directions)
+                SearchedPlaces(
+                    places = searchResult,
+                    onDirectItem = { onDirectItem(it) },
+                    onClickItem = { onClickItem(it)},
+                )
             }
         }
     }
@@ -89,13 +93,20 @@ fun SearchedFacilityListScreen(
 
 @Composable
 fun SearchedPlaces(
-    places: List<NodeInfo>
+    places: List<NodeInfo>,
+    onDirectItem: (NodeInfo) -> Unit,
+    onClickItem: (NodeInfo) -> Unit
 ) {
     LazyColumn() {
         items(places) { place ->
             PlaceInfoItem(
                 info = place,
-                onDirect = {}
+                onDirect = {
+                    onDirectItem(place)
+                },
+                onClick = {
+                    onClickItem(place)
+                }
             )
         }
     }
@@ -104,12 +115,15 @@ fun SearchedPlaces(
 @Composable
 fun PlaceInfoItem(
     info: NodeInfo,
-    onDirect: () -> Unit
+    onDirect: () -> Unit,
+    onClick: () -> Unit,
 ) {
     Column(
         modifier = Modifier
-            .fillMaxWidth(),
-
+            .fillMaxWidth()
+            .clickable {
+                onClick()
+            },
         ) {
         Spacer(Modifier.height(12.dp))
         Row(
@@ -145,7 +159,7 @@ fun PlaceInfoItem(
                 .height(120.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(info.images) { image ->
+            items(info.photoList) { image ->
                 // 네트워크 이미지 로더 추가 필요
                 Image(
                     painterResource(R.drawable.img_blank),
@@ -158,11 +172,16 @@ fun PlaceInfoItem(
             }
         }
         Spacer(Modifier.height(5.dp))
-        ButtonWithIcon(
-            icon = R.drawable.ic_direction,
-            title = "길찾기",
-            onClick = { onDirect() }
-        )
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.TopEnd
+        ) {
+            ButtonWithIcon(
+                icon = R.drawable.ic_direction,
+                title = "길찾기",
+                onClick = { onDirect() }
+            )
+        }
         Spacer(Modifier.height(8.dp))
         HorizontalDivider(Modifier.height(1.dp), color = Gray300)
     }
