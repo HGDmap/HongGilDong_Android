@@ -67,15 +67,15 @@ fun DirectionScreen(
 
     var calculatedMin by remember { mutableIntStateOf(0) }
     LaunchedEffect(departInfo, arrivalInfo, directionInfo) {
-        directionInfo?.let {
+        directionInfo?.let { info ->
             // 길찾기 정보가 검색 완료되었다면
             // 지도에 그리기
-            mapViewmodel.showPath(directionInfo!!.nodes)
+            mapViewmodel.showPath(info.nodes)
 
             // 소요시간 분단위(반올림해서) 계산
-            calculatedMin = directionInfo!!.minute
+            calculatedMin = info.minute
             // 초는 반올림
-            if (directionInfo!!.seconds >= 30) calculatedMin++
+            if (info.seconds >= 30) calculatedMin++
         }
     }
 
