@@ -124,7 +124,7 @@ fun AnchoredDraggableBottomSheet(
     val anchors = DraggableAnchors {
         BottomSheetState.Collapsed at maxHeight - collapsedHeight
         BottomSheetState.PartiallyExpanded at maxHeight - partialHeight
-        BottomSheetState.Expanded at if (isFullScreen) maxHeight * 0f else maxHeight * 0.2f // 화면의 80% 높이 (상단에서 20% 지점)
+        BottomSheetState.Expanded at if (isFullScreen) maxHeight * 0f else maxHeight * 0.18f // 화면의 82% 높이 (상단에서 18% 지점)
     }
 
     val decayAnimationSpec = rememberSplineBasedDecay<Float>()

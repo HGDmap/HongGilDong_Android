@@ -47,6 +47,9 @@ class SearchKeywordViewmodel @Inject constructor(
     private val _searchResult = MutableStateFlow<NodeInfo?>(null)
     val searchResult: StateFlow<NodeInfo?> = _searchResult.asStateFlow()
 
+    private val _searchedList = MutableStateFlow<List<NodeInfo>>(listOf())
+    val searchedList: StateFlow<List<NodeInfo>> = _searchedList.asStateFlow()
+
     private val _autoCompleteResult = MutableStateFlow<List<AutoCompleteSearchKeyword>>(listOf())
     val autoCompleteResult: StateFlow<List<AutoCompleteSearchKeyword>> = _autoCompleteResult.asStateFlow()
 
@@ -97,6 +100,30 @@ class SearchKeywordViewmodel @Inject constructor(
         }
     }
 
+    // 일반 검색 (검색 버튼으로 바로 검색, 자동완성 선택 x) 일때 호출
+    fun onSearchRawWord(query: String) {
+        if (query == "") {
+            Toast.makeText(context, "검색어를 입력해주세요", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        viewModelScope.launch {
+            val response = searchRepository.searchRawWord(query)
+            when (response) {
+                is DefaultResponse.Success -> {
+                    Log.d(TAG, "응답 성공: $response")
+                    _searchedList.value = response.data
+                    Log.d(TAG, "searched List: ${_searchedList.value}")
+                    _isSearchSuccess.value = UiState.Success
+                }
+                is DefaultResponse.Error -> {
+                    Log.d(TAG, "응답 실패: $response")
+                    _isSearchSuccess.value = UiState.Error("유효하지 않은 검색어입니다.")
+                }
+            }
+        }
+    }
+
     // 검색시 호출
     fun onSearch(keyword: SearchKeyword) {
         // todo: 검색버튼으로 바로 검색하는 경우를 위한 함수 따로 만들기
@@ -126,7 +153,7 @@ class SearchKeywordViewmodel @Inject constructor(
                 is DefaultResponse.Success -> {
                     Log.d(TAG, "응답 성공: $response")
                     _searchResult.value = response.data
-                    Log.d(TAG, "searchResult: ${searchResult.value}l")
+                    Log.d(TAG, "searchResult: ${searchResult.value}")
                     _isSearchSuccess.value = UiState.Success
 
                     searchKeywordDao.insertKeyword(
