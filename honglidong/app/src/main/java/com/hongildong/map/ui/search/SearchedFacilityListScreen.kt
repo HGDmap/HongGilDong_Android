@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -40,6 +41,7 @@ import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Black
 import com.hongildong.map.ui.theme.Gray300
 import com.hongildong.map.ui.theme.Gray600
+import com.hongildong.map.ui.theme.White
 import com.hongildong.map.ui.util.ButtonWithIcon
 import com.hongildong.map.ui.util.FlexibleBottomSheet
 
@@ -60,34 +62,75 @@ fun SearchedFacilityListScreen(
     Box(
         modifier = Modifier.background(Color.Transparent)
     ) {
-        SearchBarWithGoBack(
-            searchedWord = searchedWord,
-            onGoBack = {
-                onGoBack()
-            }
-        )
-
-        FlexibleBottomSheet(
-            modifier = Modifier
-                .nestedScroll(
-                    nestedScrollConnection
-                ),
-            sheetScaffoldState = sheetScaffoldState,
-            isFullscreen = false
-        ) {
+        if (searchResult.isEmpty()) {
             Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.Start,
-                verticalArrangement = Arrangement.Top
+                modifier = Modifier.fillMaxSize()
             ) {
-                // api 연결하기
-                SearchedPlaces(
-                    places = searchResult,
-                    onDirectItem = { onDirectItem(it) },
-                    onClickItem = { onClickItem(it)},
+                SearchBarWithGoBack(
+                    searchedWord = searchedWord,
+                    onGoBack = {
+                        onGoBack()
+                    }
                 )
+                EmptyItem()
+            }
+        } else {
+            SearchBarWithGoBack(
+                searchedWord = searchedWord,
+                onGoBack = {
+                    onGoBack()
+                }
+            )
+
+            FlexibleBottomSheet(
+                modifier = Modifier
+                    .nestedScroll(
+                        nestedScrollConnection
+                    ),
+                sheetScaffoldState = sheetScaffoldState,
+                isFullscreen = false
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.Top
+                ) {
+                    // api 연결하기
+                    SearchedPlaces(
+                        places = searchResult,
+                        onDirectItem = { onDirectItem(it) },
+                        onClickItem = { onClickItem(it)},
+                    )
+                }
             }
         }
+    }
+}
+
+
+@Composable
+fun EmptyItem() {
+    Column(
+        modifier = Modifier.fillMaxSize().background(White),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            painterResource(R.drawable.ic_empty_head),
+            contentDescription = null,
+            modifier = Modifier.size(50.dp),
+            contentScale = ContentScale.Fit
+        )
+        Spacer(Modifier.height(8.dp))
+        Text(
+            "검색 결과가 없습니다.",
+            style = AppTypography.Bold_20.copy(color = Black)
+        )
+        Spacer(Modifier.height(4.dp))
+        Text(
+            "찾고 있는 결과가 없다면 등록해 보세요.",
+            style = AppTypography.Medium_15.copy(color = Black)
+        )
     }
 }
 
