@@ -103,7 +103,7 @@ class SearchKeywordViewmodel @Inject constructor(
     // 일반 검색 (검색 버튼으로 바로 검색, 자동완성 선택 x) 일때 호출
     fun onSearchRawWord(query: String) {
         if (query == "") {
-            Toast.makeText(context, "검색어를 입력해주세요", Toast.LENGTH_SHORT).show()
+
             return
         }
 
@@ -126,12 +126,6 @@ class SearchKeywordViewmodel @Inject constructor(
 
     // 검색시 호출
     fun onSearch(keyword: SearchKeyword) {
-        // todo: 검색버튼으로 바로 검색하는 경우를 위한 함수 따로 만들기
-        /*if (keyword.id == null) {
-            Toast.makeText(context, "검색어를 입력해주세요", Toast.LENGTH_SHORT).show()
-            return
-        }*/
-
         viewModelScope.launch {
 
             // 임시 검색 로직

@@ -1,5 +1,6 @@
 package com.hongildong.map.ui.search
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -33,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.hongildong.map.R
 import com.hongildong.map.data.entity.SearchKeyword
+import com.hongildong.map.data.entity.toSearchKeyword
 import com.hongildong.map.navGraph.LOCATION_SEARCH_MODE
 import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.White
@@ -85,9 +87,13 @@ fun SearchScreen(
                     when (searchMode) {
                         // 장소 검색 모드일 경우 키보드로 직접 검색 -> 검색 호출
                         LOCATION_SEARCH_MODE -> {
-                            viewModel.onSearchRawWord(textState)
-                            onRawSearch(textState)
-                            textState = ""
+                            if (textState == "") {
+                                viewModel.onSearchRawWord(textState)
+                                onRawSearch(textState)
+                                textState = ""
+                            } else {
+                                viewModel.onSearchRawWord(textState)
+                            }
                         }
                         // 경로 검색 모드일 경우 자동완성된 리스트에서 고르도록 유도 -> 키보드 숨김
                         else -> {
@@ -160,12 +166,7 @@ fun AutoCompleteSearchedKeyword(
 
     LazyColumn {
         items(autoCompleteResult) { searchedResult ->
-            val keyword = SearchKeyword(
-                nodeName = searchedResult.name,
-                nodeId = searchedResult.nodeId,
-                id = searchedResult.id,
-                nodeCode = searchedResult.type,
-            )
+            val keyword = searchedResult.toSearchKeyword()
 
             SearchedItem(
                 itemName = keyword.nodeName,
