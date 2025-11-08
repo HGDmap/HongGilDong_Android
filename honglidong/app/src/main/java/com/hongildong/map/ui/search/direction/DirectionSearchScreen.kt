@@ -179,16 +179,6 @@ fun DirectionHeader(
             )
         }
     }
-   /* Column (
-        modifier = Modifier
-            .shadow(3.dp)
-            .background(White)
-            .wrapContentSize()
-            .systemBarsPadding()
-            .padding(top = 16.dp, start = 10.dp, end = 10.dp, bottom = 16.dp),
-    ) {
-
-    }*/
 }
 
 @Composable

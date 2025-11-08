@@ -12,6 +12,7 @@ import com.hongildong.map.ui.theme.Gray600
 import com.hongildong.map.ui.theme.PrimaryMid
 import com.hongildong.map.ui.theme.White
 import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.compose.CircleOverlay
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
 import com.naver.maps.map.compose.MapProperties
 import com.naver.maps.map.compose.MapUiSettings
@@ -49,6 +50,7 @@ fun MapBackground(
                 captionText = markerInfo.name
             )
         }
+
         // 길찾기
         if (pathNodes.size > 2) {
             PathOverlay(

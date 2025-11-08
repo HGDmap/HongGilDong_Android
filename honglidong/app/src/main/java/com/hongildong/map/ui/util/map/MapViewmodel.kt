@@ -60,6 +60,12 @@ class MapViewmodel @Inject constructor(
         }
     }
 
+    fun showMarkers(infos: List<NodeInfo>) {
+        viewModelScope.launch {
+            // todo: infos의 각 아이템 위치에 마커 xx 점찍기
+        }
+    }
+
     @OptIn(ExperimentalNaverMapApi::class)
     fun showPath(nodes: List<NodeInfo>) {
         viewModelScope.launch {

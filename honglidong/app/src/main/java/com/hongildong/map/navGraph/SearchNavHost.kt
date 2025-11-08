@@ -7,8 +7,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.hongildong.map.data.entity.SearchKeyword
 import com.hongildong.map.ui.search.SearchKeywordViewmodel
 import com.hongildong.map.ui.search.SearchScreen
+import com.hongildong.map.ui.search.SearchedFacilityListScreen
 import com.hongildong.map.ui.search.direction.DirectionScreen
 import com.hongildong.map.ui.search.direction.DirectionSearchScreen
 import com.hongildong.map.ui.search.location_detail.LocationDetailScreen
@@ -63,6 +65,13 @@ fun SearchNavHost(
                             }
                         }
                     },
+                    onRawSearch = { query ->
+                        when (searchMode) {
+                            LOCATION_SEARCH_MODE -> {
+                                searchNavController.navigate(NavRoute.RawSearch.route + "/${query}")
+                            }
+                        }
+                    },
                     onGoBack = {
                         when (searchMode) {
                             LOCATION_SEARCH_MODE -> {
@@ -76,8 +85,50 @@ fun SearchNavHost(
                         }
 
                     },
-                    viewModel = searchKeywordViewmodel
+                    viewModel = searchKeywordViewmodel,
+                    searchMode = searchMode
                 )
+            }
+            composable(route = NavRoute.RawSearch.route + "/{searchedWord}") { backStackEntry ->
+                val parentEntry = remember(backStackEntry) {
+                    searchNavController.getBackStackEntry(SEARCH_GRAPH_ROUTE)
+                }
+                val searchKeywordViewmodel: SearchKeywordViewmodel = hiltViewModel(parentEntry)
+                val searchedWord = backStackEntry.arguments?.getString("searchedWord") ?: ""
+
+                SearchedFacilityListScreen(
+                    searchViewmodel = searchKeywordViewmodel,
+                    searchedWord = searchedWord,
+                    onDirectItem = {
+                        val target = SearchKeyword(
+                            nodeName = it.name ?: it.nodeName ?: "temp",
+                            id = it.id ?: 0,
+                            nodeId = it.nodeId,
+                            nodeCode = it.nodeCode ?: "",
+                        )
+                        // 길찾기 버튼 클릭시 해당 장소를 도착지로 설정
+                        searchKeywordViewmodel.setArrival(target)
+                        // 길찾기 화면으로 이동
+                        searchNavController.navigate(NavRoute.DirectionSearch.route)
+                    },
+                    onClickItem = {
+                        val target = SearchKeyword(
+                            nodeName = it.name ?: it.nodeName ?: "temp",
+                            id = it.id ?: 0,
+                            nodeId = it.nodeId,
+                            nodeCode = it.nodeCode ?: "",
+                        )
+                        // 아이템 클릭시 해당 장소 상세 정보 검색
+                        searchKeywordViewmodel.onSearch(target)
+                        // 장소 상세 정보 화면으로 이동
+                        searchNavController.navigate(NavRoute.LocationDetail.route + "/${target.nodeName}")
+                    },
+                    onGoBack = {
+                        searchNavController.popBackStack()
+                        mapViewmodel.clearMarker()
+                    }
+                )
+
             }
             composable(route = NavRoute.LocationDetail.route + "/{searchedWord}") { backStackEntry ->
                 val parentEntry = remember(backStackEntry) {

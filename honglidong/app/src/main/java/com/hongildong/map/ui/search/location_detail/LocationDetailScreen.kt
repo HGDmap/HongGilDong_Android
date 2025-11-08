@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import com.hongildong.map.R
 import com.hongildong.map.data.entity.NodeInfo
 import com.hongildong.map.data.entity.SearchKeyword
+import com.hongildong.map.data.entity.toSearchKeyword
 import com.hongildong.map.ui.search.SearchKeywordViewmodel
 import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Black
@@ -101,12 +102,7 @@ fun LocationDetailScreen(
                     onDepart = {
                         if (searchResult != null) {
                             // 검색 결과를 바탕으로 출발지 설정
-                            val keyword = SearchKeyword(
-                                nodeName = searchResult!!.name ?: "temp",
-                                id = searchResult?.id ?: searchResult!!.nodeId,
-                                nodeId = searchResult!!.nodeId,
-                                nodeCode = searchResult!!.nodeCode,
-                            )
+                            val keyword = searchResult!!.toSearchKeyword()
 
                             // 출발지 설정
                             searchViewmodel.setDepart(keyword)
@@ -121,12 +117,7 @@ fun LocationDetailScreen(
                     onArrival = {
                         if (searchResult != null) {
                             // 검색 결과를 바탕으로 도착지 설정
-                            val keyword = SearchKeyword(
-                                nodeName = searchResult!!.name ?: "temp",
-                                id = searchResult?.id ?: searchResult!!.nodeId,
-                                nodeId = searchResult!!.nodeId,
-                                nodeCode = searchResult!!.nodeCode,
-                            )
+                            val keyword = searchResult!!.toSearchKeyword()
 
                             // 도착지 설정
                             searchViewmodel.setArrival(keyword)
