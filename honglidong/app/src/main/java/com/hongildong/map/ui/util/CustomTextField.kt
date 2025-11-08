@@ -1,10 +1,15 @@
 package com.hongildong.map.ui.util
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -18,12 +23,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.hongildong.map.R
 import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Black
 import com.hongildong.map.ui.theme.Gray300
@@ -154,4 +161,79 @@ fun CustomUnderLineTextField(
         ),
         suffix = { if (suffix.isNotEmpty()) Text(suffix, style = AppTypography.Medium_15) }
     )
+}
+
+@Composable
+fun CustomInfixIconTextField(
+    modifier: Modifier = Modifier,
+    placeholderMessage: String,
+    textState: String,
+    onTextChange: (String) -> Unit,
+    onEditDone: (String) -> Unit = {},
+    onGoBack: () -> Unit = {},
+    icon: Int,
+    maxLength: Int = 20,
+    textStyle: TextStyle = AppTypography.Medium_18.copy(color = Black),
+    isWithClose: Boolean = false
+) {
+    // 키보드를 제어하기 위한 컨트롤러
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(
+            painter = painterResource(icon),
+            contentDescription = null,
+            modifier = Modifier
+                .padding(horizontal = 5.dp)
+        )
+        TextField(
+            value = textState,
+            modifier = modifier.weight(1f),
+            singleLine = true,
+            onValueChange = {
+                if (it.length <= maxLength) onTextChange(it)
+            },
+            visualTransformation = VisualTransformation.None,
+            colors = TextFieldDefaults.colors(
+                focusedTextColor = Black,
+                errorTextColor = TypeEvent,
+                focusedContainerColor = Color.Transparent,
+                unfocusedContainerColor = Color.Transparent,
+                errorContainerColor = Color.Transparent,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                errorIndicatorColor = Color.Transparent,
+                focusedPlaceholderColor = Gray300,
+                unfocusedPlaceholderColor = Gray300,
+                errorPlaceholderColor = TypeEvent,
+            ),
+            textStyle = textStyle,
+            placeholder = {
+                Text(placeholderMessage, style = textStyle.copy(color = Gray300))
+            },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(
+                // 완료 버튼을 눌렀을 때 실행될 동작
+                onDone = {
+                    // onDone 콜백 함수 실행
+                    onEditDone(textState)
+                    // 검색 실행 후 키보드 숨기기
+                    keyboardController?.hide()
+                }
+            ),
+        )
+        if (isWithClose) {
+            Image(
+                painter = painterResource(R.drawable.ic_close),
+                contentDescription = "검색 취소하기",
+                modifier = Modifier
+                    .size(30.dp)
+                    .padding(horizontal = 5.dp)
+                    .clickable { onGoBack() }
+            )
+        }
+    }
 }

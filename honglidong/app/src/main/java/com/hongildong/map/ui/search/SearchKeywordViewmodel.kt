@@ -2,6 +2,7 @@ package com.hongildong.map.ui.search
 
 import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.key
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,6 +10,7 @@ import com.hongildong.map.data.dao.SearchKeywordDao
 import com.hongildong.map.data.entity.AutoCompleteSearchKeyword
 import com.hongildong.map.data.entity.NodeInfo
 import com.hongildong.map.data.entity.SearchKeyword
+import com.hongildong.map.data.remote.response.DirectionResponse
 import com.hongildong.map.data.repository.SearchRepository
 import com.hongildong.map.data.util.DefaultResponse
 import com.hongildong.map.ui.util.UiState
@@ -45,25 +47,86 @@ class SearchKeywordViewmodel @Inject constructor(
     private val _searchResult = MutableStateFlow<NodeInfo?>(null)
     val searchResult: StateFlow<NodeInfo?> = _searchResult.asStateFlow()
 
+    private val _searchedList = MutableStateFlow<List<NodeInfo>>(listOf())
+    val searchedList: StateFlow<List<NodeInfo>> = _searchedList.asStateFlow()
+
     private val _autoCompleteResult = MutableStateFlow<List<AutoCompleteSearchKeyword>>(listOf())
     val autoCompleteResult: StateFlow<List<AutoCompleteSearchKeyword>> = _autoCompleteResult.asStateFlow()
 
+    private val _directionResult = MutableStateFlow<DirectionResponse?>(null)
+    val directionResult: StateFlow<DirectionResponse?> = _directionResult.asStateFlow()
+
+    private val _departPlaceInfo = MutableStateFlow<SearchKeyword?>(null)
+    val departPlaceInfo: StateFlow<SearchKeyword?> = _departPlaceInfo.asStateFlow()
+
+    private val _arrivalPlaceInfo = MutableStateFlow<SearchKeyword?>(null)
+    val arrivalPlaceInfo: StateFlow<SearchKeyword?> = _arrivalPlaceInfo.asStateFlow()
     private val sharedPreferences = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
     fun getToken(): String? {
         return sharedPreferences.getString("access_token", null)
     }
 
-    // 검색시 호출
-    fun onSearch(keyword: String) {
-        if (keyword.isBlank()) return
+    // 출발지 지정
+    fun setDepart(place: SearchKeyword) {
+        viewModelScope.launch {
+            _departPlaceInfo.value = place
+            Log.d(TAG, "depart set: ${_departPlaceInfo.value}")
+        }
+    }
+
+    // 도착지 지정
+    fun setArrival(place: SearchKeyword) {
+        viewModelScope.launch {
+            _arrivalPlaceInfo.value = place
+            Log.d(TAG, "arrival set: ${_arrivalPlaceInfo.value}")
+        }
+    }
+
+    // 출발지 - 도착지 바꾸기
+    fun exchangeDepartAndArrival() {
+        viewModelScope.launch {
+            val tempData = _departPlaceInfo.value
+            _departPlaceInfo.value = _arrivalPlaceInfo.value
+            _arrivalPlaceInfo.value = tempData
+        }
+    }
+
+    // 출발지, 도착지 데이터 지우기 (direction 화면들에서 벗어날 때 초기화 필요)
+    fun deleteDirectionData() {
+        viewModelScope.launch {
+            _departPlaceInfo.value = null
+            _arrivalPlaceInfo.value = null
+            _directionResult.value = null
+        }
+    }
+
+    // 일반 검색 (검색 버튼으로 바로 검색, 자동완성 선택 x) 일때 호출
+    fun onSearchRawWord(query: String) {
+        if (query == "") {
+
+            return
+        }
 
         viewModelScope.launch {
+            val response = searchRepository.searchRawWord(query)
+            when (response) {
+                is DefaultResponse.Success -> {
+                    Log.d(TAG, "응답 성공: $response")
+                    _searchedList.value = response.data.resultList
+                    Log.d(TAG, "searched List: ${_searchedList.value}")
+                    _isSearchSuccess.value = UiState.Success
+                }
+                is DefaultResponse.Error -> {
+                    Log.d(TAG, "응답 실패: $response")
+                    _isSearchSuccess.value = UiState.Error("유효하지 않은 검색어입니다.")
+                }
+            }
+        }
+    }
 
-            searchKeywordDao.insertKeyword(
-                SearchKeyword(
-                    keyword = keyword.trim()
-                )
-            )
+    // 검색시 호출
+    fun onSearch(keyword: SearchKeyword) {
+        viewModelScope.launch {
 
             // 임시 검색 로직
             // todo: 실제 검색 로직이 생기면 바꿀 것
@@ -73,18 +136,28 @@ class SearchKeywordViewmodel @Inject constructor(
                 return@launch
             }
 
-            val keywordValue = keyword.trim().toLongOrNull()
+            val keywordValue = keyword.nodeId.toLong()
             if (keywordValue == null) {
                 _isSearchSuccess.value = UiState.Error("유효하지 않은 검색어입니다.")
                 return@launch
             }
+            // todo: 타입별로 검색 api 달라지면 when절로 타입별 검색하기
             val response = searchRepository.searchWithId(token, keywordValue)
             when (response) {
                 is DefaultResponse.Success -> {
                     Log.d(TAG, "응답 성공: $response")
                     _searchResult.value = response.data
-                    Log.d(TAG, "searchResult: ${searchResult.value}l")
+                    Log.d(TAG, "searchResult: ${searchResult.value}")
                     _isSearchSuccess.value = UiState.Success
+
+                    searchKeywordDao.insertKeyword(
+                        SearchKeyword(
+                            nodeName = response.data.name ?: "temp",
+                            nodeId = response.data.nodeId,
+                            nodeCode = response.data.nodeCode ?: "",
+                            id = response.data.nodeId
+                        )
+                    )
                 }
                 is DefaultResponse.Error -> {
                     Log.d(TAG, "응답 실패: $response")
@@ -104,7 +177,7 @@ class SearchKeywordViewmodel @Inject constructor(
                 is DefaultResponse.Success -> {
                     Log.d(TAG, "응답 성공: $response")
                     _autoCompleteResult.value = response.data
-                    Log.d(TAG, "searchResult: ${searchResult.value}")
+                    Log.d(TAG, "autoCompleteResult: ${_autoCompleteResult.value}")
                     _isSearchSuccess.value = UiState.Success
                 }
                 is DefaultResponse.Error -> {
@@ -116,9 +189,12 @@ class SearchKeywordViewmodel @Inject constructor(
     }
 
     // 검색어 1개 삭제
-    fun deleteKeyword(keyword: String) {
+    fun deleteKeyword(keyword: SearchKeyword) {
         viewModelScope.launch {
-            searchKeywordDao.deleteKeyword(keyword)
+            searchKeywordDao.deleteKeyword(
+                id = keyword.id,
+                nodeCode = keyword.nodeCode
+            )
         }
     }
 
@@ -126,6 +202,32 @@ class SearchKeywordViewmodel @Inject constructor(
     fun clearAllKeyword() {
         viewModelScope.launch {
             searchKeywordDao.clearAllKeywords()
+        }
+    }
+
+    // 길찾기 api 임시 연결
+    fun direct() {
+        if ((_departPlaceInfo.value == null) and (_arrivalPlaceInfo.value == null)) {
+            Toast.makeText(context, "잘못된 접근입니다", Toast.LENGTH_SHORT).show()
+            return
+        }
+        viewModelScope.launch {
+            val response = searchRepository.direct(
+                from = _departPlaceInfo.value!!.nodeId,
+                to = _arrivalPlaceInfo.value!!.nodeId
+            )
+            when (response) {
+                is DefaultResponse.Success -> {
+                    Log.d(TAG, "응답 성공: $response")
+                    _directionResult.value = response.data
+                    Log.d(TAG, "directionResult: ${directionResult.value}")
+                    _isSearchSuccess.value = UiState.Success
+                }
+                is DefaultResponse.Error -> {
+                    Log.d(TAG, "응답 실패: $response")
+                    _isSearchSuccess.value = UiState.Error(response.message)
+                }
+            }
         }
     }
 }

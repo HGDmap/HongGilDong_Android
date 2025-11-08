@@ -3,6 +3,8 @@ package com.hongildong.map.data.repository
 import com.hongildong.map.data.entity.AutoCompleteSearchKeyword
 import com.hongildong.map.data.entity.NodeInfo
 import com.hongildong.map.data.remote.api.SearchService
+import com.hongildong.map.data.remote.response.DirectionResponse
+import com.hongildong.map.data.remote.response.RawSearchResponse
 import com.hongildong.map.data.util.DefaultResponse
 import com.hongildong.map.data.util.safeApiCall
 import javax.inject.Inject
@@ -17,9 +19,22 @@ class SearchRepositoryImpl @Inject constructor(
         return safeApiCall { api.searchWithId(accessToken, nodeId) }
     }
 
+    override suspend fun searchRawWord(
+        query: String
+    ): DefaultResponse<RawSearchResponse> {
+        return safeApiCall { api.searchRawWord(query) }
+    }
+
     override suspend fun autoCompleteSearch(
         keyword: String
     ): DefaultResponse<List<AutoCompleteSearchKeyword>> {
         return safeApiCall { api.autoCompleteSearch(keyword) }
+    }
+
+    override suspend fun direct(
+        from: Int,
+        to: Int
+    ): DefaultResponse<DirectionResponse> {
+        return safeApiCall { api.direct(from, to) }
     }
 }

@@ -12,6 +12,7 @@ import com.hongildong.map.ui.theme.Gray600
 import com.hongildong.map.ui.theme.PrimaryMid
 import com.hongildong.map.ui.theme.White
 import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.compose.CircleOverlay
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
 import com.naver.maps.map.compose.MapProperties
 import com.naver.maps.map.compose.MapUiSettings
@@ -44,14 +45,14 @@ fun MapBackground(
     ) {
         // 마커
         markers.forEach { markerInfo ->
-            Log.d("mapviewmodel", "$markerInfo")
             Marker(
                 state = MarkerState(position = markerInfo.position),
                 captionText = markerInfo.name
             )
         }
+
         // 길찾기
-        if (pathNodes.isNotEmpty()) {
+        if (pathNodes.size > 2) {
             PathOverlay(
                 coords = pathNodes,
                 width = 6.dp,

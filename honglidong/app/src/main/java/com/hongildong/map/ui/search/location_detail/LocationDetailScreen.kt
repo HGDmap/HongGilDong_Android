@@ -1,6 +1,6 @@
 package com.hongildong.map.ui.search.location_detail
 
-import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -8,7 +8,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -31,15 +30,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.hongildong.map.R
 import com.hongildong.map.data.entity.NodeInfo
-import com.hongildong.map.ui.direction.directions
+import com.hongildong.map.data.entity.SearchKeyword
+import com.hongildong.map.data.entity.toSearchKeyword
 import com.hongildong.map.ui.search.SearchKeywordViewmodel
 import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Black
@@ -54,17 +53,23 @@ import com.naver.maps.map.compose.ExperimentalNaverMapApi
 @Composable
 fun LocationDetailScreen(
     searchedWord: String = "",
-    mainNavController: NavController,
     searchViewmodel: SearchKeywordViewmodel,
     mapViewmodel: MapViewmodel,
-    onDepart: () -> Unit
+    onGoBack: () -> Unit,
+    onSearchDirection: () -> Unit,
 ) {
+    val context = LocalContext.current
     val searchResult by searchViewmodel.searchResult.collectAsState()
-    LaunchedEffect(key1 = searchResult) {
+    val directionResult by searchViewmodel.directionResult.collectAsState()
+    LaunchedEffect(key1 = searchResult, key2 = directionResult) {
         // searchResult가 null이 아닐 때만 실행
         searchResult?.let { result ->
             val newPosition = LatLng(result.latitude, result.longitude)
-            mapViewmodel.showMarkerAndMoveCamera(newPosition, result.name)
+            mapViewmodel.showMarkerAndMoveCamera(newPosition, result.name ?: "")
+        }
+
+        directionResult?.let { response ->
+            mapViewmodel.showPath(directionResult!!.nodes)
         }
     }
 
@@ -75,7 +80,10 @@ fun LocationDetailScreen(
     ) {
         SearchBarWithGoBack(
             searchedWord = searchedWord,
-            onGoBack = {mainNavController.popBackStack()}
+            onGoBack = {
+                onGoBack()
+                mapViewmodel.clearMarker()
+            }
         )
 
         BoxWithConstraints (
@@ -90,12 +98,34 @@ fun LocationDetailScreen(
             ) {
                 LocationDetailInfo(
                     modifier = Modifier.nestedScroll(nestedScrollConnection),
-                    searchResult = searchResult ?: NodeInfo(0.0,0.0,"temp", "", 0),
+                    searchResult = searchResult ?: NodeInfo(0.0,0.0,"temp", "", "",0, nodeId = 0),
                     onDepart = {
-                        mapViewmodel.clearMarker()
-                        mapViewmodel.showPath(directions)
+                        if (searchResult != null) {
+                            // 검색 결과를 바탕으로 출발지 설정
+                            val keyword = searchResult!!.toSearchKeyword()
+
+                            // 출발지 설정
+                            searchViewmodel.setDepart(keyword)
+                            // 경로 검색 화면으로 화면 전환
+                            onSearchDirection()
+                        }
+                        else Toast.makeText(context, "유효하지 않은 장소입니다.", Toast.LENGTH_SHORT).show()
+
+                        /*mapViewmodel.clearMarker()
+                        searchViewmodel.direct()*/
                     },
-                    onArrival = {}
+                    onArrival = {
+                        if (searchResult != null) {
+                            // 검색 결과를 바탕으로 도착지 설정
+                            val keyword = searchResult!!.toSearchKeyword()
+
+                            // 도착지 설정
+                            searchViewmodel.setArrival(keyword)
+                            // 경로 검색 화면으로 화면 전환
+                            onSearchDirection()
+                        }
+                        else Toast.makeText(context, "유효하지 않은 장소입니다.", Toast.LENGTH_SHORT).show()
+                    }
                 )
             }
         }
