@@ -12,6 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.hongildong.map.ui.theme.Gray300
+import com.hongildong.map.ui.theme.White
 import kotlinx.coroutines.flow.collectLatest
 
 /**
@@ -27,7 +28,7 @@ fun SharedBottomSheetHost(
 ) {
     val content by viewModel.sheetContent.collectAsState()
     val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true // 중간에 걸치는 상태 없이 완전히 펼쳐지도록 설정
+        skipPartiallyExpanded = false // 중간에 걸치는 상태 없이 완전히 펼쳐지도록 설정
     )
 
     // ViewModel의 content 상태가 변경될 때를 감지합니다.
@@ -46,7 +47,7 @@ fun SharedBottomSheetHost(
             sheetState = sheetState,
             onDismissRequest = { viewModel.hide() }, // 바깥 영역 클릭 시 숨김 처리
             // 원하는 공통 스타일을 여기에 적용할 수 있습니다.
-            // containerColor = White,
+            containerColor = White,
             dragHandle = {
                 BottomSheetDefaults.DragHandle(
                     color = Gray300,

@@ -1,5 +1,6 @@
 package com.hongildong.map.ui.home
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.hongildong.map.ui.bookmark.BookmarkFolderHeader
@@ -29,6 +31,7 @@ fun BookmarkScreen(
     onSearch: () -> Unit,
     bottomSheetViewModel: BottomSheetViewModel
 ) {
+    val context = LocalContext.current
     val bookMarkViewmodel: BookmarkViewModel = hiltViewModel()
     val sheetScaffoldState = rememberBottomSheetScaffoldState()
 
@@ -58,15 +61,18 @@ fun BookmarkScreen(
                 BookmarkFolderHeader(
                     numOfFolder = allBookmarkInfo.size,
                     addFolder = {
-                        bottomSheetViewModel.show(
-                            {
-                                BookmarkFolderUpdateContent(
-                                    onClose = {
-                                        bottomSheetViewModel.hide()
-                                    }
-                                )
-                            }
-                        )
+                        if (bookMarkViewmodel.verifyUser()) {
+                            bottomSheetViewModel.show(
+                                {
+                                    BookmarkFolderUpdateContent(
+                                        onDone = {
+                                            bookMarkViewmodel.addFolder(it.folderName, it.folderColor)
+                                            bottomSheetViewModel.hide()
+                                        }
+                                    )
+                                }
+                            )
+                        }
                     }
                 )
                 BookmarkFolderList(allBookmarkInfo)

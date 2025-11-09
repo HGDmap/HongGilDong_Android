@@ -2,6 +2,7 @@ package com.hongildong.map.ui.bookmark
 
 import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hongildong.map.data.remote.request.BookmarkFolderUpdateRequest
@@ -28,6 +29,15 @@ class BookmarkViewModel @Inject constructor(
     private val sharedPreferences = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
     fun getToken(): String? {
         return sharedPreferences.getString("access_token", null)
+    }
+
+    fun verifyUser(): Boolean {
+        if (getToken()?.isNotEmpty() ?: false) {
+            return true
+        } else {
+            Toast.makeText(context, "북마크 기능을 사용하려면 로그인이 필요합니다.", Toast.LENGTH_SHORT).show()
+            return false
+        }
     }
 
     // 로딩

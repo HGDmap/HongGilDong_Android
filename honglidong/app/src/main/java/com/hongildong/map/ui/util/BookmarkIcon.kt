@@ -26,8 +26,8 @@ fun BookmarkIcon(
         contentDescription = null,
         modifier = Modifier
             .clip(CircleShape)
-            .background(BookmarkBlue)
+            .background(color)
             .padding(5.dp)
-            .size(19.dp)
+            .size(size)
     )
 }

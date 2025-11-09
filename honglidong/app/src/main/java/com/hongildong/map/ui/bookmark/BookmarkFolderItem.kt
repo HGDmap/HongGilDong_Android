@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -21,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.hongildong.map.R
 import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Black
+import com.hongildong.map.ui.theme.Gray400
 import com.hongildong.map.ui.theme.Gray500
 import com.hongildong.map.ui.util.BookmarkIcon
 
@@ -73,5 +75,6 @@ fun BookmarkFolderItem(
                 modifier = Modifier
             )
         }
+        HorizontalDivider(thickness = 1.dp, color = Gray400)
     }
 }
