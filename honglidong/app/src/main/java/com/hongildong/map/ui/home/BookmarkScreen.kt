@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -35,7 +36,12 @@ fun BookmarkScreen(
     val bookMarkViewmodel: BookmarkViewModel = hiltViewModel()
     val sheetScaffoldState = rememberBottomSheetScaffoldState()
 
+    val isUser by bookMarkViewmodel.isUser.collectAsState()
     val allBookmarkInfo by bookMarkViewmodel.allBookmarkInfo.collectAsState()
+    LaunchedEffect(isUser, allBookmarkInfo) {
+        bookMarkViewmodel.verifyUser()
+        bookMarkViewmodel.getAllBookmarks()
+    }
 
     Box(
         modifier = Modifier
@@ -61,7 +67,7 @@ fun BookmarkScreen(
                 BookmarkFolderHeader(
                     numOfFolder = allBookmarkInfo.size,
                     addFolder = {
-                        if (bookMarkViewmodel.verifyUser()) {
+                        if (isUser) {
                             bottomSheetViewModel.show(
                                 {
                                     BookmarkFolderUpdateContent(
@@ -72,6 +78,8 @@ fun BookmarkScreen(
                                     )
                                 }
                             )
+                        } else {
+                            Toast.makeText(context, "북마크 기능을 사용하려면 로그인이 필요합니다.", Toast.LENGTH_SHORT).show()
                         }
                     }
                 )

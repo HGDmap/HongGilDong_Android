@@ -112,7 +112,7 @@ fun BookmarkFolderUpdateContent(
 
         BottomButton(
             buttonText = "완료",
-            isButtonEnabled = if (textState.isNotEmpty()) true else false,
+            isButtonEnabled = if (textState.isNotEmpty() and colorState.isNotEmpty()) true else false,
             onClick = {
                 onDone(
                     BookmarkFolderUpdateRequest(

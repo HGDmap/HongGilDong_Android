@@ -31,12 +31,20 @@ class BookmarkViewModel @Inject constructor(
         return sharedPreferences.getString("access_token", null)
     }
 
-    fun verifyUser(): Boolean {
-        if (getToken()?.isNotEmpty() ?: false) {
-            return true
-        } else {
-            Toast.makeText(context, "북마크 기능을 사용하려면 로그인이 필요합니다.", Toast.LENGTH_SHORT).show()
-            return false
+    private val _isUser = MutableStateFlow<Boolean>(false)
+    val isUser: StateFlow<Boolean> = _isUser.asStateFlow()
+
+    fun verifyUser() {
+        viewModelScope.launch {
+            val token = getToken()
+            Log.d("token check", "$token")
+            if (token != null) {
+                _isUser.value = true
+                return@launch
+            } else {
+                _isUser.value = false
+                return@launch
+            }
         }
     }
 

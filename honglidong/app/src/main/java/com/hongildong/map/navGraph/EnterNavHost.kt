@@ -32,11 +32,14 @@ fun EnterNavHost(
         startDestination = NavRoute.Enter.route
     ) {
         composable(NavRoute.Enter.route) {
+            val authViewmodel: AuthViewmodel = hiltViewModel()
+
             EnterScreen(
                 onLoginClick = {
                     enterNavController.navigate(NavRoute.Login.route)
                 },
                 onStrangerClick = {
+                    authViewmodel.logout()
                     // 메인으로 이동
                     rootNavController.navigate(NavRoute.MainFlow.route) {
                         popUpTo(NavRoute.EnterFlow.route) { inclusive = true }
