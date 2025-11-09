@@ -35,10 +35,11 @@ fun BookmarkFolderItem(
     onClick: () -> Unit = {}
 ) {
     Column (
-        modifier = Modifier.fillMaxWidth().padding(8.dp).clickable { onClick() }
+        modifier = Modifier.fillMaxWidth().clickable { onClick() }
     ) {
         Row (
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(vertical = 10.dp)
         ) {
             BookmarkIcon(
                 19.dp,
