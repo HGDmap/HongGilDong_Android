@@ -30,17 +30,16 @@ import com.hongildong.map.ui.util.bottomsheet.FlexibleBottomSheet
 @Composable
 fun BookmarkScreen(
     onSearch: () -> Unit,
-    bottomSheetViewModel: BottomSheetViewModel
+    bottomSheetViewModel: BottomSheetViewModel,
+    bookmarkViewModel: BookmarkViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
-    val bookMarkViewmodel: BookmarkViewModel = hiltViewModel()
     val sheetScaffoldState = rememberBottomSheetScaffoldState()
 
-    val isUser by bookMarkViewmodel.isUser.collectAsState()
-    val allBookmarkInfo by bookMarkViewmodel.allBookmarkInfo.collectAsState()
-    LaunchedEffect(isUser, allBookmarkInfo) {
-        bookMarkViewmodel.verifyUser()
-        bookMarkViewmodel.getAllBookmarks()
+    val isUser by bookmarkViewModel.isUser.collectAsState()
+    val allBookmarkInfo by bookmarkViewModel.allBookmarkInfo.collectAsState()
+    LaunchedEffect(isUser) {
+        bookmarkViewModel.verifyUser()
     }
 
     Box(
@@ -72,7 +71,7 @@ fun BookmarkScreen(
                                 {
                                     BookmarkFolderUpdateContent(
                                         onDone = {
-                                            bookMarkViewmodel.addFolder(it.folderName, it.folderColor)
+                                            bookmarkViewModel.addFolder(it.folderName, it.folderColor)
                                             bottomSheetViewModel.hide()
                                         }
                                     )

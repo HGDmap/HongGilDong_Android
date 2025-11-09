@@ -116,7 +116,7 @@ class BookmarkViewModel @Inject constructor(
         }
     }
 
-    // 북마크 추가 수정
+    // 북마크 삭제
     fun deleteBookmark(
         type: String,
         targetId: Int
