@@ -2,7 +2,7 @@ package com.hongildong.map.data.repository
 
 import com.hongildong.map.data.remote.request.BookmarkFolderUpdateRequest
 import com.hongildong.map.data.remote.response.BookmarkAllResponse
-import com.hongildong.map.data.remote.response.BookmarkUpdateResponse
+import com.hongildong.map.data.entity.BookmarkFolder
 import com.hongildong.map.data.util.DefaultResponse
 
 interface BookmarkRepository {
@@ -15,13 +15,13 @@ interface BookmarkRepository {
         type: String,
         folderId: Int,
         targetId: Int
-    ): DefaultResponse<BookmarkUpdateResponse>
+    ): DefaultResponse<BookmarkFolder>
 
     suspend fun delete(
         accessToken: String,
         type: String,
         targetId: Int
-    ): DefaultResponse<BookmarkUpdateResponse>
+    ): DefaultResponse<BookmarkFolder>
 
     suspend fun addFolder(
         accessToken: String,
@@ -42,5 +42,5 @@ interface BookmarkRepository {
     suspend fun getBookmarksOfFolder(
         accessToken: String,
         folderId: Int
-    ): DefaultResponse<BookmarkUpdateResponse>
+    ): DefaultResponse<BookmarkFolder>
 }

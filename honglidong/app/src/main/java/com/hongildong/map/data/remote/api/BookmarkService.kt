@@ -2,7 +2,7 @@ package com.hongildong.map.data.remote.api
 
 import com.hongildong.map.data.remote.request.BookmarkFolderUpdateRequest
 import com.hongildong.map.data.remote.response.BookmarkAllResponse
-import com.hongildong.map.data.remote.response.BookmarkUpdateResponse
+import com.hongildong.map.data.entity.BookmarkFolder
 import com.hongildong.map.data.util.ApiResponse
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -30,7 +30,7 @@ interface BookmarkService {
         @Path("type") type: String, // BUILDING or FACILITY
         @Query("folderId") folderId: Int,
         @Query("targetId") targetId: Int
-    ): ApiResponse<BookmarkUpdateResponse>
+    ): ApiResponse<BookmarkFolder>
 
     // 북마크 삭제
     // 북마크 수정시 아무 폴더도 선택하지 않고 확인 누를 경우
@@ -39,7 +39,7 @@ interface BookmarkService {
         @Header("Authorization") accessToken: String,
         @Path("type") type: String, // BUILDING or FACILITY
         @Query("targetId") targetId: Int
-    ): ApiResponse<BookmarkUpdateResponse>
+    ): ApiResponse<BookmarkFolder>
 
     // 북마크 폴더
 
@@ -70,5 +70,5 @@ interface BookmarkService {
     suspend fun getBookmarksOfFolder(
         @Header("Authorization") accessToken: String,
         @Path("folderId") folderId: Int,
-    ): ApiResponse<BookmarkUpdateResponse>
+    ): ApiResponse<BookmarkFolder>
 }

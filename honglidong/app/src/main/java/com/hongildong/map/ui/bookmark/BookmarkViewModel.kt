@@ -5,7 +5,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hongildong.map.data.remote.request.BookmarkFolderUpdateRequest
-import com.hongildong.map.data.remote.response.BookmarkUpdateResponse
+import com.hongildong.map.data.entity.BookmarkFolder
 import com.hongildong.map.data.repository.BookmarkRepository
 import com.hongildong.map.data.util.DefaultResponse
 import com.hongildong.map.ui.util.UiState
@@ -35,8 +35,8 @@ class BookmarkViewModel @Inject constructor(
     val loading: StateFlow<UiState> = _loading.asStateFlow()
 
     // 모든 북마크 리스트
-    private val _allBookmarkInfo = MutableStateFlow<List<BookmarkUpdateResponse>>(listOf())
-    val allBookmarkInfo: StateFlow<List<BookmarkUpdateResponse>> = _allBookmarkInfo.asStateFlow()
+    private val _allBookmarkInfo = MutableStateFlow<List<BookmarkFolder>>(listOf())
+    val allBookmarkInfo: StateFlow<List<BookmarkFolder>> = _allBookmarkInfo.asStateFlow()
 
     // 모든 북마크 리스트 가져오기
     fun getAllBookmarks() {
@@ -65,8 +65,8 @@ class BookmarkViewModel @Inject constructor(
     }
 
     // 수정, 추가된 북마크 폴더 정보
-    private val _folderInfo = MutableStateFlow<BookmarkUpdateResponse?>(null)
-    val folderInfo: StateFlow<BookmarkUpdateResponse?> = _folderInfo.asStateFlow()
+    private val _folderInfo = MutableStateFlow<BookmarkFolder?>(null)
+    val folderInfo: StateFlow<BookmarkFolder?> = _folderInfo.asStateFlow()
 
     // 북마크 추가 수정
     fun updateBookmark(
