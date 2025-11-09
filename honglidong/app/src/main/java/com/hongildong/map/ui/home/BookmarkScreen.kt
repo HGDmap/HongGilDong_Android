@@ -18,18 +18,21 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.hongildong.map.ui.bookmark.BookmarkFolderHeader
 import com.hongildong.map.ui.bookmark.BookmarkFolderList
+import com.hongildong.map.ui.bookmark.BookmarkFolderUpdateContent
 import com.hongildong.map.ui.bookmark.BookmarkViewModel
-import com.hongildong.map.ui.util.FlexibleBottomSheet
+import com.hongildong.map.ui.util.bottomsheet.BottomSheetViewModel
+import com.hongildong.map.ui.util.bottomsheet.FlexibleBottomSheet
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookmarkScreen(
-    onSearch: () -> Unit
+    onSearch: () -> Unit,
+    bottomSheetViewModel: BottomSheetViewModel
 ) {
-    val viewmodel: BookmarkViewModel = hiltViewModel()
+    val bookMarkViewmodel: BookmarkViewModel = hiltViewModel()
     val sheetScaffoldState = rememberBottomSheetScaffoldState()
 
-    val allBookmarkInfo by viewmodel.allBookmarkInfo.collectAsState()
+    val allBookmarkInfo by bookMarkViewmodel.allBookmarkInfo.collectAsState()
 
     Box(
         modifier = Modifier
@@ -54,7 +57,17 @@ fun BookmarkScreen(
             ) {
                 BookmarkFolderHeader(
                     numOfFolder = allBookmarkInfo.size,
-                    addFolder = {}
+                    addFolder = {
+                        bottomSheetViewModel.show(
+                            {
+                                BookmarkFolderUpdateContent(
+                                    onClose = {
+                                        bottomSheetViewModel.hide()
+                                    }
+                                )
+                            }
+                        )
+                    }
                 )
                 BookmarkFolderList(allBookmarkInfo)
             }

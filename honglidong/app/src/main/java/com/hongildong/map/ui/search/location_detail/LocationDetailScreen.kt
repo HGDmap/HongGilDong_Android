@@ -37,14 +37,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hongildong.map.R
 import com.hongildong.map.data.entity.NodeInfo
-import com.hongildong.map.data.entity.SearchKeyword
 import com.hongildong.map.data.entity.toSearchKeyword
 import com.hongildong.map.ui.search.SearchKeywordViewmodel
 import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Black
 import com.hongildong.map.ui.theme.Gray400
 import com.hongildong.map.ui.theme.White
-import com.hongildong.map.ui.util.AnchoredDraggableBottomSheet
+import com.hongildong.map.ui.util.bottomsheet.AnchoredDraggableBottomSheet
 import com.hongildong.map.ui.util.map.MapViewmodel
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.compose.ExperimentalNaverMapApi

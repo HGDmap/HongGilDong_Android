@@ -38,7 +38,6 @@ import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import com.hongildong.map.R
 import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Black
@@ -46,7 +45,7 @@ import com.hongildong.map.ui.theme.Gray300
 import com.hongildong.map.ui.theme.Gray500
 import com.hongildong.map.ui.theme.Gray600
 import com.hongildong.map.ui.theme.White
-import com.hongildong.map.ui.util.FlexibleBottomSheet
+import com.hongildong.map.ui.util.bottomsheet.FlexibleBottomSheet
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

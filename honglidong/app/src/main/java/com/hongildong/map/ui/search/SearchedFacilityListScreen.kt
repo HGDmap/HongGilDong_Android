@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -35,7 +34,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.hongildong.map.R
 import com.hongildong.map.data.entity.NodeInfo
-import com.hongildong.map.ui.search.direction.directions
 import com.hongildong.map.ui.search.location_detail.SearchBarWithGoBack
 import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Black
@@ -43,7 +41,7 @@ import com.hongildong.map.ui.theme.Gray300
 import com.hongildong.map.ui.theme.Gray600
 import com.hongildong.map.ui.theme.White
 import com.hongildong.map.ui.util.ButtonWithIcon
-import com.hongildong.map.ui.util.FlexibleBottomSheet
+import com.hongildong.map.ui.util.bottomsheet.FlexibleBottomSheet
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

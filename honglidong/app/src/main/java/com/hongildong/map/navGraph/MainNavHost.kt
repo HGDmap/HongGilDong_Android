@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import com.hongildong.map.ui.home.BookmarkScreen
 import com.hongildong.map.ui.home.NearbyScreen
 import com.hongildong.map.ui.home.ProfileScreen
+import com.hongildong.map.ui.util.bottomsheet.BottomSheetViewModel
 import com.hongildong.map.ui.util.map.MapViewmodel
 
 
@@ -16,7 +17,8 @@ import com.hongildong.map.ui.util.map.MapViewmodel
 fun MainNavHost(
     rootNavController: NavHostController,
     mainNavController: NavHostController,
-    mapViewmodel: MapViewmodel
+    mapViewmodel: MapViewmodel,
+    bottomSheetViewModel: BottomSheetViewModel
 ) {
     // home
     NavHost(
@@ -47,7 +49,8 @@ fun MainNavHost(
                         launchSingleTop = true
                         restoreState = true
                     }
-                }
+                },
+                bottomSheetViewModel = bottomSheetViewModel
             )
         }
         composable(route = NavRoute.Profile.route) {

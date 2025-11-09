@@ -20,6 +20,8 @@ import com.hongildong.map.navGraph.AppNavHost
 import com.hongildong.map.navGraph.BottomNavigationBar
 import com.hongildong.map.navGraph.MainNavHost
 import com.hongildong.map.ui.theme.HongildongTheme
+import com.hongildong.map.ui.util.bottomsheet.BottomSheetViewModel
+import com.hongildong.map.ui.util.bottomsheet.SharedBottomSheetHost
 import com.hongildong.map.ui.util.map.MapBackground
 import com.hongildong.map.ui.util.map.MapViewmodel
 import dagger.hilt.android.AndroidEntryPoint
@@ -49,6 +51,7 @@ fun MainScreen(
 ) {
     val navController = rememberNavController()
     val mapViewmodel: MapViewmodel = hiltViewModel()
+    val bottomSheetViewModel: BottomSheetViewModel = hiltViewModel()
 
     Scaffold(
         bottomBar = { BottomNavigationBar(navController) },
@@ -66,9 +69,13 @@ fun MainScreen(
             MainNavHost(
                 rootNavController = rootNavController,
                 mainNavController = navController,
-                mapViewmodel = mapViewmodel
+                mapViewmodel = mapViewmodel,
+                bottomSheetViewModel = bottomSheetViewModel
             )
         }
+
+        // 모달 바텀시트를 위한 내용
+        SharedBottomSheetHost(viewModel = bottomSheetViewModel)
     }
 }
 
