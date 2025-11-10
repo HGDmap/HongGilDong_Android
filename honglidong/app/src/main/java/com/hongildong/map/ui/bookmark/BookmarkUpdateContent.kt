@@ -25,7 +25,7 @@ import com.hongildong.map.R
 import com.hongildong.map.data.entity.BookmarkFolder
 import com.hongildong.map.data.entity.FolderColor
 import com.hongildong.map.ui.theme.AppTypography
-import com.hongildong.map.ui.theme.Gray400
+import com.hongildong.map.ui.theme.Gray300
 import com.hongildong.map.ui.theme.Gray500
 import com.hongildong.map.ui.util.BottomButton
 
@@ -39,7 +39,12 @@ fun BookmarkUpdateContent(
 ) {
     var selectedFolder by remember { mutableStateOf(0) }
 
-    Column {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(10.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Text(title, style = AppTypography.Bold_20)
         Spacer(Modifier.height(20.dp))
         Row(
@@ -59,7 +64,7 @@ fun BookmarkUpdateContent(
             Text("새 리스트 만들기", style = AppTypography.Medium_18.copy(color = Gray500))
         }
         Spacer(Modifier.height(4.dp))
-        HorizontalDivider(thickness = 1.dp, color = Gray400)
+        HorizontalDivider(thickness = 1.dp, color = Gray300)
 
         LazyColumn {
             items(folders) { folder ->

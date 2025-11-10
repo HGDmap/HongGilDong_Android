@@ -45,12 +45,10 @@ fun AppNavHost() {
                     val parentEntry = remember(backStackEntry) {
                         rootNavController.getBackStackEntry(WHOLE_APP_ROUTE)
                     }
-                    val mapViewmodel: MapViewmodel = hiltViewModel(parentEntry)
                     val bookmarkViewModel: BookmarkViewModel = hiltViewModel(parentEntry)
 
                     MainScreen(
                         rootNavController = rootNavController,
-                        mapViewModel = mapViewmodel,
                         bookmarkViewModel = bookmarkViewModel
                     )
                 }
@@ -64,12 +62,10 @@ fun AppNavHost() {
                     val parentEntry = remember(backStackEntry) {
                         rootNavController.getBackStackEntry(WHOLE_APP_ROUTE)
                     }
-                    val mapViewmodel: MapViewmodel = hiltViewModel(parentEntry)
                     val bookmarkViewModel: BookmarkViewModel = hiltViewModel(parentEntry)
 
                     SearchRootScreen(
                         rootNavController = rootNavController,
-                        mapViewModel = mapViewmodel,
                         bookmarkViewModel = bookmarkViewModel
                     )
                 }

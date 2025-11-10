@@ -49,10 +49,10 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainScreen(
     rootNavController: NavHostController,
-    mapViewModel: MapViewmodel,
     bookmarkViewModel: BookmarkViewModel
 ) {
     val navController = rememberNavController()
+    val mapViewModel: MapViewmodel = hiltViewModel()
     val bottomSheetViewModel: BottomSheetViewModel = hiltViewModel()
 
     Scaffold(

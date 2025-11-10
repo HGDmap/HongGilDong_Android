@@ -21,10 +21,10 @@ import com.hongildong.map.ui.util.map.MapViewmodel
 @Composable
 fun SearchRootScreen(
     rootNavController: NavHostController,
-    mapViewModel: MapViewmodel,
     bookmarkViewModel: BookmarkViewModel
 ) {
     val navController = rememberNavController()
+    val mapViewModel: MapViewmodel = hiltViewModel()
     val bottomSheetViewModel: BottomSheetViewModel = hiltViewModel()
 
     Scaffold(
