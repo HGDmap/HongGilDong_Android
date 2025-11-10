@@ -130,7 +130,9 @@ fun SearchNavHost(
                     onGoBack = {
                         searchNavController.popBackStack()
                         mapViewmodel.clearMarker()
-                    }
+                    },
+                    bottomSheetViewModel = bottomSheetViewModel,
+                    bookmarkViewModel = bookmarkViewModel
                 )
 
             }
@@ -145,6 +147,8 @@ fun SearchNavHost(
                     searchedWord = searchedWord,
                     searchViewmodel = searchKeywordViewmodel,
                     mapViewmodel = mapViewmodel,
+                    bookmarkViewModel = bookmarkViewModel,
+                    bottomSheetViewModel = bottomSheetViewModel,
                     onGoBack = {
                         searchNavController.popBackStack()
                     },

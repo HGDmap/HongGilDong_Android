@@ -37,13 +37,18 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hongildong.map.R
 import com.hongildong.map.data.entity.NodeInfo
+import com.hongildong.map.data.entity.SearchableNodeType
 import com.hongildong.map.data.entity.toSearchKeyword
+import com.hongildong.map.ui.bookmark.BookmarkFolderUpdateContent
+import com.hongildong.map.ui.bookmark.BookmarkUpdateContent
+import com.hongildong.map.ui.bookmark.BookmarkViewModel
 import com.hongildong.map.ui.search.SearchKeywordViewmodel
 import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Black
 import com.hongildong.map.ui.theme.Gray400
 import com.hongildong.map.ui.theme.White
 import com.hongildong.map.ui.util.bottomsheet.AnchoredDraggableBottomSheet
+import com.hongildong.map.ui.util.bottomsheet.BottomSheetViewModel
 import com.hongildong.map.ui.util.map.MapViewmodel
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
@@ -54,12 +59,17 @@ fun LocationDetailScreen(
     searchedWord: String = "",
     searchViewmodel: SearchKeywordViewmodel,
     mapViewmodel: MapViewmodel,
+    bookmarkViewModel: BookmarkViewModel,
+    bottomSheetViewModel: BottomSheetViewModel,
     onGoBack: () -> Unit,
     onSearchDirection: () -> Unit,
 ) {
     val context = LocalContext.current
     val searchResult by searchViewmodel.searchResult.collectAsState()
     val directionResult by searchViewmodel.directionResult.collectAsState()
+    val isUser by bookmarkViewModel.isUser.collectAsState()
+    val allBookmarks by bookmarkViewModel.allBookmarkInfo.collectAsState()
+
     LaunchedEffect(key1 = searchResult, key2 = directionResult) {
         // searchResult가 null이 아닐 때만 실행
         searchResult?.let { result ->
@@ -124,6 +134,47 @@ fun LocationDetailScreen(
                             onSearchDirection()
                         }
                         else Toast.makeText(context, "유효하지 않은 장소입니다.", Toast.LENGTH_SHORT).show()
+                    },
+                    onBookmarkChange = {
+                        if (isUser) {
+                            bottomSheetViewModel.show {
+                                BookmarkUpdateContent(
+                                    title = searchResult?.name ?: searchResult?.nodeName ?: "",
+                                    addFolder = {
+                                        bottomSheetViewModel.change {
+                                            BookmarkFolderUpdateContent(
+                                                onDone = {
+                                                    bookmarkViewModel.addFolder(it.folderName, it.folderColor)
+                                                    bottomSheetViewModel.restore()
+                                                }
+                                            )
+                                        }
+                                    },
+                                    folders = allBookmarks,
+                                    onDone = { folderNumber ->
+                                        if (folderNumber == 0) {
+                                            // 0: 폴더 선택하지 않은 경우 -> 북마크 삭제
+                                            if (searchResult?.nodeCode == SearchableNodeType.FACILITY.apiName) searchResult?.id else searchResult?.nodeId?.let { targetId ->
+                                                bookmarkViewModel.deleteBookmark(
+                                                    type = searchResult?.nodeCode ?: SearchableNodeType.FACILITY.apiName,
+                                                    targetId = targetId
+                                                )
+                                            }
+                                        } else {
+                                            // 0이 아님: 폴더를 선택하거나 바꾼 경우 -> 북마크 업데이트
+                                            if (searchResult?.nodeCode == SearchableNodeType.FACILITY.apiName) searchResult?.id else searchResult?.nodeId?.let { targetId ->
+                                                bookmarkViewModel.updateBookmark(
+                                                    type = searchResult?.nodeCode ?: SearchableNodeType.FACILITY.apiName,
+                                                    targetId = targetId,
+                                                    folderId = folderNumber
+                                                )
+                                            }
+                                        }
+                                        bottomSheetViewModel.hide()
+                                    }
+                                )
+                            }
+                        }
                     }
                 )
             }
