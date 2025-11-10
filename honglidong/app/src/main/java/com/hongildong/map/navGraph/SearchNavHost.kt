@@ -15,6 +15,7 @@ import com.hongildong.map.ui.search.SearchedFacilityListScreen
 import com.hongildong.map.ui.search.direction.DirectionScreen
 import com.hongildong.map.ui.search.direction.DirectionSearchScreen
 import com.hongildong.map.ui.search.location_detail.LocationDetailScreen
+import com.hongildong.map.ui.util.bottomsheet.BottomSheetViewModel
 import com.hongildong.map.ui.util.map.MapViewmodel
 
 const val LOCATION_SEARCH_MODE = "location"
@@ -29,7 +30,8 @@ fun SearchNavHost(
     rootNavController: NavHostController, // 상위(AppNavHost)로 돌아가기 위한 NavController
     searchNavController: NavHostController,
     mapViewmodel: MapViewmodel,
-    bookmarkViewModel: BookmarkViewModel
+    bookmarkViewModel: BookmarkViewModel,
+    bottomSheetViewModel: BottomSheetViewModel
 ) {
     NavHost(
         navController = searchNavController,

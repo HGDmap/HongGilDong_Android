@@ -13,6 +13,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.hongildong.map.navGraph.SearchNavHost
 import com.hongildong.map.ui.bookmark.BookmarkViewModel
+import com.hongildong.map.ui.util.bottomsheet.BottomSheetViewModel
+import com.hongildong.map.ui.util.bottomsheet.SharedBottomSheetHost
 import com.hongildong.map.ui.util.map.MapBackground
 import com.hongildong.map.ui.util.map.MapViewmodel
 
@@ -23,6 +25,7 @@ fun SearchRootScreen(
     bookmarkViewModel: BookmarkViewModel
 ) {
     val navController = rememberNavController()
+    val bottomSheetViewModel: BottomSheetViewModel = hiltViewModel()
 
     Scaffold(
         modifier = Modifier.fillMaxSize()
@@ -41,8 +44,12 @@ fun SearchRootScreen(
                 rootNavController = rootNavController,
                 searchNavController = navController,
                 mapViewmodel = mapViewModel,
-                bookmarkViewModel = bookmarkViewModel
+                bookmarkViewModel = bookmarkViewModel,
+                bottomSheetViewModel = bottomSheetViewModel
             )
         }
+
+        // 모달 바텀시트를 위한 내용
+        SharedBottomSheetHost(viewModel = bottomSheetViewModel)
     }
 }
