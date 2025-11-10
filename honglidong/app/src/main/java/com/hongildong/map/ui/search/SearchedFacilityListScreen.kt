@@ -93,7 +93,6 @@ fun SearchedFacilityListScreen(
                     horizontalAlignment = Alignment.Start,
                     verticalArrangement = Arrangement.Top
                 ) {
-                    // api 연결하기
                     SearchedPlaces(
                         places = searchResult,
                         onDirectItem = { onDirectItem(it) },
@@ -190,7 +189,7 @@ fun PlaceInfoItem(
                 contentDescription = "",
                 modifier = Modifier
                     .clickable {
-                        // todo: 북마크/취소 로직 작성하기
+                        // todo: 북마크 로직 연결
                     }
             )
         }

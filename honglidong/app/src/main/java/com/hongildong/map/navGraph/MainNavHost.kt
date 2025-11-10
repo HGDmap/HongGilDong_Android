@@ -23,6 +23,7 @@ fun MainNavHost(
     rootNavController: NavHostController,
     mainNavController: NavHostController,
     mapViewmodel: MapViewmodel,
+    bookmarkViewModel: BookmarkViewModel,
     bottomSheetViewModel: BottomSheetViewModel
 ) {
     // home
@@ -40,7 +41,7 @@ fun MainNavHost(
                 val parentEntry = remember(backStackEntry) {
                     mainNavController.getBackStackEntry(MAIN_GRAPH_ROUTE)
                 }
-                val bookmarkViewmodel: BookmarkViewModel = hiltViewModel(parentEntry)
+                //val bookmarkViewmodel: BookmarkViewModel = hiltViewModel(parentEntry)
 
                 NearbyScreen(
                     onSearch = {
@@ -52,7 +53,7 @@ fun MainNavHost(
                             restoreState = true
                         }
                     },
-                    bookmarkViewModel = bookmarkViewmodel,
+                    bookmarkViewModel = bookmarkViewModel,
                     mapViewModel = mapViewmodel
                 )
             }
@@ -61,7 +62,7 @@ fun MainNavHost(
                 val parentEntry = remember(backStackEntry) {
                     mainNavController.getBackStackEntry(MAIN_GRAPH_ROUTE)
                 }
-                val bookmarkViewmodel: BookmarkViewModel = hiltViewModel(parentEntry)
+                //val bookmarkViewmodel: BookmarkViewModel = hiltViewModel(parentEntry)
 
                 BookmarkScreen(
                     onSearch = {
@@ -74,7 +75,7 @@ fun MainNavHost(
                         }
                     },
                     bottomSheetViewModel = bottomSheetViewModel,
-                    bookmarkViewModel = bookmarkViewmodel
+                    bookmarkViewModel = bookmarkViewModel
                 )
             }
             composable(route = NavRoute.Profile.route) {

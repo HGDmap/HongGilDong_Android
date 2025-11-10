@@ -19,6 +19,7 @@ import androidx.navigation.compose.rememberNavController
 import com.hongildong.map.navGraph.AppNavHost
 import com.hongildong.map.navGraph.BottomNavigationBar
 import com.hongildong.map.navGraph.MainNavHost
+import com.hongildong.map.ui.bookmark.BookmarkViewModel
 import com.hongildong.map.ui.theme.HongildongTheme
 import com.hongildong.map.ui.util.bottomsheet.BottomSheetViewModel
 import com.hongildong.map.ui.util.bottomsheet.SharedBottomSheetHost
@@ -47,10 +48,11 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainScreen(
-    rootNavController: NavHostController
+    rootNavController: NavHostController,
+    mapViewModel: MapViewmodel,
+    bookmarkViewModel: BookmarkViewModel
 ) {
     val navController = rememberNavController()
-    val mapViewmodel: MapViewmodel = hiltViewModel()
     val bottomSheetViewModel: BottomSheetViewModel = hiltViewModel()
 
     Scaffold(
@@ -58,7 +60,7 @@ fun MainScreen(
         modifier = Modifier.fillMaxSize()
     ) { paddingValues ->
         MapBackground(
-            viewModel = mapViewmodel,
+            viewModel = mapViewModel,
             onClickBookmark = {}
         )
         Box(
@@ -70,7 +72,8 @@ fun MainScreen(
             MainNavHost(
                 rootNavController = rootNavController,
                 mainNavController = navController,
-                mapViewmodel = mapViewmodel,
+                mapViewmodel = mapViewModel,
+                bookmarkViewModel = bookmarkViewModel,
                 bottomSheetViewModel = bottomSheetViewModel
             )
         }

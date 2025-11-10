@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.hongildong.map.data.entity.SearchKeyword
+import com.hongildong.map.ui.bookmark.BookmarkViewModel
 import com.hongildong.map.ui.search.SearchKeywordViewmodel
 import com.hongildong.map.ui.search.SearchScreen
 import com.hongildong.map.ui.search.SearchedFacilityListScreen
@@ -27,7 +28,8 @@ private const val SEARCH_GRAPH_ROUTE = "search_graph"
 fun SearchNavHost(
     rootNavController: NavHostController, // 상위(AppNavHost)로 돌아가기 위한 NavController
     searchNavController: NavHostController,
-    mapViewmodel: MapViewmodel = hiltViewModel<MapViewmodel>()
+    mapViewmodel: MapViewmodel,
+    bookmarkViewModel: BookmarkViewModel
 ) {
     NavHost(
         navController = searchNavController,

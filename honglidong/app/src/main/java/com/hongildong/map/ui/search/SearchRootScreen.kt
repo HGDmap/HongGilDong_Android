@@ -12,21 +12,23 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.hongildong.map.navGraph.SearchNavHost
+import com.hongildong.map.ui.bookmark.BookmarkViewModel
 import com.hongildong.map.ui.util.map.MapBackground
 import com.hongildong.map.ui.util.map.MapViewmodel
 
 @Composable
 fun SearchRootScreen(
-    rootNavController: NavHostController
+    rootNavController: NavHostController,
+    mapViewModel: MapViewmodel,
+    bookmarkViewModel: BookmarkViewModel
 ) {
     val navController = rememberNavController()
-    val mapViewmodel: MapViewmodel = hiltViewModel()
 
     Scaffold(
         modifier = Modifier.fillMaxSize()
     ) { paddingValues ->
         MapBackground(
-            viewModel = mapViewmodel,
+            viewModel = mapViewModel,
             onClickBookmark = {}
         )
         Box(
@@ -38,7 +40,8 @@ fun SearchRootScreen(
             SearchNavHost(
                 rootNavController = rootNavController,
                 searchNavController = navController,
-                mapViewmodel = mapViewmodel
+                mapViewmodel = mapViewModel,
+                bookmarkViewModel = bookmarkViewModel
             )
         }
     }
