@@ -2,7 +2,9 @@ package com.hongildong.map.ui.util.map
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hongildong.map.data.entity.BookmarkFolder
 import com.hongildong.map.data.entity.NodeInfo
+import com.hongildong.map.data.remote.request.BookmarkFolderUpdateRequest
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraAnimation
 import com.naver.maps.map.CameraPosition
@@ -60,9 +62,15 @@ class MapViewmodel @Inject constructor(
         }
     }
 
-    fun showMarkers(infos: List<NodeInfo>) {
+    private val _bookmarks = MutableStateFlow<List<BookmarkFolder>>(emptyList())
+    val bookmarks = _bookmarks.asStateFlow()
+
+    fun showBookmarks(infos: List<BookmarkFolder>) {
         viewModelScope.launch {
             // todo: infos의 각 아이템 위치에 마커 xx 점찍기
+            if (infos.isEmpty()) return@launch
+
+            _bookmarks.value = infos
         }
     }
 

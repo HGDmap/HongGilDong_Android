@@ -26,7 +26,8 @@ fun SearchRootScreen(
         modifier = Modifier.fillMaxSize()
     ) { paddingValues ->
         MapBackground(
-            viewModel = mapViewmodel
+            viewModel = mapViewmodel,
+            onClickBookmark = {}
         )
         Box(
             modifier = Modifier
