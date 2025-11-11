@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -49,6 +50,7 @@ fun DropDownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
             containerColor = White,
+            shape = RoundedCornerShape(10.dp),
             border = BorderStroke(width = 1.dp, color = Gray300)
         ) {
             DropdownMenuItem(
@@ -66,6 +68,7 @@ fun DropDownMenu(
                     )
                 },
                 onClick = {
+                    expanded = false
                     onEdit()
                 }
             )
@@ -84,6 +87,7 @@ fun DropDownMenu(
                     )
                 },
                 onClick = {
+                    expanded = false
                     onDelete()
                 }
             )

@@ -112,6 +112,7 @@ fun BookmarkScreen(
                                             folderName = it.folderName,
                                             folderColor = it.folderColor
                                         )
+                                        bottomSheetViewModel.hide()
                                     }
                                 )
                             }
