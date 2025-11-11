@@ -130,4 +130,13 @@ class AuthViewmodel @Inject constructor(
             }
         }
     }
+
+    fun logout() {
+        viewModelScope.launch {
+            sharedPreferences.edit {
+                remove("access_token")
+                remove("refresh_token")
+            }
+        }
+    }
 }

@@ -87,7 +87,7 @@ fun SearchScreen(
                     when (searchMode) {
                         // 장소 검색 모드일 경우 키보드로 직접 검색 -> 검색 호출
                         LOCATION_SEARCH_MODE -> {
-                            if (textState == "") {
+                            if (textState != "") {
                                 viewModel.onSearchRawWord(textState)
                                 onRawSearch(textState)
                                 textState = ""

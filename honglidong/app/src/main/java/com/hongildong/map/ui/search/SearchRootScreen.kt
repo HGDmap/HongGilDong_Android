@@ -12,21 +12,27 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.hongildong.map.navGraph.SearchNavHost
+import com.hongildong.map.ui.bookmark.BookmarkViewModel
+import com.hongildong.map.ui.util.bottomsheet.BottomSheetViewModel
+import com.hongildong.map.ui.util.bottomsheet.SharedBottomSheetHost
 import com.hongildong.map.ui.util.map.MapBackground
 import com.hongildong.map.ui.util.map.MapViewmodel
 
 @Composable
 fun SearchRootScreen(
-    rootNavController: NavHostController
+    rootNavController: NavHostController,
+    bookmarkViewModel: BookmarkViewModel
 ) {
     val navController = rememberNavController()
-    val mapViewmodel: MapViewmodel = hiltViewModel()
+    val mapViewModel: MapViewmodel = hiltViewModel()
+    val bottomSheetViewModel: BottomSheetViewModel = hiltViewModel()
 
     Scaffold(
         modifier = Modifier.fillMaxSize()
     ) { paddingValues ->
         MapBackground(
-            viewModel = mapViewmodel
+            viewModel = mapViewModel,
+            onClickBookmark = {}
         )
         Box(
             modifier = Modifier
@@ -37,8 +43,13 @@ fun SearchRootScreen(
             SearchNavHost(
                 rootNavController = rootNavController,
                 searchNavController = navController,
-                mapViewmodel = mapViewmodel
+                mapViewmodel = mapViewModel,
+                bookmarkViewModel = bookmarkViewModel,
+                bottomSheetViewModel = bottomSheetViewModel
             )
         }
+
+        // 모달 바텀시트를 위한 내용
+        SharedBottomSheetHost(viewModel = bottomSheetViewModel)
     }
 }

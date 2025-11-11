@@ -22,3 +22,8 @@ fun NodeInfo.toSearchKeyword(): SearchKeyword {
         nodeCode = this.nodeCode ?: "temp code",
     )
 }
+
+enum class SearchableNodeType(val apiName: String) {
+    BUILDING("BUILDING"),
+    FACILITY("FACILITY");
+}

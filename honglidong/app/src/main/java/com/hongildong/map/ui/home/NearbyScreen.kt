@@ -25,6 +25,8 @@ import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -38,23 +40,32 @@ import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.hongildong.map.R
+import com.hongildong.map.ui.bookmark.BookmarkViewModel
 import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Black
 import com.hongildong.map.ui.theme.Gray300
 import com.hongildong.map.ui.theme.Gray500
 import com.hongildong.map.ui.theme.Gray600
 import com.hongildong.map.ui.theme.White
-import com.hongildong.map.ui.util.FlexibleBottomSheet
+import com.hongildong.map.ui.util.bottomsheet.FlexibleBottomSheet
+import com.hongildong.map.ui.util.map.MapViewmodel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NearbyScreen(
-    onSearch: () -> Unit
+    onSearch: () -> Unit,
+    bookmarkViewModel: BookmarkViewModel = hiltViewModel(),
+    mapViewModel: MapViewmodel
 ) {
     val sheetScaffoldState = rememberBottomSheetScaffoldState()
     val nestedScrollConnection = rememberNestedScrollInteropConnection()
+
+    val allBookmarks by bookmarkViewModel.allBookmarkInfo.collectAsState()
+    LaunchedEffect(Unit) {
+        bookmarkViewModel.getAllBookmarks()
+    }
 
     Box(
         modifier = Modifier
