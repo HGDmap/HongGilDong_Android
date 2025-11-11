@@ -5,6 +5,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import com.hongildong.map.data.entity.BookmarkFolder
 import com.hongildong.map.data.entity.FolderColor
+import com.hongildong.map.ui.theme.BookmarkRed
 
 // 홈 - 북마크의 북마크 폴더 리스트
 @Composable
@@ -17,7 +18,7 @@ fun BookmarkFolderList(
     LazyColumn {
         items(folders) { folder ->
             BookmarkFolderItem(
-                folderColor = FolderColor.fromColorName(folder.color)!!.color,
+                folderColor = FolderColor.fromColorName(folder.color)?.color ?: BookmarkRed,
                 folderName = folder.folderName,
                 numOfItem = folder.bookmarkCount,
                 onClick = {

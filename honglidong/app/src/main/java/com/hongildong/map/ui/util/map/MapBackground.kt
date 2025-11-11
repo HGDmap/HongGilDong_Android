@@ -10,6 +10,7 @@ import androidx.navigation.NavController
 import com.hongildong.map.R
 import com.hongildong.map.data.entity.FolderColor
 import com.hongildong.map.data.entity.NodeInfo
+import com.hongildong.map.ui.theme.BookmarkRed
 import com.hongildong.map.ui.theme.Gray600
 import com.hongildong.map.ui.theme.PrimaryMid
 import com.hongildong.map.ui.theme.White
@@ -62,9 +63,10 @@ fun MapBackground(
         }
 
         bookmarks.forEach { folderInfo ->
-            val folderColor = FolderColor.fromColorName(folderInfo.color)!!.color
+            val folderColor = FolderColor.fromColorName(folderInfo.color)?.color ?: BookmarkRed
             folderInfo.bookmarkList.forEach { bookmark ->
                 MarkerComposable(
+                    state = MarkerState(position = LatLng(bookmark.latitude, bookmark.longitude)),
                     captionText = bookmark.name ?: bookmark.nodeName ?: "",
                     onClick = {
                         // todo: 북마크 버블 클릭시 해당 건물/시설 검색해야함

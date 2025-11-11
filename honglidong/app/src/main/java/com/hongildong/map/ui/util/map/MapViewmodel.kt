@@ -68,7 +68,10 @@ class MapViewmodel @Inject constructor(
     fun showBookmarks(infos: List<BookmarkFolder>) {
         viewModelScope.launch {
             // todo: infos의 각 아이템 위치에 마커 xx 점찍기
-            if (infos.isEmpty()) return@launch
+            if (infos.isEmpty()) {
+                _bookmarks.value = infos
+                return@launch
+            }
 
             _bookmarks.value = infos
         }

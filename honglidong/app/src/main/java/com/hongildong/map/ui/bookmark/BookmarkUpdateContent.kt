@@ -25,6 +25,7 @@ import com.hongildong.map.R
 import com.hongildong.map.data.entity.BookmarkFolder
 import com.hongildong.map.data.entity.FolderColor
 import com.hongildong.map.ui.theme.AppTypography
+import com.hongildong.map.ui.theme.BookmarkRed
 import com.hongildong.map.ui.theme.Gray300
 import com.hongildong.map.ui.theme.Gray500
 import com.hongildong.map.ui.util.BottomButton
@@ -69,7 +70,7 @@ fun BookmarkUpdateContent(
         LazyColumn {
             items(folders) { folder ->
                 SelectableBookmarkFolderItem(
-                    folderColor = FolderColor.fromColorName(folder.color)!!.color,
+                    folderColor = FolderColor.fromColorName(folder.color)?.color ?: BookmarkRed,
                     folderName = folder.folderName,
                     numOfItem = folder.bookmarkCount,
                     onClick = {
@@ -89,7 +90,7 @@ fun BookmarkUpdateContent(
             isButtonEnabled = true,
             onClick = {
                 onDone(selectedFolder)
-                selectedFolder == 0
+                selectedFolder = 0
             }
         )
     }

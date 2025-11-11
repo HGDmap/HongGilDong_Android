@@ -36,7 +36,7 @@ fun ConfirmPopup(
 
         Card(
             modifier = Modifier
-                .heightIn(max = 150.dp)
+                .heightIn(min = 130.dp, max = 160.dp)
                 .padding(16.dp),
             shape = RoundedCornerShape(16.dp),
         ) {

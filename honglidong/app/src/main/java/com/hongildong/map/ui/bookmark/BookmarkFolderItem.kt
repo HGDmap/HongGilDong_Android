@@ -68,7 +68,7 @@ fun BookmarkFolderItem(
                     Spacer(Modifier.width(3.dp))
                     Text(
                         "$numOfItem",
-                        style = AppTypography.Medium_13.copy(Gray500)
+                        style = AppTypography.Medium_13.copy(color = Gray500)
                     )
                 }
             }

@@ -63,14 +63,14 @@ fun SelectableBookmarkFolderItem(
                     Image(
                         painter = painterResource(R.drawable.ic_nearby),
                         contentDescription = null,
-                        colorFilter = ColorFilter.tint(Gray500),
+                        colorFilter = ColorFilter.tint(color = Gray500),
                         modifier = Modifier
                             .size(14.dp)
                     )
                     Spacer(Modifier.width(3.dp))
                     Text(
                         "$numOfItem",
-                        style = AppTypography.Medium_13.copy(Gray500)
+                        style = AppTypography.Medium_13.copy(color = Gray500)
                     )
                 }
             }
