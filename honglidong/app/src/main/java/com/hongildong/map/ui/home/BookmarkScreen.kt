@@ -14,6 +14,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -25,6 +29,7 @@ import com.hongildong.map.ui.bookmark.BookmarkFolderUpdateContent
 import com.hongildong.map.ui.bookmark.BookmarkViewModel
 import com.hongildong.map.ui.util.bottomsheet.BottomSheetViewModel
 import com.hongildong.map.ui.util.bottomsheet.FlexibleBottomSheet
+import com.hongildong.map.ui.util.popup.ConfirmPopup
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,6 +43,10 @@ fun BookmarkScreen(
 
     val isUser by bookmarkViewModel.isUser.collectAsState()
     val allBookmarkInfo by bookmarkViewModel.allBookmarkInfo.collectAsState()
+    
+    var showDialog by remember { mutableStateOf(false) }
+    var selectedFolderId by remember { mutableIntStateOf(0) }
+
     LaunchedEffect(isUser) {
         bookmarkViewModel.verifyUser()
     }
@@ -82,8 +91,52 @@ fun BookmarkScreen(
                         }
                     }
                 )
-                BookmarkFolderList(allBookmarkInfo)
+                BookmarkFolderList(
+                    allBookmarkInfo,
+                    onClickFolder = { folder ->
+                        // todo: 폴더 클릭시 폴더에 속한 아이템 리스트 api + 화면 전환
+                    },
+                    onDeleteFolder = { folderId ->
+                        showDialog = true
+                        selectedFolderId = folderId
+                    },
+                    onEditFolder = { folder ->
+                        bottomSheetViewModel.show(
+                            {
+                                BookmarkFolderUpdateContent(
+                                    initialName = folder.folderName,
+                                    initialColor = folder.color,
+                                    onDone = {
+                                        bookmarkViewModel.updateFolder(
+                                            folderId = folder.folderId,
+                                            folderName = it.folderName,
+                                            folderColor = it.folderColor
+                                        )
+                                    }
+                                )
+                            }
+                        )
+                    },
+                )
             }
+        }
+
+        // 북마크 삭제 팝업
+        if (showDialog) {
+            ConfirmPopup(
+                message = "이 폴더를 삭제합니다.",
+                dismissMsg = "취소",
+                confirmMsg = "삭제",
+                onDismissRequest = {
+                    // 삭제 취소
+                    showDialog = false
+                },
+                onConfirmation = {
+                    // 삭제
+                    bookmarkViewModel.deleteFolder(selectedFolderId)
+                    showDialog = false
+                }
+            )
         }
     }
 }

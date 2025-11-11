@@ -37,10 +37,12 @@ import com.hongildong.map.ui.util.CustomTextField
 
 @Composable
 fun BookmarkFolderUpdateContent(
+    initialName: String = "",
+    initialColor: String = "",
     onDone: (BookmarkFolderUpdateRequest) -> Unit
 ) {
-    var textState by remember { mutableStateOf("") }
-    var colorState by remember { mutableStateOf("") }
+    var textState by remember { mutableStateOf(initialName) }
+    var colorState by remember { mutableStateOf(initialColor) }
 
     Column (
         modifier = Modifier

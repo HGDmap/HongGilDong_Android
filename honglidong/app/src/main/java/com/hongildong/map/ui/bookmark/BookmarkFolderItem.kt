@@ -25,6 +25,7 @@ import com.hongildong.map.ui.theme.Black
 import com.hongildong.map.ui.theme.Gray400
 import com.hongildong.map.ui.theme.Gray500
 import com.hongildong.map.ui.util.BookmarkIcon
+import com.hongildong.map.ui.util.popup.DropDownMenu
 
 // 홈 - 북마크의 폴더 리스트 아이템
 @Composable
@@ -32,7 +33,9 @@ fun BookmarkFolderItem(
     folderColor: Color,
     folderName: String,
     numOfItem: Int,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
+    onEditFolder: () -> Unit,
+    onDeleteFolder: () -> Unit
 ) {
     Column (
         modifier = Modifier.fillMaxWidth().clickable { onClick() }
@@ -69,11 +72,9 @@ fun BookmarkFolderItem(
                     )
                 }
             }
-            Image(
-                painter = painterResource(R.drawable.ic_dot_menu),
-                contentDescription = null,
-                colorFilter = ColorFilter.tint(Gray500),
-                modifier = Modifier
+            DropDownMenu(
+                onDelete = onDeleteFolder,
+                onEdit = onEditFolder
             )
         }
         HorizontalDivider(thickness = 1.dp, color = Gray400)
