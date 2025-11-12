@@ -44,7 +44,8 @@ fun LocationDetailInfo(
     searchResult: NodeInfo,
     modifier: Modifier = Modifier,
     onDepart: () -> Unit,
-    onArrival: () -> Unit
+    onArrival: () -> Unit,
+    onBookmarkChange: () -> Unit
 ) {
     val pages = listOf("시설 정보", "리뷰", "사진")
     var tabState by remember { mutableIntStateOf(0) }
@@ -53,7 +54,8 @@ fun LocationDetailInfo(
         LocationDetailHeader(
             searchResult,
             onDepart = onDepart,
-            onArrival = onArrival
+            onArrival = onArrival,
+            onBookmarkChange = onBookmarkChange
         )
         Spacer(Modifier.height(16.dp))
         ScrollableTabRow (
@@ -109,7 +111,8 @@ fun LocationDetailInfo(
 fun LocationDetailHeader(
     searchResult: NodeInfo,
     onDepart: () -> Unit,
-    onArrival: () -> Unit
+    onArrival: () -> Unit,
+    onBookmarkChange: () -> Unit
 ) {
 
     Column(
@@ -130,13 +133,12 @@ fun LocationDetailHeader(
             ) {
                 Image(
                     painterResource(
-                        id = R.drawable.ic_bookmark_true
-                        //if (place.isBookmarked) R.drawable.ic_bookmark_true else R.drawable.ic_bookmark_false,
+                        if (searchResult.isBookmarked == true) R.drawable.ic_bookmark_true else R.drawable.ic_bookmark_false,
                     ),
                     contentDescription = "",
                     modifier = Modifier
                         .clickable {
-                            //place.isBookmarked = !place.isBookmarked
+                            onBookmarkChange()
                         }
                 )
                 Spacer(Modifier.width(10.dp))

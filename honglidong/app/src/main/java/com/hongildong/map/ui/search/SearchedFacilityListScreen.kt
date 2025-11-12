@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -35,7 +34,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.hongildong.map.R
 import com.hongildong.map.data.entity.NodeInfo
-import com.hongildong.map.ui.search.direction.directions
+import com.hongildong.map.data.entity.SearchableNodeType
+import com.hongildong.map.ui.bookmark.BookmarkFolderUpdateContent
+import com.hongildong.map.ui.bookmark.BookmarkUpdateContent
+import com.hongildong.map.ui.bookmark.BookmarkViewModel
 import com.hongildong.map.ui.search.location_detail.SearchBarWithGoBack
 import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Black
@@ -43,12 +45,15 @@ import com.hongildong.map.ui.theme.Gray300
 import com.hongildong.map.ui.theme.Gray600
 import com.hongildong.map.ui.theme.White
 import com.hongildong.map.ui.util.ButtonWithIcon
-import com.hongildong.map.ui.util.FlexibleBottomSheet
+import com.hongildong.map.ui.util.bottomsheet.BottomSheetViewModel
+import com.hongildong.map.ui.util.bottomsheet.FlexibleBottomSheet
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchedFacilityListScreen(
     searchViewmodel: SearchKeywordViewmodel,
+    bottomSheetViewModel: BottomSheetViewModel,
+    bookmarkViewModel: BookmarkViewModel,
     searchedWord: String,
     onDirectItem: (NodeInfo) -> Unit,
     onClickItem: (NodeInfo) -> Unit,
@@ -58,6 +63,9 @@ fun SearchedFacilityListScreen(
 
     val sheetScaffoldState = rememberBottomSheetScaffoldState()
     val nestedScrollConnection = rememberNestedScrollInteropConnection()
+
+    val isUser by bookmarkViewModel.isUser.collectAsState()
+    val allBookmarks by bookmarkViewModel.allBookmarkInfo.collectAsState()
 
     Box(
         modifier = Modifier.background(Color.Transparent)
@@ -95,11 +103,51 @@ fun SearchedFacilityListScreen(
                     horizontalAlignment = Alignment.Start,
                     verticalArrangement = Arrangement.Top
                 ) {
-                    // api 연결하기
                     SearchedPlaces(
                         places = searchResult,
                         onDirectItem = { onDirectItem(it) },
                         onClickItem = { onClickItem(it)},
+                        onBookmarkChange = {
+                            if (isUser) {
+                                bottomSheetViewModel.show {
+                                    BookmarkUpdateContent(
+                                        title = it.name ?: it.nodeName ?: "",
+                                        addFolder = {
+                                            bottomSheetViewModel.change {
+                                                BookmarkFolderUpdateContent(
+                                                    onDone = {
+                                                        bookmarkViewModel.addFolder(it.folderName, it.folderColor)
+                                                        bottomSheetViewModel.restore()
+                                                    }
+                                                )
+                                            }
+                                        },
+                                        folders = allBookmarks,
+                                        onDone = { folderNumber ->
+                                            if (folderNumber == 0) {
+                                                // 0: 폴더 선택하지 않은 경우 -> 북마크 삭제
+                                                if (it.nodeCode == SearchableNodeType.FACILITY.apiName) it.id else it.nodeId.let { targetId ->
+                                                    bookmarkViewModel.deleteBookmark(
+                                                        type = it.nodeCode ?: SearchableNodeType.FACILITY.apiName,
+                                                        targetId = targetId
+                                                    )
+                                                }
+                                            } else {
+                                                // 0이 아님: 폴더를 선택하거나 바꾼 경우 -> 북마크 업데이트
+                                                if (it.nodeCode == SearchableNodeType.FACILITY.apiName) it.id else it.nodeId.let { targetId ->
+                                                    bookmarkViewModel.updateBookmark(
+                                                        type = it.nodeCode ?: SearchableNodeType.FACILITY.apiName,
+                                                        targetId = targetId,
+                                                        folderId = folderNumber
+                                                    )
+                                                }
+                                            }
+                                            bottomSheetViewModel.hide()
+                                        }
+                                    )
+                                }
+                            }
+                        }
                     )
                 }
             }
@@ -111,7 +159,9 @@ fun SearchedFacilityListScreen(
 @Composable
 fun EmptyItem() {
     Column(
-        modifier = Modifier.fillMaxSize().background(White),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(White),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -138,7 +188,8 @@ fun EmptyItem() {
 fun SearchedPlaces(
     places: List<NodeInfo>,
     onDirectItem: (NodeInfo) -> Unit,
-    onClickItem: (NodeInfo) -> Unit
+    onClickItem: (NodeInfo) -> Unit,
+    onBookmarkChange: (NodeInfo) -> Unit
 ) {
     LazyColumn() {
         items(places) { place ->
@@ -149,6 +200,9 @@ fun SearchedPlaces(
                 },
                 onClick = {
                     onClickItem(place)
+                },
+                onBookmarkChange = {
+                    onBookmarkChange(place)
                 }
             )
         }
@@ -160,6 +214,7 @@ fun PlaceInfoItem(
     info: NodeInfo,
     onDirect: () -> Unit,
     onClick: () -> Unit,
+    onBookmarkChange: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -192,7 +247,7 @@ fun PlaceInfoItem(
                 contentDescription = "",
                 modifier = Modifier
                     .clickable {
-                        // todo: 북마크/취소 로직 작성하기
+                        onBookmarkChange()
                     }
             )
         }

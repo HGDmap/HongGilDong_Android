@@ -78,7 +78,9 @@ fun EnterScreen(
                 "비회원으로 계속하기",
                 style = AppTypography.Medium_15.copy(color = Gray500),
                 modifier = Modifier
-                    .clickable { onStrangerClick() }
+                    .clickable {
+                        onStrangerClick()
+                    }
             )
         }
     }
