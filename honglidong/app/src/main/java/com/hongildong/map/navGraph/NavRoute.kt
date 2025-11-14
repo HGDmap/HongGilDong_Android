@@ -27,6 +27,7 @@ sealed class NavRoute(val route: String) {
     object Search : NavRoute("search")
     object RawSearch: NavRoute("raw_search")
     object LocationDetail: NavRoute("location_detail")
+    object FacilityDetail: NavRoute("facility_detail")
 
     // direct
     object DirectionSearch: NavRoute("direction_search")

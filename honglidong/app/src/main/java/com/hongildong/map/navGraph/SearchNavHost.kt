@@ -8,12 +8,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.hongildong.map.data.entity.SearchKeyword
+import com.hongildong.map.data.entity.SearchableNodeType
 import com.hongildong.map.ui.bookmark.BookmarkViewModel
 import com.hongildong.map.ui.search.SearchKeywordViewmodel
 import com.hongildong.map.ui.search.SearchScreen
 import com.hongildong.map.ui.search.SearchedFacilityListScreen
 import com.hongildong.map.ui.search.direction.DirectionScreen
 import com.hongildong.map.ui.search.direction.DirectionSearchScreen
+import com.hongildong.map.ui.search.location_detail.facility.FacilityDetailScreen
 import com.hongildong.map.ui.search.location_detail.LocationDetailScreen
 import com.hongildong.map.ui.util.bottomsheet.BottomSheetViewModel
 import com.hongildong.map.ui.util.map.MapViewmodel
@@ -53,7 +55,11 @@ fun SearchNavHost(
                     onSearch = { keyword ->
                         when (searchMode) {
                             LOCATION_SEARCH_MODE -> {
-                                searchNavController.navigate(NavRoute.LocationDetail.route + "/${keyword.nodeName}")
+                                if (keyword.nodeCode == SearchableNodeType.FACILITY.apiName) {
+                                    searchNavController.navigate(NavRoute.FacilityDetail.route + "/${keyword.nodeName}")
+                                } else {
+                                    searchNavController.navigate(NavRoute.LocationDetail.route + "/${keyword.nodeName}")
+                                }
                             }
                             DIRECTION_SEARCH_MODE_FROM -> {
                                 // viewmodel에 출발지 저장
@@ -125,7 +131,11 @@ fun SearchNavHost(
                         // 아이템 클릭시 해당 장소 상세 정보 검색
                         searchKeywordViewmodel.onSearch(target)
                         // 장소 상세 정보 화면으로 이동
-                        searchNavController.navigate(NavRoute.LocationDetail.route + "/${target.nodeName}")
+                        if (target.nodeCode == SearchableNodeType.FACILITY.apiName) {
+                            searchNavController.navigate(NavRoute.FacilityDetail.route + "/${target.nodeName}")
+                        } else {
+                            searchNavController.navigate(NavRoute.LocationDetail.route + "/${target.nodeName}")
+                        }
                     },
                     onGoBack = {
                         searchNavController.popBackStack()
@@ -144,6 +154,27 @@ fun SearchNavHost(
                 val searchedWord = backStackEntry.arguments?.getString("searchedWord") ?: ""
 
                 LocationDetailScreen(
+                    searchedWord = searchedWord,
+                    searchViewmodel = searchKeywordViewmodel,
+                    mapViewmodel = mapViewmodel,
+                    bookmarkViewModel = bookmarkViewModel,
+                    bottomSheetViewModel = bottomSheetViewModel,
+                    onGoBack = {
+                        searchNavController.popBackStack()
+                    },
+                    onSearchDirection = {
+                        searchNavController.navigate(NavRoute.DirectionSearch.route)
+                    },
+                )
+            }
+            composable(route = NavRoute.FacilityDetail.route + "/{searchedWord}") { backStackEntry ->
+                val parentEntry = remember(backStackEntry) {
+                    searchNavController.getBackStackEntry(SEARCH_GRAPH_ROUTE)
+                }
+                val searchKeywordViewmodel: SearchKeywordViewmodel = hiltViewModel(parentEntry)
+                val searchedWord = backStackEntry.arguments?.getString("searchedWord") ?: ""
+
+                FacilityDetailScreen(
                     searchedWord = searchedWord,
                     searchViewmodel = searchKeywordViewmodel,
                     mapViewmodel = mapViewmodel,

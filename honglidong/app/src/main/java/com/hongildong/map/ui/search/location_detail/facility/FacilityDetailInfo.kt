@@ -1,4 +1,4 @@
-package com.hongildong.map.ui.search.location_detail
+package com.hongildong.map.ui.search.location_detail.facility
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -9,11 +9,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
@@ -28,7 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.hongildong.map.R
-import com.hongildong.map.data.entity.NodeInfo
+import com.hongildong.map.data.entity.FacilityInfo
 import com.hongildong.map.ui.home.RecommendPlaceItem
 import com.hongildong.map.ui.home.places
 import com.hongildong.map.ui.theme.AppTypography
@@ -39,11 +37,10 @@ import com.hongildong.map.ui.theme.PrimaryMid
 import com.hongildong.map.ui.theme.White
 import com.hongildong.map.ui.util.ButtonWithIcon
 
-
 @Composable
-fun LocationDetailInfo(
-    searchResult: NodeInfo,
+fun FacilityDetailInfo(
     modifier: Modifier = Modifier,
+    facilityInfo: FacilityInfo,
     onDepart: () -> Unit,
     onArrival: () -> Unit,
     onBookmarkChange: () -> Unit
@@ -52,8 +49,8 @@ fun LocationDetailInfo(
     var tabState by remember { mutableIntStateOf(0) }
 
     Column {
-        LocationDetailHeader(
-            searchResult,
+        FacilityDetailHeader(
+            facilityInfo,
             onDepart = onDepart,
             onArrival = onArrival,
             onBookmarkChange = onBookmarkChange
@@ -107,8 +104,8 @@ fun LocationDetailInfo(
 }
 
 @Composable
-fun LocationDetailHeader(
-    searchResult: NodeInfo,
+fun FacilityDetailHeader(
+    searchResult: FacilityInfo,
     onDepart: () -> Unit,
     onArrival: () -> Unit,
     onBookmarkChange: () -> Unit
@@ -124,7 +121,7 @@ fun LocationDetailHeader(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = searchResult.name ?: "",
+                text = searchResult.nodeName,
                 style = AppTypography.Bold_22.copy(color = Black)
             )
             Row(
@@ -132,7 +129,7 @@ fun LocationDetailHeader(
             ) {
                 Image(
                     painterResource(
-                        if (searchResult.isBookmarked == true) R.drawable.ic_bookmark_true else R.drawable.ic_bookmark_false,
+                        if (searchResult.isBookmarked) R.drawable.ic_bookmark_true else R.drawable.ic_bookmark_false,
                     ),
                     contentDescription = "",
                     modifier = Modifier
@@ -153,13 +150,13 @@ fun LocationDetailHeader(
         }
         Spacer(Modifier.height(8.dp))
         Text(
-            text = "인문사회관 A동 3층",
+            text = searchResult.description,
             style = AppTypography.Medium_13.copy(color = Gray600)
         )
         Spacer(Modifier.height(4.dp))
         Row {
             Text(
-                text = "영업중",
+                text = searchResult.open ?: "영업 종료",
                 style = AppTypography.Bold_13.copy(color = PrimaryMid)
             )
             Spacer(Modifier.width(3.dp))

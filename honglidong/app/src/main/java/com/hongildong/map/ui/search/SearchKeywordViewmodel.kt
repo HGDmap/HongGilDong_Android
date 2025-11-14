@@ -8,8 +8,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hongildong.map.data.dao.SearchKeywordDao
 import com.hongildong.map.data.entity.AutoCompleteSearchKeyword
+import com.hongildong.map.data.entity.FacilityInfo
 import com.hongildong.map.data.entity.NodeInfo
 import com.hongildong.map.data.entity.SearchKeyword
+import com.hongildong.map.data.entity.SearchableNodeType
 import com.hongildong.map.data.remote.response.DirectionResponse
 import com.hongildong.map.data.repository.SearchRepository
 import com.hongildong.map.data.util.DefaultResponse
@@ -124,8 +126,59 @@ class SearchKeywordViewmodel @Inject constructor(
         }
     }
 
-    // 검색시 호출
     fun onSearch(keyword: SearchKeyword) {
+        viewModelScope.launch {
+            when {
+                keyword.nodeCode == SearchableNodeType.BUILDING.apiName -> {
+                    onSearchBuildingInfo(keyword)
+                }
+                keyword.nodeCode == SearchableNodeType.FACILITY.apiName -> {
+                    onSearchFacilityInfo(keyword)
+                }
+            }
+        }
+    }
+
+    // 건물의 detail info
+    private val _facilityDetail = MutableStateFlow<FacilityInfo?>(null)
+    val facilityDetail = _facilityDetail.asStateFlow()
+
+    // 건물의 detial info 받아오기
+    fun onSearchFacilityInfo(keyword: SearchKeyword) {
+        viewModelScope.launch {
+            /*val token = getToken()
+            if (token == null) {
+                Log.e(TAG, "토큰이 없습니다")
+                return@launch
+            }*/
+
+            val response = searchRepository.getFacilityDetail(keyword.id)
+            when (response) {
+                is DefaultResponse.Success -> {
+                    Log.d(TAG, "응답 성공: $response")
+                    _facilityDetail.value = response.data
+                    Log.d(TAG, "searched facility detail: ${_facilityDetail.value}")
+                    _isSearchSuccess.value = UiState.Success
+
+                    searchKeywordDao.insertKeyword(
+                        SearchKeyword(
+                            nodeName = response.data.nodeName,
+                            nodeId = response.data.id,
+                            nodeCode = response.data.type,
+                            id = response.data.nodeId
+                        )
+                    )
+                }
+                is DefaultResponse.Error -> {
+                    Log.d(TAG, "응답 실패: $response")
+                    _isSearchSuccess.value = UiState.Error("유효하지 않은 검색어입니다.")
+                }
+            }
+        }
+    }
+
+    // 검색시 호출
+    fun onSearchBuildingInfo(keyword: SearchKeyword) {
         viewModelScope.launch {
 
             // 임시 검색 로직
