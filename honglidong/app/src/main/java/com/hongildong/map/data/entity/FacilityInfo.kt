@@ -11,8 +11,8 @@ data class FacilityInfo(
     val nodeId: Int, // 연결된 node의 id
     val nodeName: String,
     val open: String? = null,
-    val phone: String,
-    val photoList: List<String>,
+    val phone: String? = null,
+    val photoList: List<String?>,
     val type: String
 )
 

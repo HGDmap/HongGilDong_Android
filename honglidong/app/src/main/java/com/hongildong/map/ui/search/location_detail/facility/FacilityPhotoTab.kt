@@ -67,19 +67,21 @@ fun FacilityPhotoTab(
     ) {
         if (isUser) {
             // 로그인 되어있을 경우 - 사진 리스트 보여주거나 사진이 없다 보여주기
-            if (photos?.imageList?.isEmpty() ?: false) {
+            if (photos?.imageList?.all { !it.isNullOrEmpty() } ?: true) {
                 EmptyContents("등록된 사진이 아직 없어요.")
             } else {
                 LazyVerticalGrid(
                     columns = GridCells.Adaptive(minSize = 150.dp)
                 ) {
-                    items(photos!!.imageList) { photo ->
-                        NetworkImage(
-                            url = photo,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .clickable { imageDetailInfo = photo }
-                        )
+                    items(photos?.imageList ?: emptyList()) { photo ->
+                        if (!photo.isNullOrEmpty()) {
+                            NetworkImage(
+                                url = photo,
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .clickable { imageDetailInfo = photo }
+                            )
+                        }
                     }
                 }
             }

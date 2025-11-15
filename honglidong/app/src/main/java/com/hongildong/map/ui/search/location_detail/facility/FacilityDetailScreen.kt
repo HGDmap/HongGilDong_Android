@@ -47,6 +47,8 @@ fun FacilityDetailScreen(
     val allBookmarks by bookmarkViewModel.allBookmarkInfo.collectAsState()
 
     LaunchedEffect(key1 = facilityInfo, key2 = directionResult) {
+        bookmarkViewModel.verifyUser()
+
         // facilityInfo가 null이 아닐 때만 실행
         facilityInfo?.let { result ->
             val newPosition = LatLng(result.latitude, result.longitude)

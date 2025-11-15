@@ -28,10 +28,10 @@ fun FacilityInfoTab(
     ) {
         IconWithText(icon = R.drawable.ic_location_info, text = facilityInfo.description)
         IconWithText(icon = R.drawable.ic_location_open, text = facilityInfo.open ?: "영업중")
-        if (facilityInfo.phone != null) {
+        if (!facilityInfo.phone.isNullOrEmpty()) {
             IconWithText(icon = R.drawable.ic_location_phone, text = facilityInfo.phone)
         }
-        if (facilityInfo.link != null) {
+        if (!facilityInfo.link.isNullOrEmpty()) {
             IconWithText(icon = R.drawable.ic_location_link, text = facilityInfo.link)
         }
     }

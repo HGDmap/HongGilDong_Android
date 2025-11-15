@@ -5,7 +5,7 @@ data class ReviewInfo(
     val createdAt: String,
     val id: Int,
     val isLiked: Boolean,
-    val photoList: List<String>,
+    val photoList: List<String?>,
     val updatedAt: String,
     val writerId: Int,
     val writerNickname: String,
