@@ -2,6 +2,7 @@ package com.hongildong.map.data.entity
 
 data class FacilityInfo(
     val description: String,
+    val name: String,
     val id: Int, // 시설의 id
     val isBookmarked: Boolean,
     val latitude: Double,
@@ -17,7 +18,7 @@ data class FacilityInfo(
 
 fun FacilityInfo.toSearchKeyword(): SearchKeyword {
     return SearchKeyword(
-        nodeName = this.nodeName,
+        nodeName = this.name,
         id = this.id,
         nodeId = this.nodeId,
         nodeCode = this.type,

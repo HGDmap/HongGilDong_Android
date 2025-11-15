@@ -25,10 +25,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.hongildong.map.R
 import com.hongildong.map.data.entity.FacilityInfo
 import com.hongildong.map.ui.home.RecommendPlaceItem
 import com.hongildong.map.ui.home.places
+import com.hongildong.map.ui.search.SearchKeywordViewmodel
 import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Black
 import com.hongildong.map.ui.theme.Gray500
@@ -43,7 +45,8 @@ fun FacilityDetailInfo(
     facilityInfo: FacilityInfo,
     onDepart: () -> Unit,
     onArrival: () -> Unit,
-    onBookmarkChange: () -> Unit
+    onBookmarkChange: () -> Unit,
+    searchViewmodel: SearchKeywordViewmodel = hiltViewModel()
 ) {
     val pages = listOf("시설 정보", "리뷰", "사진")
     var tabState by remember { mutableIntStateOf(0) }
@@ -91,15 +94,41 @@ fun FacilityDetailInfo(
             }
         }
         HorizontalDivider(Modifier.height(1.dp), color = Gray500)
-        LazyColumn(
-            modifier = modifier
-                .fillMaxWidth()
-                .weight(1f),
-        ) {
-            items(places) { place ->
-                RecommendPlaceItem(place)
+        when (tabState) {
+            0 -> {
+                // 시설 정보 탭
+                FacilityInfoTab(facilityInfo)
+            }
+            1 -> {
+                // 리뷰 탭
+                LazyColumn(
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                ) {
+                    items(places) { place ->
+                        RecommendPlaceItem(place)
+                    }
+                }
+            }
+            2 -> {
+                // 사진 탭
+                LazyColumn(
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                ) {
+                    items(places) { place ->
+                        RecommendPlaceItem(place)
+                    }
+                }
+            }
+            else -> {
+                // 시설 정보 탭
+                FacilityInfoTab(facilityInfo)
             }
         }
+
     }
 }
 
@@ -121,7 +150,7 @@ fun FacilityDetailHeader(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = searchResult.nodeName,
+                text = searchResult.name,
                 style = AppTypography.Bold_22.copy(color = Black)
             )
             Row(
@@ -150,13 +179,13 @@ fun FacilityDetailHeader(
         }
         Spacer(Modifier.height(8.dp))
         Text(
-            text = searchResult.description,
+            text = searchResult.nodeName,
             style = AppTypography.Medium_13.copy(color = Gray600)
         )
         Spacer(Modifier.height(4.dp))
         Row {
             Text(
-                text = searchResult.open ?: "영업 종료",
+                text = searchResult.open ?: "영업중",
                 style = AppTypography.Bold_13.copy(color = PrimaryMid)
             )
             Spacer(Modifier.width(3.dp))

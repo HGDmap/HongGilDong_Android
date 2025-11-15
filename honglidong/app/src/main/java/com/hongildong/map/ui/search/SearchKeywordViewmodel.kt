@@ -12,7 +12,9 @@ import com.hongildong.map.data.entity.FacilityInfo
 import com.hongildong.map.data.entity.NodeInfo
 import com.hongildong.map.data.entity.SearchKeyword
 import com.hongildong.map.data.entity.SearchableNodeType
+import com.hongildong.map.data.remote.request.PhotoRequest
 import com.hongildong.map.data.remote.response.DirectionResponse
+import com.hongildong.map.data.remote.response.PhotoResponse
 import com.hongildong.map.data.repository.SearchRepository
 import com.hongildong.map.data.util.DefaultResponse
 import com.hongildong.map.ui.util.UiState
@@ -273,6 +275,49 @@ class SearchKeywordViewmodel @Inject constructor(
                 is DefaultResponse.Success -> {
                     Log.d(TAG, "응답 성공: $response")
                     _directionResult.value = response.data
+                    Log.d(TAG, "directionResult: ${directionResult.value}")
+                    _isSearchSuccess.value = UiState.Success
+                }
+                is DefaultResponse.Error -> {
+                    Log.d(TAG, "응답 실패: $response")
+                    _isSearchSuccess.value = UiState.Error(response.message)
+                }
+            }
+        }
+    }
+
+    val _facilityPhotoInfo = MutableStateFlow<PhotoResponse?>(null)
+    val facilityPhotoInfo = _facilityPhotoInfo.asStateFlow()
+
+    // 시설 사진 받기 api
+    fun getFacilityPhotos(
+        facilityId: Int,
+    ) {
+        viewModelScope.launch {
+            val token = getToken()
+            if (token == null) {
+                Log.e(TAG, "토큰이 없습니다")
+                return@launch
+            }
+
+            var request = PhotoRequest("",0)
+            if (_facilityPhotoInfo.value == null) {
+                request = PhotoRequest(
+                    continuationToken = "",
+                    size = 20
+                )
+            } else {
+                request = PhotoRequest(
+                    continuationToken = _facilityPhotoInfo.value!!.continuationToken,
+                    size = 20
+                )
+            }
+
+            val response = searchRepository.getFacilityPhoto(token, facilityId, request)
+            when (response) {
+                is DefaultResponse.Success -> {
+                    Log.d(TAG, "응답 성공: $response")
+                    _facilityPhotoInfo.value = response.data
                     Log.d(TAG, "directionResult: ${directionResult.value}")
                     _isSearchSuccess.value = UiState.Success
                 }

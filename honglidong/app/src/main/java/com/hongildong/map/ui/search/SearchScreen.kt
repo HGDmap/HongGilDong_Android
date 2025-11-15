@@ -37,6 +37,7 @@ import com.hongildong.map.data.entity.SearchKeyword
 import com.hongildong.map.data.entity.toSearchKeyword
 import com.hongildong.map.navGraph.LOCATION_SEARCH_MODE
 import com.hongildong.map.ui.theme.AppTypography
+import com.hongildong.map.ui.theme.Black
 import com.hongildong.map.ui.theme.White
 import com.hongildong.map.ui.util.CustomTextField
 import com.hongildong.map.ui.util.EmptyContents
@@ -119,12 +120,12 @@ fun SearchScreen(
             ) {
                 Text(
                     text = stringResource(R.string.recently_searched_title),
-                    style = AppTypography.Bold_18
+                    style = AppTypography.Bold_18.copy(color = Black)
                 )
 
                 Text(
                     text = stringResource(R.string.delete_all),
-                    style = AppTypography.Regular_13,
+                    style = AppTypography.Regular_13.copy(color = Black),
                     modifier = Modifier
                         .padding(horizontal = 10.dp, vertical = 5.dp)
                         .clickable {

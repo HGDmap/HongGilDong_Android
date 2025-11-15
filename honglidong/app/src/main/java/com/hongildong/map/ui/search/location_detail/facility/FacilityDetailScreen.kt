@@ -50,7 +50,7 @@ fun FacilityDetailScreen(
         // facilityInfo가 null이 아닐 때만 실행
         facilityInfo?.let { result ->
             val newPosition = LatLng(result.latitude, result.longitude)
-            mapViewmodel.showMarkerAndMoveCamera(newPosition, result.nodeName)
+            mapViewmodel.showMarkerAndMoveCamera(newPosition, result.name)
         }
 
         directionResult?.let { response ->
@@ -84,8 +84,10 @@ fun FacilityDetailScreen(
             ) {
                 FacilityDetailInfo(
                     modifier = Modifier.nestedScroll(nestedScrollConnection),
+                    searchViewmodel = searchViewmodel,
                     facilityInfo = facilityInfo ?: FacilityInfo(
                         "임시 데이터",
+                        "임시 시설",
                         0,
                         false,
                         0.0,
@@ -93,7 +95,7 @@ fun FacilityDetailScreen(
                         0.0,
                         0,
                         "temp",
-                        "영업 종료",
+                        null,
                         "",
                         emptyList(),
                         ""
@@ -127,7 +129,7 @@ fun FacilityDetailScreen(
                         if (isUser) {
                             bottomSheetViewModel.show {
                                 BookmarkUpdateContent(
-                                    title = facilityInfo?.nodeName ?: "",
+                                    title = facilityInfo?.name ?: "",
                                     addFolder = {
                                         bottomSheetViewModel.change {
                                             BookmarkFolderUpdateContent(
