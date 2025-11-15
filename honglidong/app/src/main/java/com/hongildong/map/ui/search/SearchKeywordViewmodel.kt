@@ -164,10 +164,10 @@ class SearchKeywordViewmodel @Inject constructor(
 
                     searchKeywordDao.insertKeyword(
                         SearchKeyword(
-                            nodeName = response.data.nodeName,
-                            nodeId = response.data.id,
+                            nodeName = response.data.name,
+                            nodeId = response.data.nodeId,
                             nodeCode = response.data.type,
-                            id = response.data.nodeId
+                            id = response.data.id
                         )
                     )
                 }

@@ -85,6 +85,7 @@ fun FacilityDetailScreen(
                 FacilityDetailInfo(
                     modifier = Modifier.nestedScroll(nestedScrollConnection),
                     searchViewmodel = searchViewmodel,
+                    bookmarkViewmodel = bookmarkViewModel,
                     facilityInfo = facilityInfo ?: FacilityInfo(
                         "임시 데이터",
                         "임시 시설",
@@ -110,9 +111,6 @@ fun FacilityDetailScreen(
                             // 경로 검색 화면으로 화면 전환
                             onSearchDirection()
                         } else Toast.makeText(context, "유효하지 않은 장소입니다.", Toast.LENGTH_SHORT).show()
-
-                        /*mapViewmodel.clearMarker()
-                        searchViewmodel.direct()*/
                     },
                     onArrival = {
                         if (facilityInfo != null) {

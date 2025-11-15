@@ -17,6 +17,7 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -28,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.hongildong.map.R
 import com.hongildong.map.data.entity.FacilityInfo
+import com.hongildong.map.ui.bookmark.BookmarkViewModel
 import com.hongildong.map.ui.home.RecommendPlaceItem
 import com.hongildong.map.ui.home.places
 import com.hongildong.map.ui.search.SearchKeywordViewmodel
@@ -46,10 +48,13 @@ fun FacilityDetailInfo(
     onDepart: () -> Unit,
     onArrival: () -> Unit,
     onBookmarkChange: () -> Unit,
-    searchViewmodel: SearchKeywordViewmodel = hiltViewModel()
+    searchViewmodel: SearchKeywordViewmodel = hiltViewModel(),
+    bookmarkViewmodel: BookmarkViewModel = hiltViewModel(),
 ) {
     val pages = listOf("시설 정보", "리뷰", "사진")
     var tabState by remember { mutableIntStateOf(0) }
+
+    val isUser by bookmarkViewmodel.isUser.collectAsState()
 
     Column {
         FacilityDetailHeader(
@@ -113,15 +118,13 @@ fun FacilityDetailInfo(
             }
             2 -> {
                 // 사진 탭
-                LazyColumn(
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                ) {
-                    items(places) { place ->
-                        RecommendPlaceItem(place)
+                FacilityPhotoTab(
+                    searchViewmodel = searchViewmodel,
+                    isUser = isUser,
+                    onUpdate = {
+                        searchViewmodel.getFacilityPhotos(facilityInfo.id)
                     }
-                }
+                )
             }
             else -> {
                 // 시설 정보 탭

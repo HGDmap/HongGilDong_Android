@@ -9,12 +9,12 @@ plugins {
 
 android {
     namespace = "com.hongildong.map"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.hongildong.map"
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
@@ -104,5 +104,13 @@ dependencies {
     debugImplementation("com.squareup.okhttp3:logging-interceptor:$okhttp_version")
     implementation("com.squareup.okhttp3:okhttp:$okhttp_version")
 
+    // coil - network image loading
+    // 이미지 로딩 하는 법: AsyncImage(model="url") 사용
+    val coil_version = "2.6.0"
+    implementation("io.coil-kt:coil-compose:$coil_version")
 
+    // background blur
+    val haze_version = "0.5.4"
+    implementation("dev.chrisbanes.haze:haze:$haze_version")
+    implementation("dev.chrisbanes.haze:haze-materials:$haze_version")
 }
