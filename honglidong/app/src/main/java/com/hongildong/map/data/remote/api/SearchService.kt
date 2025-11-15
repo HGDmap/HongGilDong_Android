@@ -44,7 +44,7 @@ interface SearchService {
     ): ApiResponse<ReviewResponse>
 
     // 시설 사진 조회
-    @GET("facility/{facilityId}/photos")
+    @POST("facility/{facilityId}/photos")
     suspend fun getFacilityPhoto(
         @Header("Authorization") accessToken: String, // 사진도 회원 기능
         @Path("facilityId") facilityId: Int,

@@ -110,7 +110,7 @@ fun SmallButton(
 fun ButtonWithIcon(
     icon: Int,
     title: String,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
 ) {
     Box(
         modifier = Modifier

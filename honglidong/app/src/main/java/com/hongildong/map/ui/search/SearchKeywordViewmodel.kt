@@ -3,7 +3,6 @@ package com.hongildong.map.ui.search
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.runtime.key
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hongildong.map.data.dao.SearchKeywordDao
@@ -15,6 +14,8 @@ import com.hongildong.map.data.entity.SearchableNodeType
 import com.hongildong.map.data.remote.request.PhotoRequest
 import com.hongildong.map.data.remote.response.DirectionResponse
 import com.hongildong.map.data.remote.response.PhotoResponse
+import com.hongildong.map.data.remote.response.ReviewResponse
+import com.hongildong.map.data.repository.ReviewRepository
 import com.hongildong.map.data.repository.SearchRepository
 import com.hongildong.map.data.util.DefaultResponse
 import com.hongildong.map.ui.util.UiState
@@ -32,6 +33,7 @@ import javax.inject.Inject
 class SearchKeywordViewmodel @Inject constructor(
     private val searchKeywordDao: SearchKeywordDao,
     private val searchRepository: SearchRepository,
+    private val reviewRepository: ReviewRepository,
     @ApplicationContext private val context: Context
 ): ViewModel() {
 
@@ -300,17 +302,24 @@ class SearchKeywordViewmodel @Inject constructor(
                 return@launch
             }
 
-            var request = PhotoRequest("",0)
+            var request: PhotoRequest
             if (_facilityPhotoInfo.value == null) {
+                // 처음 요청시
                 request = PhotoRequest(
-                    continuationToken = "",
                     size = 20
                 )
             } else {
-                request = PhotoRequest(
-                    continuationToken = _facilityPhotoInfo.value!!.continuationToken,
-                    size = 20
-                )
+                if (_facilityPhotoInfo.value!!.isLast) {
+                    // 다음 요청시
+                    request = PhotoRequest(
+                        continuationToken = _facilityPhotoInfo.value!!.continuationToken,
+                        size = 20
+                    )
+                } else {
+                    // 다음 요청 - 마지막 페이지의 경우
+                    Toast.makeText(context, "마지막 페이지입니다.", Toast.LENGTH_SHORT).show()
+                    return@launch
+                }
             }
 
             val response = searchRepository.getFacilityPhoto(token, facilityId, request)
@@ -318,7 +327,7 @@ class SearchKeywordViewmodel @Inject constructor(
                 is DefaultResponse.Success -> {
                     Log.d(TAG, "응답 성공: $response")
                     _facilityPhotoInfo.value = response.data
-                    Log.d(TAG, "directionResult: ${directionResult.value}")
+                    Log.d(TAG, "_facilityPhotoInfo: ${_facilityPhotoInfo.value}")
                     _isSearchSuccess.value = UiState.Success
                 }
                 is DefaultResponse.Error -> {
@@ -326,6 +335,59 @@ class SearchKeywordViewmodel @Inject constructor(
                     _isSearchSuccess.value = UiState.Error(response.message)
                 }
             }
+        }
+    }
+
+    val _reviewPage = MutableStateFlow<Int>(0)
+    val reviewPage = _reviewPage.asStateFlow()
+
+    val _facilityReviewInfo = MutableStateFlow<ReviewResponse?>(null)
+    val facilityReviewInfo = _facilityReviewInfo.asStateFlow()
+
+    // 시설 리뷰 조회
+    fun getFacilityReview(facilityId: Int) {
+        viewModelScope.launch {
+            val token = getToken()
+            if (token == null) {
+                Log.e(TAG, "토큰이 없습니다")
+                return@launch
+            }
+
+            if (_facilityReviewInfo.value != null) {
+                if (!_facilityReviewInfo.value!!.isLast) {
+                    // 다음 요청 - 마지막 페이지의 경우
+                    Toast.makeText(context, "마지막 페이지입니다.", Toast.LENGTH_SHORT).show()
+                    return@launch
+                }
+                // 다음 요청 - 마지막 페이지가 아니라면
+                _reviewPage.value += 1
+            } else {
+                // 처음 요청
+                _reviewPage.value = 0
+            }
+
+            val response = searchRepository.getFacilityReview(token, facilityId, _reviewPage.value, 20)
+            when (response) {
+                is DefaultResponse.Success -> {
+                    Log.d(TAG, "응답 성공: $response")
+                    _facilityReviewInfo.value = response.data
+                    Log.d(TAG, "_facilityReviewInfo: ${_facilityReviewInfo.value}")
+                    _isSearchSuccess.value = UiState.Success
+                }
+                is DefaultResponse.Error -> {
+                    Log.d(TAG, "응답 실패: $response")
+                    _isSearchSuccess.value = UiState.Error(response.message)
+                }
+            }
+        }
+    }
+
+    fun eraseFacilityData() {
+        viewModelScope.launch {
+            _facilityPhotoInfo.value = null
+            _facilityDetail.value = null
+            _reviewPage.value = 0
+            _facilityReviewInfo.value = null
         }
     }
 }

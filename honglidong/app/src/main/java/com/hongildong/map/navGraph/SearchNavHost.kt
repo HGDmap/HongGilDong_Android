@@ -181,6 +181,7 @@ fun SearchNavHost(
                     bookmarkViewModel = bookmarkViewModel,
                     bottomSheetViewModel = bottomSheetViewModel,
                     onGoBack = {
+                        searchKeywordViewmodel.eraseFacilityData()
                         searchNavController.popBackStack()
                     },
                     onSearchDirection = {

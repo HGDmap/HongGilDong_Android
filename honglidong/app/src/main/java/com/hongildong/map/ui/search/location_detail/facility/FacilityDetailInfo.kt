@@ -106,15 +106,10 @@ fun FacilityDetailInfo(
             }
             1 -> {
                 // 리뷰 탭
-                LazyColumn(
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                ) {
-                    items(places) { place ->
-                        RecommendPlaceItem(place)
-                    }
-                }
+                FacilityReviewTab(
+                    searchViewmodel = searchViewmodel,
+                    isUser = isUser,
+                )
             }
             2 -> {
                 // 사진 탭

@@ -92,7 +92,7 @@ fun FacilityPhotoTab(
                 modifier = Modifier
                     .haze(
                         state = hazeState,
-                        style = HazeMaterials.ultraThin(containerColor = White)
+                        style = HazeMaterials.thick(containerColor = White)
                     )
             ) {
                 // api 호출도 토큰 있어야 가능해서.. 그냥 임시 데이터 넣어줌
