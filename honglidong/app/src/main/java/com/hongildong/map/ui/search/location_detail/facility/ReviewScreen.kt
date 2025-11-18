@@ -3,14 +3,15 @@ package com.hongildong.map.ui.search.location_detail.facility
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,7 +19,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -35,12 +36,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hongildong.map.R
 import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Black
 import com.hongildong.map.ui.theme.Gray300
 import com.hongildong.map.ui.theme.PrimaryMid
+import com.hongildong.map.ui.theme.White
 import com.hongildong.map.ui.util.BottomButton
 import com.hongildong.map.ui.util.CustomTextBox
 import com.hongildong.map.ui.util.NetworkImage
@@ -70,14 +73,18 @@ fun ReviewScreen(
 
     Box(
         modifier = Modifier
+            .background(White)
             .fillMaxSize()
-            .statusBarsPadding(),
+            .systemBarsPadding(),
         contentAlignment = Alignment.TopCenter
     ) {
-        Column() {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(horizontal = 10.dp)
+        ) {
             // 화면 상단 시설 정보와 뒤로가기 버튼
             Box(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp, horizontal = 20.dp)
             ) {
                 Text(
                     facilityName,
@@ -89,7 +96,7 @@ fun ReviewScreen(
                     contentDescription = null,
                     colorFilter = ColorFilter.tint(color = Black),
                     modifier = Modifier
-                        .size(15.dp)
+                        .size(20.dp)
                         .align(Alignment.TopEnd)
                         .clickable {
                             showDialog = true
@@ -101,26 +108,33 @@ fun ReviewScreen(
             // 스크롤 가능한 부분: 별점 선택, 어떤점이 좋았나요, 후기 작성(이미지+텍스트)
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(scrollState)
+                    .weight(1f)
+                    .verticalScroll(scrollState),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(Modifier.height(20.dp))
+                Spacer(Modifier.height(25.dp))
                 RateImage(
                     width = 181.dp,
                     height = 31.dp,
                     rate = 0.9f
                 )
+                Spacer(Modifier.height(25.dp))
 
                 HorizontalDivider(thickness = 1.dp, color = Gray300)
 
+                // todo: 여기에 어떤점이 좋았나요 들어감
+
+                Spacer(Modifier.height(20.dp))
                 Text(
                     "후기를 작성해보세요!",
                     style = AppTypography.Bold_20.copy(color = Black),
-                    modifier = Modifier.padding(vertical = 25.dp)
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 25.dp, horizontal = 10.dp)
                 )
+                Spacer(Modifier.height(12.dp))
                 // 사진 리스트 보여주기
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().padding(start = 10.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     // 이미지 선택 아이콘
@@ -162,7 +176,9 @@ fun ReviewScreen(
                     // 고른 이미지
                     if (selectedImageUris.isNotEmpty()) {
                         LazyRow (
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            contentPadding = PaddingValues(horizontal = 5.dp),
+                            horizontalArrangement = Arrangement.spacedBy(5.dp)
                         ) {
                             items(selectedImageUris) { imageUri ->
                                 NetworkImage(
@@ -176,19 +192,26 @@ fun ReviewScreen(
                     }
                 }
 
-                Spacer(Modifier.height(4.dp))
-                CustomTextBox(
-                    placeholderMessage = "장소가 마음에 들었나요?\n자세한 후기를 적어주세요!",
-                    textState = textState,
-                    onDone = { onDone() },
-                    onTextChange = { textState = it }
-                )
+                Spacer(Modifier.height(20.dp))
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 10.dp)
+                ) {
+                    CustomTextBox(
+                        placeholderMessage = "장소가 마음에 들었나요?\n자세한 후기를 적어주세요!",
+                        textState = textState,
+                        onDone = { onDone() },
+                        onTextChange = { textState = it }
+                    )
+                }
+                Spacer(Modifier.height(20.dp))
             }
 
             // bottom button
             BottomButton(
-                buttonText = "작성완료",
-                isButtonEnabled = textState.isNotEmpty(),
+                buttonText = "작성 완료",
+                isButtonEnabled = if (textState.length > 10) true else false,
                 onClick = {
                     onDone()
                 }

@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -23,6 +25,7 @@ import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Black
 import com.hongildong.map.ui.theme.Gray300
 import com.hongildong.map.ui.theme.PrimaryMid
+import com.hongildong.map.ui.theme.White
 
 @Composable
 fun ConfirmPopup(
@@ -39,6 +42,9 @@ fun ConfirmPopup(
                 .heightIn(min = 130.dp, max = 160.dp)
                 .padding(16.dp),
             shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = White
+            )
         ) {
             Column(
                 modifier = Modifier

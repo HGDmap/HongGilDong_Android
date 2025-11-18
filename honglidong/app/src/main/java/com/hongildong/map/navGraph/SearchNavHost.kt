@@ -204,7 +204,7 @@ fun SearchNavHost(
                 }
                 val searchKeywordViewmodel: SearchKeywordViewmodel = hiltViewModel(parentEntry)
                 val facilityName = backStackEntry.arguments?.getString("facilityName") ?: ""
-                val facilityId = backStackEntry.arguments?.getInt("facilityId") ?: ""
+                val facilityId = backStackEntry.arguments?.getInt("facilityId") ?: 0
 
                 ReviewScreen(
                     facilityName = facilityName,

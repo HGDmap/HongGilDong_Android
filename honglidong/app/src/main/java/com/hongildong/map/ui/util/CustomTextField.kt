@@ -263,7 +263,7 @@ fun CustomTextBox(
                     .background(color = White, shape = RoundedCornerShape(size = 10.dp))
                     .border(1.dp, color = Gray400, shape = RoundedCornerShape(size = 10.dp))
                     .padding(all = 16.dp),
-                verticalAlignment = Alignment.CenterVertically,
+                verticalAlignment = Alignment.Top,
             ) {
                 // 텍스트 박스가 비어있을 경우 placeholder 메시지 출력
                 if (textState.isEmpty()) {
@@ -274,7 +274,7 @@ fun CustomTextBox(
                         style = AppTypography.Regular_15,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .align(Alignment.CenterVertically),
+                            .align(Alignment.Top),
                     )
                 } else {
                     innerTextField()

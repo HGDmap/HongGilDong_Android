@@ -17,16 +17,14 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.hongildong.map.ui.theme.AppTypography
-import com.hongildong.map.ui.theme.Black
 import com.hongildong.map.ui.theme.Gray300
 import com.hongildong.map.ui.theme.Gray400
 import com.hongildong.map.ui.theme.PrimaryMid
@@ -51,7 +49,7 @@ fun BottomButton(
                 shape = buttonShape
             ),
         shape = buttonShape,
-        colors = ButtonColors(
+        colors = ButtonDefaults.buttonColors(
             containerColor = PrimaryMid,
             contentColor = White,
             disabledContainerColor = White,
@@ -65,6 +63,7 @@ fun BottomButton(
         Text(
             buttonText,
             style = AppTypography.Bold_18
+                .copy(color = if(isButtonEnabled) White else Gray400)
         )
     }
 }
@@ -88,7 +87,7 @@ fun SmallButton(
             ),
         contentPadding = PaddingValues(8.dp),
         shape = buttonShape,
-        colors = ButtonColors(
+        colors = ButtonDefaults.buttonColors(
             containerColor = PrimaryMid,
             contentColor = White,
             disabledContainerColor = White,

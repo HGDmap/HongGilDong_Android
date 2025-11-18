@@ -51,7 +51,9 @@ fun FacilityReviewTab(
         if (isUser) {
             // if (리뷰를 단 적이 없으면) {
             // 리뷰 유도 박스
-            FacilityReviewInduceItem()
+            FacilityReviewInduceItem(
+                onClick = onReview
+            )
             HorizontalDivider(thickness = 3.dp, color = Gray100)
             // }
 
