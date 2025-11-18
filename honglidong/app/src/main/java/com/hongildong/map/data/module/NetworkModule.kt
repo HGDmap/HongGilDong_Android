@@ -3,6 +3,7 @@ package com.hongildong.map.data.module
 import android.content.Context
 import com.hongildong.map.BuildConfig
 import com.hongildong.map.R
+import com.hongildong.map.data.util.ImageRepository
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
@@ -73,4 +74,11 @@ object NetworkModule {
     private inline fun <reified T> Retrofit.buildService(): T{
         return this.create(T::class.java)
     }
+
+    @Provides
+    @Singleton
+    fun provideImageRepo(
+        @BaseRetrofit okHttpClient: OkHttpClient,
+        @ApplicationContext context: Context,
+    ): ImageRepository = ImageRepository(okHttpClient, context)
 }

@@ -51,16 +51,6 @@ interface SearchService {
         @Body body: PhotoRequest
     ): ApiResponse<PhotoResponse>
 
-    // 시설 리뷰 등록시 사진 등록 - s3 업로드용 링크 받기
-    // s3 사용법
-    // 1. 리뷰에서 사진 등록할 경우 링크 받기 api로 파일명 리스트를 보내서 링크를 받음
-    // 2. 해당 api에서 받은 presignedURL로 Put 요청 보내기
-    // 3. 해당 api에서 받은 imageURL은 리뷰 등록 api로 보내기
-    @POST("image/presigned-url")
-    suspend fun createPresignedUrl(
-        @Body body: ImageUploadRequest
-    ): ApiResponse<List<ImageUploadResponse>>
-
     // 자동완성이 아닌 검색
     @GET("search/{query}")
     suspend fun searchRawWord(

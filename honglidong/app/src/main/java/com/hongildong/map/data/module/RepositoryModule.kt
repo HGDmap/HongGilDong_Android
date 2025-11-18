@@ -12,6 +12,7 @@ import com.hongildong.map.data.repository.ReviewRepository
 import com.hongildong.map.data.repository.ReviewRepositoryImpl
 import com.hongildong.map.data.repository.SearchRepository
 import com.hongildong.map.data.repository.SearchRepositoryImpl
+import com.hongildong.map.data.util.ImageRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -45,4 +46,5 @@ object RepositoryModule {
     fun provideReviewRepository(
         reviewService: ReviewService
     ) : ReviewRepository = ReviewRepositoryImpl(api = reviewService)
+
 }

@@ -19,7 +19,6 @@ import javax.inject.Singleton
 
 @Singleton
 class ImageRepository @Inject constructor(
-    // 1. NetworkModule에서 @BaseRetrofit 이름표가 붙은 OkHttpClient를 주입받습니다.
     @NetworkModule.BaseRetrofit private val okHttpClient: OkHttpClient,
     @ApplicationContext private val context: Context
 ) {
@@ -34,14 +33,13 @@ class ImageRepository @Inject constructor(
         presignedUrl: String,
         imageUri: Uri
     ): Result<Unit> {
-        // 네트워크 작업은 IO 스레드에서 수행
         return withContext(Dispatchers.IO) {
             try {
-                // 2. Uri로부터 MIME 타입과 파일 크기를 가져옵니다.
+                // Uri로부터 MIME 타입과 파일크기 가져오기
                 val mimeType = context.contentResolver.getType(imageUri) ?: "image/jpeg"
                 val contentLength = getFileSize(imageUri)
 
-                // 3. Uri의 InputStream에서 직접 데이터를 읽어 RequestBody를 생성합니다.
+                // Uri의 InputStream에서 직접 데이터를 읽어 RequestBody를 생성합니다.
                 val requestBody = object : RequestBody() {
                     override fun contentType() = mimeType.toMediaTypeOrNull()
 
@@ -89,5 +87,18 @@ class ImageRepository @Inject constructor(
             }
         }
         return -1 // 크기를 알 수 없음
+    }
+
+    fun getFileName(uri: Uri): String? {
+        var fileName: String? = null
+        context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+            if (cursor.moveToFirst()) {
+                val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                if (nameIndex != -1) {
+                    fileName = cursor.getString(nameIndex)
+                }
+            }
+        }
+        return fileName
     }
 }

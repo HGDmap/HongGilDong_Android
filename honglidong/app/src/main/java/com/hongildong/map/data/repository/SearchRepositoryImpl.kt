@@ -64,8 +64,4 @@ class SearchRepositoryImpl @Inject constructor(
     ): DefaultResponse<PhotoResponse> {
         return safeApiCall { api.getFacilityPhoto(accessToken, facilityId, body) }
     }
-
-    override suspend fun createPresignedUrl(body: ImageUploadRequest): DefaultResponse<List<ImageUploadResponse>> {
-        return safeApiCall { api.createPresignedUrl(body) }
-    }
 }

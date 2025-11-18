@@ -2,7 +2,9 @@ package com.hongildong.map.data.repository
 
 import com.hongildong.map.data.entity.ReviewInfo
 import com.hongildong.map.data.remote.api.ReviewService
+import com.hongildong.map.data.remote.request.ImageUploadRequest
 import com.hongildong.map.data.remote.request.ReviewUpdateRequest
+import com.hongildong.map.data.remote.response.ImageUploadResponse
 import com.hongildong.map.data.util.DefaultResponse
 import com.hongildong.map.data.util.safeApiCall
 import javax.inject.Inject
@@ -10,6 +12,11 @@ import javax.inject.Inject
 class ReviewRepositoryImpl @Inject constructor(
     private val api: ReviewService
 ): ReviewRepository {
+
+    override suspend fun createPresignedUrl(body: ImageUploadRequest): DefaultResponse<List<ImageUploadResponse>> {
+        return safeApiCall { api.createPresignedUrl(body) }
+    }
+
     override suspend fun getOneReview(
         accessToken: String,
         reviewId: Int
