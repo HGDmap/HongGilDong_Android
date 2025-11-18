@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -236,4 +237,59 @@ fun CustomInfixIconTextField(
             )
         }
     }
+}
+
+@Composable
+fun CustomTextBox(
+    placeholderMessage: String,
+    textState: String,
+    onDone: (String) -> Unit = {},
+    onTextChange: (String) -> Unit,
+) {
+    // 키보드를 제어하기 위한 컨트롤러
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    BasicTextField(
+        value = textState,
+        onValueChange =  { onTextChange(it) },
+        singleLine = false,
+        textStyle = AppTypography.Medium_15.copy(color = Black),
+        visualTransformation = VisualTransformation.None,
+        modifier = Modifier.fillMaxWidth().height(180.dp),
+        decorationBox = { innerTextField ->
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(color = White, shape = RoundedCornerShape(size = 10.dp))
+                    .border(1.dp, color = Gray400, shape = RoundedCornerShape(size = 10.dp))
+                    .padding(all = 16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                // 텍스트 박스가 비어있을 경우 placeholder 메시지 출력
+                if (textState.isEmpty()) {
+                    Text(
+                        text = placeholderMessage,
+                        color = Gray400,
+                        textAlign = TextAlign.Start,
+                        style = AppTypography.Regular_15,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.CenterVertically),
+                    )
+                } else {
+                    innerTextField()
+                }
+            }
+        },
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+        keyboardActions = KeyboardActions(
+            // 완료 버튼을 눌렀을 때 실행될 동작
+            onDone = {
+                // onSearch 콜백 함수 실행
+                onDone(textState)
+                // 검색 실행 후 키보드 숨기기
+                keyboardController?.hide()
+            }
+        )
+    )
 }

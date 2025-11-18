@@ -48,6 +48,7 @@ fun FacilityDetailInfo(
     onDepart: () -> Unit,
     onArrival: () -> Unit,
     onBookmarkChange: () -> Unit,
+    onReview: () -> Unit,
     searchViewmodel: SearchKeywordViewmodel = hiltViewModel(),
     bookmarkViewmodel: BookmarkViewModel = hiltViewModel(),
 ) {
@@ -109,6 +110,7 @@ fun FacilityDetailInfo(
                 FacilityReviewTab(
                     searchViewmodel = searchViewmodel,
                     isUser = isUser,
+                    onReview = onReview
                 )
             }
             2 -> {
