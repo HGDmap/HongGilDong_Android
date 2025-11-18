@@ -17,6 +17,7 @@ import com.hongildong.map.ui.search.direction.DirectionScreen
 import com.hongildong.map.ui.search.direction.DirectionSearchScreen
 import com.hongildong.map.ui.search.location_detail.facility.FacilityDetailScreen
 import com.hongildong.map.ui.search.location_detail.LocationDetailScreen
+import com.hongildong.map.ui.search.location_detail.facility.ReviewScreen
 import com.hongildong.map.ui.util.bottomsheet.BottomSheetViewModel
 import com.hongildong.map.ui.util.map.MapViewmodel
 
@@ -43,6 +44,7 @@ fun SearchNavHost(
             route = SEARCH_GRAPH_ROUTE,
             startDestination = NavRoute.Search.route + "/$LOCATION_SEARCH_MODE"
         ) {
+            // 검색 화면 - 검색 기록, 자동 완성 모두 여기임
             composable(route = NavRoute.Search.route + "/{searchMode}") { backStackEntry ->
                 // SEARCH_GRAPH_ROUTE를 찾아 ViewModel을 공유
                 val parentEntry = remember(backStackEntry) {
@@ -99,6 +101,7 @@ fun SearchNavHost(
                     searchMode = searchMode
                 )
             }
+            // 일반 검색 - 검색버튼으로 검색시 제공할 시설 리스트 화면
             composable(route = NavRoute.RawSearch.route + "/{searchedWord}") { backStackEntry ->
                 val parentEntry = remember(backStackEntry) {
                     searchNavController.getBackStackEntry(SEARCH_GRAPH_ROUTE)
@@ -146,6 +149,7 @@ fun SearchNavHost(
                 )
 
             }
+            // 건물 상세 정보 화면으로 재활용 예정
             composable(route = NavRoute.LocationDetail.route + "/{searchedWord}") { backStackEntry ->
                 val parentEntry = remember(backStackEntry) {
                     searchNavController.getBackStackEntry(SEARCH_GRAPH_ROUTE)
@@ -167,6 +171,7 @@ fun SearchNavHost(
                     },
                 )
             }
+            // 시설 상세 정보 화면
             composable(route = NavRoute.FacilityDetail.route + "/{searchedWord}") { backStackEntry ->
                 val parentEntry = remember(backStackEntry) {
                     searchNavController.getBackStackEntry(SEARCH_GRAPH_ROUTE)
@@ -187,8 +192,32 @@ fun SearchNavHost(
                     onSearchDirection = {
                         searchNavController.navigate(NavRoute.DirectionSearch.route)
                     },
+                    onReview = {
+                        searchNavController.navigate(NavRoute.Review.route + "/${it.name}/${it.id}")
+                    }
                 )
             }
+            // 리뷰 작성 화면
+            composable(route = NavRoute.Review.route + "/{facilityName}" + "/{facilityId}") { backStackEntry ->
+                val parentEntry = remember(backStackEntry) {
+                    searchNavController.getBackStackEntry(SEARCH_GRAPH_ROUTE)
+                }
+                val searchKeywordViewmodel: SearchKeywordViewmodel = hiltViewModel(parentEntry)
+                val facilityName = backStackEntry.arguments?.getString("facilityName") ?: ""
+                val facilityId = backStackEntry.arguments?.getInt("facilityId") ?: ""
+
+                ReviewScreen(
+                    facilityName = facilityName,
+                    facilityId = facilityId,
+                    onGoBack = {
+                        searchNavController.popBackStack()
+                    },
+                    onDone = {
+
+                    }
+                )
+            }
+            // 경로 검색 (시작점, 종료 지점)
             composable(route = NavRoute.DirectionSearch.route) { backStackEntry ->
                 val parentEntry = remember(backStackEntry) {
                     searchNavController.getBackStackEntry(SEARCH_GRAPH_ROUTE)
@@ -212,6 +241,7 @@ fun SearchNavHost(
                     }
                 )
             }
+            // 경로 화면
             composable(route = NavRoute.Direction.route) { backStackEntry ->
                 val parentEntry = remember(backStackEntry) {
                     searchNavController.getBackStackEntry(SEARCH_GRAPH_ROUTE)

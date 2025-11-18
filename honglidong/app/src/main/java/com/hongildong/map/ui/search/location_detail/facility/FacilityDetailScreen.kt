@@ -39,6 +39,7 @@ fun FacilityDetailScreen(
     bottomSheetViewModel: BottomSheetViewModel,
     onGoBack: () -> Unit,
     onSearchDirection: () -> Unit,
+    onReview: (FacilityInfo) -> Unit
 ) {
     val context = LocalContext.current
     val facilityInfo by searchViewmodel.facilityDetail.collectAsState()
@@ -168,6 +169,13 @@ fun FacilityDetailScreen(
                                     }
                                 )
                             }
+                        }
+                    },
+                    onReview = {
+                        if (facilityInfo == null) {
+                            Toast.makeText(context, "유효하지 않은 장소입니다.", Toast.LENGTH_SHORT).show()
+                        } else {
+                            onReview(facilityInfo!!)
                         }
                     }
                 )

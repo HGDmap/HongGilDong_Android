@@ -146,6 +146,12 @@ fun FacilityReviewInduceItem(
     }
 }
 
+/**
+ * rate - 별점
+ * 0 = 0 / 0.5 = 0.1 / 1 = 0.2 / 1.5 = 0.3 / 2 = 0.4
+ * / 2.5 = 0.5 / 3 = 0.6 / 3.5 = 0.7 / 4 = 0.8 / 4.5 = 0.9 / 5 = 1.0
+ *
+ */
 @Preview
 @Composable
 fun RateImage(
