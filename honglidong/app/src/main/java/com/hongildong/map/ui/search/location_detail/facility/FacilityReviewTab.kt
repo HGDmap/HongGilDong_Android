@@ -3,6 +3,8 @@ package com.hongildong.map.ui.search.location_detail.facility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -53,7 +56,6 @@ fun FacilityReviewTab(
     onEditReview: (ReviewInfo) -> Unit,
     onDeleteReview: (Int) -> Unit
 ) {
-
     val reviews by searchViewmodel.facilityReviews.collectAsState()
     var targetReviewId by remember { mutableStateOf(-1) }
     var enablePopup by remember { mutableStateOf(false) }
@@ -70,7 +72,8 @@ fun FacilityReviewTab(
 
     Box {
         Column(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
         ) {
             val hazeState = remember { HazeState() }
 

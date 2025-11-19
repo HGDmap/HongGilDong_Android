@@ -362,7 +362,7 @@ class SearchKeywordViewmodel @Inject constructor(
                 return@launch
             }
 
-            if (_facilityReviewInfo.value != null) {
+            /*if (_facilityReviewInfo.value != null) {
                 if (!_facilityReviewInfo.value!!.isLast) {
                     // 다음 요청 - 마지막 페이지의 경우
                     Toast.makeText(context, "마지막 페이지입니다.", Toast.LENGTH_SHORT).show()
@@ -373,14 +373,14 @@ class SearchKeywordViewmodel @Inject constructor(
             } else {
                 // 처음 요청
                 _reviewPage.value = 0
-            }
+            }*/
 
-            val response = searchRepository.getFacilityReview(token, facilityId, _reviewPage.value, 20)
+            val response = searchRepository.getFacilityReview(token, facilityId, 0, 20)
             when (response) {
                 is DefaultResponse.Success -> {
                     Log.d(TAG, "응답 성공: $response")
                     _facilityReviewInfo.value = response.data
-                    _facilityReviews.value += response.data.reviewList
+                    _facilityReviews.value = response.data.reviewList
                     Log.d(TAG, "_facilityReviewInfo: ${_facilityReviewInfo.value}")
                     _isSearchSuccess.value = UiState.Success
                 }

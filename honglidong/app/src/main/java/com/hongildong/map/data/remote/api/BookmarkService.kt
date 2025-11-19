@@ -18,7 +18,7 @@ interface BookmarkService {
     // 개별 북마크
 
     // 전체 북마크 현황 받아오기
-    @POST("bookmarks/all")
+    @GET("bookmarks/all")
     suspend fun getAllBookmarks(
         @Header("Authorization") accessToken: String,
     ): ApiResponse<BookmarkAllResponse>

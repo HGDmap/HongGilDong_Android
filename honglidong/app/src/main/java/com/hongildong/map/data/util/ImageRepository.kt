@@ -15,6 +15,7 @@ import okhttp3.RequestBody
 import okio.BufferedSink
 import okio.source
 import java.io.IOException
+import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -37,7 +38,8 @@ class ImageRepository @Inject constructor(
         return withContext(Dispatchers.IO) {
             try {
                 // Uri로부터 MIME 타입과 파일크기 가져오기
-                val mimeType = context.contentResolver.getType(imageUri) ?: "image/jpeg"
+                val mimeType = getMimeType(imageUri)
+                Log.d("ReviewViewmodel", "mimeType: $mimeType")
                 val contentLength = getFileSize(imageUri)
 
                 // Uri의 InputStream에서 직접 데이터를 읽어 RequestBody를 생성합니다.
@@ -74,6 +76,25 @@ class ImageRepository @Inject constructor(
             }
         }
     }
+
+    private suspend fun getMimeType(uri: Uri): String {
+        val fileName = getFileName(uri) ?: return "image/jpeg" // 파일명 못 찾으면 기본값
+        val extension = fileName.substringAfterLast('.', "").lowercase(Locale.getDefault())
+
+        return when (extension) {
+            "jpg" -> "image/jpg"
+            "jpeg" -> "image/jpeg"
+            "png" -> "image/png"
+            "gif" -> "image/gif"
+            "webp" -> "image/webp"
+            else -> {
+                // 매칭되는 게 없으면 안드로이드 시스템에게 물어보거나 기본값 사용
+                context.contentResolver.getType(uri) ?: "application/octet-stream"
+            }
+        }
+    }
+
+
 
     /**
      * ContentResolver를 사용해 Uri로부터 파일 크기를 가져옵니다.
