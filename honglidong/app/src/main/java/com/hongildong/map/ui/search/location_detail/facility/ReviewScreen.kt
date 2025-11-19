@@ -60,11 +60,16 @@ import com.hongildong.map.ui.util.popup.ConfirmPopup
 fun ReviewScreen(
     reviewViewModel: ReviewViewModel = hiltViewModel(),
     facilityName: String,
+    reviewMode: Int,
     onGoBack: () -> Unit,
     onDone: (String) -> Unit
 ) {
     val context = LocalContext.current
     val scrollState = rememberScrollState()
+
+    // 기존 리뷰 정보 - reviewmode == 1(수정)일때 사용
+    val targetReview by reviewViewModel.targetReview.collectAsState()
+
     var textState by remember { mutableStateOf("") }
 
     // 취소 2버튼 팝업 상태
@@ -86,6 +91,13 @@ fun ReviewScreen(
                 showProgress = false
                 onGoBack()
             }
+        }
+    }
+
+    LaunchedEffect(targetReview, textState) {
+        if (reviewMode == 1 && targetReview != null) {
+            // 리뷰 수정 상황이라면 기존 리뷰 컨텐츠 덮어쓰기
+            textState = targetReview!!.content
         }
     }
 

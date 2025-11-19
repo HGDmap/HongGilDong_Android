@@ -39,7 +39,7 @@ class ImageRepository @Inject constructor(
             try {
                 // Uri로부터 MIME 타입과 파일크기 가져오기
                 val mimeType = getMimeType(imageUri)
-                Log.d("ReviewViewmodel", "mimeType: $mimeType")
+                Log.d("ImageRepository", "mimeType: $mimeType")
                 val contentLength = getFileSize(imageUri)
 
                 // Uri의 InputStream에서 직접 데이터를 읽어 RequestBody를 생성합니다.
@@ -63,14 +63,14 @@ class ImageRepository @Inject constructor(
                     .addHeader("Content-Type", mimeType)
                     .build()
 
-                // 5. OkHttp 클라이언트로 요청을 동기적으로 실행 (withContext가 IO 스레드를 보장)
-                val response = okHttpClient.newCall(request).execute()
-
-                if (response.isSuccessful) {
-                    Result.success(Unit)
-                } else {
-                    Result.failure(IOException("S3 Upload Failed: ${response.message}"))
+                okHttpClient.newCall(request = request).execute().use { response ->
+                    if (response.isSuccessful) {
+                        Result.success(Unit)
+                    } else {
+                        Result.failure(IOException("S3 Upload Failed: ${response.message}"))
+                    }
                 }
+
             } catch (e: Exception) {
                 Result.failure(e)
             }
@@ -103,7 +103,7 @@ class ImageRepository @Inject constructor(
         context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
             if (cursor.moveToFirst()) {
                 val sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE)
-                if (!cursor.isNull(sizeIndex)) {
+                if (sizeIndex != -1 && !cursor.isNull(sizeIndex)) {
                     return cursor.getLong(sizeIndex)
                 }
             }
@@ -123,7 +123,7 @@ class ImageRepository @Inject constructor(
                 }
             }
         } catch (e: Exception) {
-            Log.e("ReviewViewModel", "파일명 추출 실패", e)
+            Log.e("ImageRepository", "파일명 추출 실패", e)
         }
         return@withContext fileName
     }

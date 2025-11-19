@@ -63,12 +63,12 @@ fun FacilityReviewTab(
     LaunchedEffect(Unit) {
         searchViewmodel.getFacilityReview(facilityId)
     }
-
+/*
     LaunchedEffect(enablePopup) {
         if (enablePopup) {
             searchViewmodel.getFacilityReview(facilityId)
         }
-    }
+    }*/
 
     Box {
         Column(

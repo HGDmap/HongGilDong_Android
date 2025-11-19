@@ -67,7 +67,7 @@ fun FacilityPhotoTab(
     ) {
         if (isUser) {
             // 로그인 되어있을 경우 - 사진 리스트 보여주거나 사진이 없다 보여주기
-            if (photos?.imageList?.all { !it.isNullOrEmpty() } ?: true) {
+            if (photos?.imageList?.all { it.isNullOrEmpty() } != false) {
                 EmptyContents("등록된 사진이 아직 없어요.")
             } else {
                 LazyVerticalGrid(

@@ -167,7 +167,7 @@ class ReviewViewModel @Inject constructor(
                         }
                     }
                 } else {
-                    val reviewId = _targetReview.value?.id ?: 0
+                    val reviewId = _targetReview.value?.id ?: throw Exception("리뷰 id가 없습니다.")
                     // 리뷰 업데이트
                     val response = reviewRepository.updateReview(token, reviewId, body)
                     when (response) {
@@ -205,7 +205,7 @@ class ReviewViewModel @Inject constructor(
                     _uploadState.value = UiState.Success
                 }
                 is DefaultResponse.Error -> {
-                    throw Exception(response.message)
+                    Log.d(TAG, "리뷰 삭제 실패")
                 }
             }
         }

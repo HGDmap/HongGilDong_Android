@@ -130,7 +130,7 @@ fun FacilityDetailScreen(
                         } else Toast.makeText(context, "유효하지 않은 장소입니다.", Toast.LENGTH_SHORT).show()
                     },
                     onBookmarkChange = {
-                        if (isUser) {
+                        if (isUser && (facilityInfo != null)) {
                             bottomSheetViewModel.show {
                                 BookmarkUpdateContent(
                                     title = facilityInfo?.name ?: "",
@@ -189,7 +189,9 @@ fun FacilityDetailScreen(
                         }
                     },
                     onDeleteReview = {
-                        onDeleteReview(it)
+                        if (facilityInfo != null) {
+                            onDeleteReview(it)
+                        }
                     },
                 )
             }

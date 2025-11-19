@@ -233,6 +233,7 @@ fun SearchNavHost(
                 ReviewScreen(
                     facilityName = facilityName,
                     reviewViewModel = reviewViewModel,
+                    reviewMode = reviewMode,
                     onGoBack = {
                         reviewViewModel.clearReviewInfo()
                         searchNavController.popBackStack()

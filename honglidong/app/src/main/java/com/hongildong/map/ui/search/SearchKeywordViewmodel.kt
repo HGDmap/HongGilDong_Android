@@ -291,7 +291,7 @@ class SearchKeywordViewmodel @Inject constructor(
         }
     }
 
-    val _facilityPhotoInfo = MutableStateFlow<PhotoResponse?>(null)
+    private val _facilityPhotoInfo = MutableStateFlow<PhotoResponse?>(null)
     val facilityPhotoInfo = _facilityPhotoInfo.asStateFlow()
 
     // 시설 사진 받기 api
