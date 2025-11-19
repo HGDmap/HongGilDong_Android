@@ -18,6 +18,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.forEach
@@ -34,6 +35,9 @@ class ReviewViewModel @Inject constructor(
     // 로컬 이미지 uri 리스트
     private val _selectedImageUris = MutableStateFlow<List<Uri>>(emptyList())
     val selectedImageUris = _selectedImageUris.asStateFlow()
+
+    // 로컬 uri과 presigned url / image url 합친 리스트
+    private val _serverUrls = MutableStateFlow<List<Pair<Uri, ImageUploadResponse>>>(emptyList())
 
     private val _uploadState = MutableStateFlow<UiState>(UiState.Initial)
     val uploadState = _uploadState.asStateFlow()
@@ -94,19 +98,21 @@ class ReviewViewModel @Inject constructor(
                     }
 
                     // s3에 이미지 업로드
-                    val uploadJobs = _serverUrls.value.map { (uri, response) ->
-                        async {
-                            val result = imageRepository.uploadImageToS3(response.presignedURL, uri)
-                            if (result.isFailure) {
-                                Log.e(TAG, "s3 업로드 실패: ${result.exceptionOrNull()?.message}")
-                                throw Exception("s3 이미지 업로드 실패: ${result.exceptionOrNull()?.message}")
-                            } else {
-                                Log.d(TAG, "s3 이미지 업로드 성공")
+                    coroutineScope {
+                        val uploadJobs = _serverUrls.value.map { (uri, response) ->
+                            async {
+                                val result = imageRepository.uploadImageToS3(response.presignedURL, uri)
+                                if (result.isFailure) {
+                                    Log.e(TAG, "s3 업로드 실패: ${result.exceptionOrNull()?.message}")
+                                    throw Exception("s3 이미지 업로드 실패: ${result.exceptionOrNull()?.message}")
+                                } else {
+                                    Log.d(TAG, "s3 이미지 업로드 성공")
+                                }
                             }
                         }
+                        uploadJobs.awaitAll() // 병렬 처리가 모두 완료될때까지 기다리기
                     }
 
-                    uploadJobs.awaitAll() // 병렬 처리가 모두 완료될때까지 기다리기
                     uploadedImageUrls = _serverUrls.value.map { it.second.imageURL }
                 }
 
@@ -120,8 +126,9 @@ class ReviewViewModel @Inject constructor(
                 when (response) {
                     is DefaultResponse.Success -> {
                         Log.d("ReviewViewModel", "리뷰 등록 성공")
-                        _uploadState.value = UiState.Success
                         _selectedImageUris.value = emptyList() // 성공 후 이미지 비우기
+                        _serverUrls.value = emptyList() // 성공 후 url 정보 비우기
+                        _uploadState.value = UiState.Success
                     }
                     is DefaultResponse.Error -> {
                         throw Exception(response.message)
@@ -134,111 +141,5 @@ class ReviewViewModel @Inject constructor(
         }
     }
 
-    private val _serverUrls = MutableStateFlow<List<Pair<Uri, ImageUploadResponse>>>(emptyList())
-    val serverUrls = _serverUrls.asStateFlow()
 
-    // presigned url 받아오기
-    fun getPresignedUrl(facilityId: Int) {
-        viewModelScope.launch {
-            val token = getToken() ?: return@launch
-
-            val fileNames = _selectedImageUris.value.map { uri -> imageRepository.getFileName(uri) ?: "" }
-            val body = ImageUploadRequest(
-                facilityId = facilityId,
-                fileNames = fileNames
-            )
-            Log.d(TAG, "create presigned url request body: $body")
-            val response = reviewRepository.createPresignedUrl(token, body)
-            when (response) {
-                is DefaultResponse.Success -> {
-                    Log.d(TAG, "create presigned url 응답 성공: $response")
-                    _serverUrls.value = _selectedImageUris.value.zip(response.data)
-                }
-                is DefaultResponse.Error -> {
-                    Log.d(TAG, "create presigned url 응답 실패: $response")
-                    return@launch
-                }
-            }
-        }
-    }
-
-    // presigned url에 이미지 등록
-    fun uploadImageToS3() {
-        viewModelScope.launch {
-            _serverUrls.value.forEach {
-                val imageUri = it.first
-                val presignedUrl = it.second.presignedURL
-                try {
-                    imageRepository.uploadImageToS3(presignedUrl, imageUri).onFailure {
-                        return@forEach // 실패 시 Exception을 발생시켜 catch 블록으로 보냄
-                    }
-                    //_uploadState.value = ImageUploadState.Success
-                    Log.d("ReviewViewModel", "s3 이미지 업로드 성공")
-                    _selectedImageUris.value = emptyList() // 성공 후 목록 비우기
-                } catch (e: Exception) {
-                    // 업로드 과정 중 하나라도 실패하면
-                    Log.e("ReviewViewModel", "업로드 실패", e)
-                    //_uploadState.value = ImageUploadState.Error(e.message ?: "업로드에 실패했습니다.")
-                }
-            }
-        }
-    }
-
-
-
-    // 이미지
-
-    /*
-
-
-        // 4. UI가 구독할 업로드 상태
-
-
-        fun uploadImages() {
-            viewModelScope.launch {
-                _uploadState.value = ImageUploadState.Loading
-                val uris = _selectedImageUris.value
-                if (uris.isEmpty()) {
-                    _uploadState.value = ImageUploadState.Error("선택된 이미지가 없습니다.")
-                    return@launch
-                }
-
-                try {
-                    // 5. 선택된 모든 이미지에 대해 반복
-                    uris.forEach { uri ->
-                        // 6. Uri에서 파일명을 추출합니다. (서버에 요청 시 필요)
-                        val fileName = getFileName(uri)
-                        if (fileName == null) {
-                            Log.e("ImageUploadViewModel", "파일명 추출 실패: $uri")
-                            return@forEach // 다음 이미지로
-                        }
-
-                        // 7. (가정) 자체 서버에 파일명을 보내 Presigned URL을 받아옵니다.
-                        // val presignedUrlResponse = yourServerRepository.getPresignedUrl(fileName)
-                        // if (!presignedUrlResponse.isSuccess) {
-                        //    throw Exception("Presigned URL 발급 실패: $fileName")
-                        // }
-                        // val presignedUrl = presignedUrlResponse.result.url
-
-                        // --- 테스트를 위한 임시 URL ---
-                        val presignedUrl = "https://your-s3-presigned-url.com/$fileName"
-                        Log.d("ImageUploadViewModel", "업로드 시도: $fileName -> $presignedUrl")
-                        // --- 테스트 ---
-
-                        // 8. StorageRepository를 사용해 S3에 실제 파일 업로드
-                        imageRepository.uploadImageToS3(presignedUrl, uri).onFailure {
-                            throw it // 실패 시 Exception을 발생시켜 catch 블록으로 보냄
-                        }
-                    }
-
-                    // 모든 업로드 성공
-                    _uploadState.value = ImageUploadState.Success
-                    _selectedImageUris.value = emptyList() // 성공 후 목록 비우기
-                } catch (e: Exception) {
-                    // 업로드 과정 중 하나라도 실패하면
-                    Log.e("ImageUploadViewModel", "업로드 실패", e)
-                    _uploadState.value = ImageUploadState.Error(e.message ?: "업로드에 실패했습니다.")
-                }
-            }
-        }*/
 }

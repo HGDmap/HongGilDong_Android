@@ -86,7 +86,6 @@ fun ReviewScreen(
                 showProgress = false
                 onGoBack()
             }
-
         }
     }
 
