@@ -2,6 +2,7 @@ package com.hongildong.map.ui.search.location_detail.facility
 
 import android.content.Context
 import android.net.Uri
+import android.provider.OpenableColumns
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,12 +12,17 @@ import com.hongildong.map.data.remote.response.ImageUploadResponse
 import com.hongildong.map.data.repository.ReviewRepository
 import com.hongildong.map.data.util.DefaultResponse
 import com.hongildong.map.data.util.ImageRepository
+import com.hongildong.map.ui.util.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.forEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,8 +35,8 @@ class ReviewViewModel @Inject constructor(
     private val _selectedImageUris = MutableStateFlow<List<Uri>>(emptyList())
     val selectedImageUris = _selectedImageUris.asStateFlow()
 
-    /*private val _uploadState = MutableStateFlow<ImageUploadState>(ImageUploadState.Idle)
-    val uploadState = _uploadState.asStateFlow()*/
+    private val _uploadState = MutableStateFlow<UiState>(UiState.Initial)
+    val uploadState = _uploadState.asStateFlow()
 
     private val TAG = this.javaClass.simpleName
     private val sharedPreferences = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
@@ -50,84 +56,80 @@ class ReviewViewModel @Inject constructor(
         content: String,
     ) {
         viewModelScope.launch {
-            val token = getToken() ?: return@launch
+            try {
+                val token = getToken() ?: throw Exception("토큰이 없습니다.")
 
-            if (_selectedImageUris.value.isEmpty()) {
-                // 이미지가 없는 리뷰 등록
-                val body = ReviewUpdateRequest(
-                    content = content,
-                    photoList = emptyList()
-                )
-                val response = reviewRepository.createReview(token, facilityId, body)
-                when (response) {
-                    is DefaultResponse.Success -> {
-                        // 성공 처리
-                        Log.d(TAG, "create review 응답 성공: $response")
+                _uploadState.value = UiState.Loading
+                val uploadedImageUrls: List<String>
+                if (_selectedImageUris.value.isEmpty()) {
+                    // 이미지가 없는 리뷰 등록
+                    uploadedImageUrls = emptyList()
+                } else {
+                    // 이미지 있는 리뷰 등록
+                    // uri 리스트로 presigned url 받아오기
+                    val fileNames = _selectedImageUris.value.map { uri ->
+                        imageRepository.getFileName(uri) ?: ""
                     }
-                    is DefaultResponse.Error -> {
-                        Log.d(TAG, "create review 응답 실패: $response")
-                    }
-                }
-            } else {
-                // 이미지 있는 리뷰 등록
-                // uri 리스트로 presigned url 받아오기
-                //getPresignedUrl(facilityId)
 
-                val fileNames = _selectedImageUris.value.map { uri -> imageRepository.getFileName(uri) ?: "" }
-                val imageUploadRequest = ImageUploadRequest(
-                    facilityId = facilityId,
-                    fileNames = fileNames
-                )
-                Log.d(TAG, "create presigned url request body: $imageUploadRequest")
-                val presignedUrlResponse = reviewRepository.createPresignedUrl(token, imageUploadRequest)
-                when (presignedUrlResponse) {
-                    is DefaultResponse.Success -> {
-                        Log.d(TAG, "create presigned url 응답 성공: $presignedUrlResponse")
-                        _serverUrls.value = _selectedImageUris.value.zip(presignedUrlResponse.data)
-                    }
-                    is DefaultResponse.Error -> {
-                        Log.d(TAG, "create presigned url 응답 실패: $presignedUrlResponse")
-                        return@launch
-                    }
-                }
+                    val imageUploadRequest = ImageUploadRequest(
+                        facilityId = facilityId,
+                        fileNames = fileNames
+                    )
+                    Log.d(TAG, "create presigned url 요청: $imageUploadRequest")
 
-                // s3에 이미지 업로드
-                //uploadImageToS3()
-
-                _serverUrls.value.forEach {
-                    val imageUri = it.first
-                    val presignedUrl = it.second.presignedURL
-                    try {
-                        imageRepository.uploadImageToS3(presignedUrl, imageUri).onFailure {
-                            return@forEach // 실패 시 Exception을 발생시켜 catch 블록으로 보냄
+                    val presignedUrlResponse =
+                        reviewRepository.createPresignedUrl(token, imageUploadRequest)
+                    when (presignedUrlResponse) {
+                        is DefaultResponse.Success -> {
+                            Log.d(TAG, "create presigned url 응답 성공: $presignedUrlResponse")
+                            _serverUrls.value =
+                                _selectedImageUris.value.zip(presignedUrlResponse.data)
                         }
-                        //_uploadState.value = ImageUploadState.Success
-                        Log.d(TAG, "s3 이미지 업로드 성공")
-                        _selectedImageUris.value = emptyList() // 성공 후 목록 비우기
-                    } catch (e: Exception) {
-                        // 업로드 과정 중 하나라도 실패하면
-                        Log.e(TAG, "업로드 실패", e)
-                        return@forEach
-                        //_uploadState.value = ImageUploadState.Error(e.message ?: "업로드에 실패했습니다.")
+
+                        is DefaultResponse.Error -> {
+                            Log.d(TAG, "create presigned url 응답 실패: $presignedUrlResponse")
+                            _uploadState.value = UiState.Error(presignedUrlResponse.message)
+                            throw Exception("presigned url 요청 실패: ${presignedUrlResponse.message}")
+                        }
                     }
+
+                    // s3에 이미지 업로드
+                    val uploadJobs = _serverUrls.value.map { (uri, response) ->
+                        async {
+                            val result = imageRepository.uploadImageToS3(response.presignedURL, uri)
+                            if (result.isFailure) {
+                                Log.e(TAG, "s3 업로드 실패: ${result.exceptionOrNull()?.message}")
+                                throw Exception("s3 이미지 업로드 실패: ${result.exceptionOrNull()?.message}")
+                            } else {
+                                Log.d(TAG, "s3 이미지 업로드 성공")
+                            }
+                        }
+                    }
+
+                    uploadJobs.awaitAll() // 병렬 처리가 모두 완료될때까지 기다리기
+                    uploadedImageUrls = _serverUrls.value.map { it.second.imageURL }
                 }
 
-                // 업로드 후 imageUrl로 api 요청
+                // imageUrl로 api 요청
                 val body = ReviewUpdateRequest(
                     content = content,
-                    photoList = _serverUrls.value.map { (uri, response) -> response.imageURL }
+                    photoList = uploadedImageUrls
                 )
 
                 val response = reviewRepository.createReview(token, facilityId, body)
                 when (response) {
                     is DefaultResponse.Success -> {
-                        // 성공 처리
-                        Log.d(TAG, "create review 응답 성공: $response")
+                        Log.d("ReviewViewModel", "리뷰 등록 성공")
+                        _uploadState.value = UiState.Success
+                        _selectedImageUris.value = emptyList() // 성공 후 이미지 비우기
                     }
                     is DefaultResponse.Error -> {
-                        Log.d(TAG, "create review 응답 실패: $response")
+                        throw Exception(response.message)
                     }
                 }
+            } catch (e: Exception) {
+                Log.e(TAG, "리뷰 등록 실패", e)
+                _uploadState.value = UiState.Error(e.message ?: "리뷰 등록에 실패했습니다.")
             }
         }
     }
@@ -171,16 +173,18 @@ class ReviewViewModel @Inject constructor(
                         return@forEach // 실패 시 Exception을 발생시켜 catch 블록으로 보냄
                     }
                     //_uploadState.value = ImageUploadState.Success
-                    Log.d(TAG, "s3 이미지 업로드 성공")
+                    Log.d("ReviewViewModel", "s3 이미지 업로드 성공")
                     _selectedImageUris.value = emptyList() // 성공 후 목록 비우기
                 } catch (e: Exception) {
                     // 업로드 과정 중 하나라도 실패하면
-                    Log.e(TAG, "업로드 실패", e)
+                    Log.e("ReviewViewModel", "업로드 실패", e)
                     //_uploadState.value = ImageUploadState.Error(e.message ?: "업로드에 실패했습니다.")
                 }
             }
         }
     }
+
+
 
     // 이미지
 

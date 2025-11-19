@@ -9,6 +9,7 @@ import com.hongildong.map.data.dao.SearchKeywordDao
 import com.hongildong.map.data.entity.AutoCompleteSearchKeyword
 import com.hongildong.map.data.entity.FacilityInfo
 import com.hongildong.map.data.entity.NodeInfo
+import com.hongildong.map.data.entity.ReviewInfo
 import com.hongildong.map.data.entity.SearchKeyword
 import com.hongildong.map.data.entity.SearchableNodeType
 import com.hongildong.map.data.remote.request.PhotoRequest
@@ -341,12 +342,16 @@ class SearchKeywordViewmodel @Inject constructor(
     }
 
     // 현재 리뷰 페이지
-    val _reviewPage = MutableStateFlow<Int>(0)
+    private val _reviewPage = MutableStateFlow<Int>(0)
     val reviewPage = _reviewPage.asStateFlow()
 
     // 시설 리뷰 리스트
-    val _facilityReviewInfo = MutableStateFlow<ReviewResponse?>(null)
+    private val _facilityReviewInfo = MutableStateFlow<ReviewResponse?>(null)
     val facilityReviewInfo = _facilityReviewInfo.asStateFlow()
+
+    // 시설 리뷰
+    private val _facilityReviews = MutableStateFlow<List<ReviewInfo>>(listOf())
+    val facilityReviews = _facilityReviews.asStateFlow()
 
     // 시설 리뷰 조회
     fun getFacilityReview(facilityId: Int) {
@@ -375,6 +380,7 @@ class SearchKeywordViewmodel @Inject constructor(
                 is DefaultResponse.Success -> {
                     Log.d(TAG, "응답 성공: $response")
                     _facilityReviewInfo.value = response.data
+                    _facilityReviews.value += response.data.reviewList
                     Log.d(TAG, "_facilityReviewInfo: ${_facilityReviewInfo.value}")
                     _isSearchSuccess.value = UiState.Success
                 }

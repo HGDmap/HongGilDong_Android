@@ -110,7 +110,8 @@ fun FacilityDetailInfo(
                 FacilityReviewTab(
                     searchViewmodel = searchViewmodel,
                     isUser = isUser,
-                    onReview = onReview
+                    onReview = onReview,
+                    facilityId = facilityInfo.id
                 )
             }
             2 -> {

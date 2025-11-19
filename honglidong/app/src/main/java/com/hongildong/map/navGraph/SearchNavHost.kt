@@ -198,7 +198,6 @@ fun SearchNavHost(
                     },
                     onReview = {
                         searchNavController.navigate(NavRoute.Review.route + "/${it.name}/${it.id}")
-                        Log.d("디테일 스크린 여긴가?", "시설아이디: ${it.id}")
                     }
                 )
             }
@@ -216,7 +215,6 @@ fun SearchNavHost(
                 val reviewViewModel: ReviewViewModel = hiltViewModel()
                 val facilityName = backStackEntry.arguments?.getString("facilityName") ?: ""
                 val facilityId = backStackEntry.arguments?.getInt("facilityId") ?: 0
-                Log.d("리뷰 스크린 여긴가?", "시설아이디: $facilityId")
 
                 ReviewScreen(
                     reviewViewModel = reviewViewModel,
@@ -226,7 +224,6 @@ fun SearchNavHost(
                     },
                     onDone = {
                         reviewViewModel.createReview(facilityId, it)
-                        searchNavController.popBackStack()
                     }
                 )
             }

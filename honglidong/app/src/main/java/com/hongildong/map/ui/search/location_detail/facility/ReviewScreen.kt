@@ -1,6 +1,7 @@
 package com.hongildong.map.ui.search.location_detail.facility
 
 import android.net.Uri
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -28,6 +29,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,6 +38,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -47,8 +50,10 @@ import com.hongildong.map.ui.theme.Gray300
 import com.hongildong.map.ui.theme.PrimaryMid
 import com.hongildong.map.ui.theme.White
 import com.hongildong.map.ui.util.BottomButton
+import com.hongildong.map.ui.util.CustomLoading
 import com.hongildong.map.ui.util.CustomTextBox
 import com.hongildong.map.ui.util.NetworkImage
+import com.hongildong.map.ui.util.UiState
 import com.hongildong.map.ui.util.popup.ConfirmPopup
 
 @Composable
@@ -58,9 +63,32 @@ fun ReviewScreen(
     onGoBack: () -> Unit,
     onDone: (String) -> Unit
 ) {
+    val context = LocalContext.current
     val scrollState = rememberScrollState()
     var textState by remember { mutableStateOf("") }
+
+    // 취소 2버튼 팝업 상태
     var showDialog by remember { mutableStateOf(false) }
+
+    // 프로그래스바 상태
+    var showProgress by remember { mutableStateOf(false) }
+    val loadingState by reviewViewModel.uploadState.collectAsState()
+
+    LaunchedEffect(loadingState) {
+        when (loadingState) {
+            is UiState.Initial -> showProgress = false
+            is UiState.Error -> {
+                showProgress = false
+                Toast.makeText(context, "리뷰 작성에 실패했습니다.", Toast.LENGTH_SHORT).show()
+            }
+            is UiState.Loading -> showProgress = true
+            is UiState.Success -> {
+                showProgress = false
+                onGoBack()
+            }
+
+        }
+    }
 
     // 고른 이미지 리스트
     val images by reviewViewModel.selectedImageUris.collectAsState()
@@ -227,6 +255,10 @@ fun ReviewScreen(
                 onDismissRequest = {showDialog = false},
                 onConfirmation = { onGoBack() }
             )
+        }
+
+        if (showProgress) {
+            CustomLoading()
         }
     }
 }

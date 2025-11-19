@@ -3,6 +3,7 @@ package com.hongildong.map.data.util
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
+import android.util.Log
 import com.hongildong.map.data.module.NetworkModule
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -89,16 +90,20 @@ class ImageRepository @Inject constructor(
         return -1 // 크기를 알 수 없음
     }
 
-    fun getFileName(uri: Uri): String? {
+    suspend fun getFileName(uri: Uri): String? = withContext(Dispatchers.IO) {
         var fileName: String? = null
-        context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
-            if (cursor.moveToFirst()) {
-                val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-                if (nameIndex != -1) {
-                    fileName = cursor.getString(nameIndex)
+        try {
+            context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+                if (cursor.moveToFirst()) {
+                    val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                    if (nameIndex != -1) {
+                        fileName = cursor.getString(nameIndex)
+                    }
                 }
             }
+        } catch (e: Exception) {
+            Log.e("ReviewViewModel", "파일명 추출 실패", e)
         }
-        return fileName
+        return@withContext fileName
     }
 }
