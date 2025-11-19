@@ -29,7 +29,9 @@ import com.hongildong.map.ui.util.popup.DropDownMenu
 
 @Composable
 fun FacilityReviews(
-    reviews: List<ReviewInfo>
+    reviews: List<ReviewInfo>,
+    onDeleteItem: (Int) -> Unit = {},
+    onEditItem: (ReviewInfo) -> Unit = {}
 ) {
     Column {
         Text(
@@ -42,7 +44,15 @@ fun FacilityReviews(
         } else {
             LazyColumn {
                 items(reviews) { review ->
-                    FacilityReviewItem(review)
+                    FacilityReviewItem(
+                        reviewItem = review,
+                        onDeleteItem = {
+                            onDeleteItem(review.id)
+                        },
+                        onEditItem = {
+                            onEditItem(review)
+                        }
+                    )
                 }
             }
         }
@@ -51,7 +61,9 @@ fun FacilityReviews(
 
 @Composable
 fun FacilityReviewItem(
-    reviewItem: ReviewInfo
+    reviewItem: ReviewInfo,
+    onDeleteItem: () -> Unit,
+    onEditItem: () -> Unit
 ) {
     Column {
         Row (
@@ -74,9 +86,10 @@ fun FacilityReviewItem(
                 )
             }
 
+            // todo: 리뷰쓴 사람 == 사용자일때만 보이게 해야함
             DropDownMenu(
-                onDelete = {},
-                onEdit = {}
+                onDelete = onDeleteItem,
+                onEdit = onEditItem
             )
         }
         Row (
@@ -94,6 +107,7 @@ fun FacilityReviewItem(
                 style = AppTypography.Medium_13.copy(color = Gray500)
             )
         }
+        Spacer(Modifier.height(8.dp))
 
         Text(
             reviewItem.content,
@@ -101,6 +115,7 @@ fun FacilityReviewItem(
             modifier = Modifier
                 .fillMaxWidth()
         )
+        Spacer(Modifier.height(8.dp))
         if (reviewItem.photoList.isNotEmpty()) {
             LazyRow {
                 items(reviewItem.photoList) { photo ->
@@ -117,7 +132,7 @@ fun FacilityReviewItem(
         // todo: 좋아요 아이콘
 
 
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(12.dp))
         HorizontalDivider(thickness = 1.dp, color = Gray300)
     }
 }

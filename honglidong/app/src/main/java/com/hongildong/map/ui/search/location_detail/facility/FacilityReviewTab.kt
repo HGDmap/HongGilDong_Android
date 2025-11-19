@@ -20,7 +20,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -29,6 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.hongildong.map.R
+import com.hongildong.map.data.entity.ReviewInfo
 import com.hongildong.map.ui.search.SearchKeywordViewmodel
 import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Black
@@ -36,6 +39,7 @@ import com.hongildong.map.ui.theme.Gray100
 import com.hongildong.map.ui.theme.Gray300
 import com.hongildong.map.ui.theme.PrimaryMid
 import com.hongildong.map.ui.theme.White
+import com.hongildong.map.ui.util.popup.ConfirmPopup
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.materials.HazeMaterials
@@ -45,65 +49,102 @@ fun FacilityReviewTab(
     searchViewmodel: SearchKeywordViewmodel,
     isUser: Boolean,
     facilityId: Int,
-    onReview: () -> Unit
+    onReview: () -> Unit,
+    onEditReview: (ReviewInfo) -> Unit,
+    onDeleteReview: (Int) -> Unit
 ) {
+
+    val reviews by searchViewmodel.facilityReviews.collectAsState()
+    var targetReviewId by remember { mutableStateOf(-1) }
+    var enablePopup by remember { mutableStateOf(false) }
+
     LaunchedEffect(Unit) {
         searchViewmodel.getFacilityReview(facilityId)
     }
-    val reviews by searchViewmodel.facilityReviews.collectAsState()
 
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        val hazeState = remember { HazeState() }
+    LaunchedEffect(enablePopup) {
+        if (enablePopup) {
+            searchViewmodel.getFacilityReview(facilityId)
+        }
+    }
 
-        if (isUser) {
-            // if (리뷰를 단 적이 없으면) {
-            // 리뷰 유도 박스
-            FacilityReviewInduceItem(
-                onClick = onReview
-            )
-            HorizontalDivider(thickness = 3.dp, color = Gray100)
-            // }
+    Box {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            val hazeState = remember { HazeState() }
 
-            FacilityReviewInfo()
-            HorizontalDivider(thickness = 3.dp, color = Gray100)
+            if (isUser) {
+                // if (리뷰를 단 적이 없으면) {
+                // 리뷰 유도 박스
+                FacilityReviewInduceItem(
+                    onClick = onReview
+                )
+                HorizontalDivider(thickness = 3.dp, color = Gray100)
+                // }
 
-            FacilityReviews(
-                reviews = reviews
-            )
-        } else {
-            Box(
-                modifier = Modifier.fillMaxSize()
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .haze(
-                            state = hazeState,
-                            style = HazeMaterials.thick(containerColor = White)
-                        )
+                FacilityReviewInfo()
+                HorizontalDivider(thickness = 3.dp, color = Gray100)
+
+                FacilityReviews(
+                    reviews = reviews,
+                    onDeleteItem = {
+                        targetReviewId = it
+                        enablePopup = true
+                    },
+                    onEditItem = {
+                        onEditReview(it)
+                    },
+                )
+            } else {
+                Box(
+                    modifier = Modifier.fillMaxSize()
                 ) {
-                    // if (리뷰를 단 적이 없으면) {
-                    // 리뷰 유도 박스
-                    FacilityReviewInduceItem()
-                    HorizontalDivider(thickness = 3.dp, color = Gray100)
-                    // }
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .haze(
+                                state = hazeState,
+                                style = HazeMaterials.thick(containerColor = White)
+                            )
+                    ) {
+                        // if (리뷰를 단 적이 없으면) {
+                        // 리뷰 유도 박스
+                        FacilityReviewInduceItem()
+                        HorizontalDivider(thickness = 3.dp, color = Gray100)
+                        // }
 
-                    FacilityReviewInfo()
-                    HorizontalDivider(thickness = 3.dp, color = Gray100)
+                        FacilityReviewInfo()
+                        HorizontalDivider(thickness = 3.dp, color = Gray100)
 
-                    FacilityReviews(
-                        reviews = emptyList()
+                        FacilityReviews(
+                            reviews = emptyList(),
+                        )
+                    }
+                    BlockNonUser(
+                        title = "리뷰",
+                        hazeState = hazeState,
                     )
                 }
-                BlockNonUser(
-                    title = "리뷰",
-                    hazeState = hazeState,
-                )
             }
+
         }
 
+        if (enablePopup) {
+            ConfirmPopup(
+                message = "내 리뷰를 삭제하시겠습니까?",
+                dismissMsg = "취소",
+                confirmMsg = "확인",
+                onDismissRequest = {
+                    targetReviewId = -1
+                    enablePopup = false
+                },
+                onConfirmation = {
+                    onDeleteReview(targetReviewId)
+                    enablePopup = false
+                }
+            )
+        }
     }
 }
 

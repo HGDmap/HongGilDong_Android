@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.hongildong.map.R
 import com.hongildong.map.data.entity.FacilityInfo
+import com.hongildong.map.data.entity.ReviewInfo
 import com.hongildong.map.ui.bookmark.BookmarkViewModel
 import com.hongildong.map.ui.home.RecommendPlaceItem
 import com.hongildong.map.ui.home.places
@@ -51,6 +52,8 @@ fun FacilityDetailInfo(
     onReview: () -> Unit,
     searchViewmodel: SearchKeywordViewmodel = hiltViewModel(),
     bookmarkViewmodel: BookmarkViewModel = hiltViewModel(),
+    onEditReview: (ReviewInfo) -> Unit,
+    onDeleteReview: (Int) -> Unit
 ) {
     val pages = listOf("시설 정보", "리뷰", "사진")
     var tabState by remember { mutableIntStateOf(0) }
@@ -111,7 +114,13 @@ fun FacilityDetailInfo(
                     searchViewmodel = searchViewmodel,
                     isUser = isUser,
                     onReview = onReview,
-                    facilityId = facilityInfo.id
+                    facilityId = facilityInfo.id,
+                    onEditReview = {
+                        onEditReview(it)
+                    },
+                    onDeleteReview = {
+                        onDeleteReview(it)
+                    }
                 )
             }
             2 -> {

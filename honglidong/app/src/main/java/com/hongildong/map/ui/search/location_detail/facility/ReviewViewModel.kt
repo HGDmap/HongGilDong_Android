@@ -6,6 +6,8 @@ import android.provider.OpenableColumns
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hongildong.map.data.entity.FacilityInfo
+import com.hongildong.map.data.entity.ReviewInfo
 import com.hongildong.map.data.remote.request.ImageUploadRequest
 import com.hongildong.map.data.remote.request.ReviewUpdateRequest
 import com.hongildong.map.data.remote.response.ImageUploadResponse
@@ -32,6 +34,33 @@ class ReviewViewModel @Inject constructor(
     private val imageRepository: ImageRepository,
     @ApplicationContext private val context: Context
 ): ViewModel() {
+
+    fun clearReviewInfo() {
+        viewModelScope.launch {
+            _selectedImageUris.value = emptyList()
+            _serverUrls.value = emptyList()
+            _uploadState.value = UiState.Initial
+        }
+    }
+
+    private val _targetReview = MutableStateFlow<ReviewInfo?>(null)
+    val targetReview = _targetReview.asStateFlow()
+
+    fun setTargetReview(review: ReviewInfo) {
+        viewModelScope.launch {
+            _targetReview.value = review
+        }
+    }
+
+    private val _targetFacility = MutableStateFlow<FacilityInfo?>(null)
+    val targetFacility = _targetFacility.asStateFlow()
+
+    fun setTargetFacility(facility: FacilityInfo) {
+        viewModelScope.launch {
+            _targetFacility.value = facility
+        }
+    }
+
     // 로컬 이미지 uri 리스트
     private val _selectedImageUris = MutableStateFlow<List<Uri>>(emptyList())
     val selectedImageUris = _selectedImageUris.asStateFlow()
@@ -54,9 +83,10 @@ class ReviewViewModel @Inject constructor(
         }
     }
 
-    // 리뷰 등록하기
-    fun createReview(
-        facilityId: Int,
+    // 리뷰 새로 등록 or 업데이트
+    fun updateReview(
+        isNewReview: Boolean = true,
+        facilityId: Int = 0,
         content: String,
     ) {
         viewModelScope.launch {
@@ -122,18 +152,37 @@ class ReviewViewModel @Inject constructor(
                     photoList = uploadedImageUrls
                 )
 
-                val response = reviewRepository.createReview(token, facilityId, body)
-                when (response) {
-                    is DefaultResponse.Success -> {
-                        Log.d("ReviewViewModel", "리뷰 등록 성공")
-                        _selectedImageUris.value = emptyList() // 성공 후 이미지 비우기
-                        _serverUrls.value = emptyList() // 성공 후 url 정보 비우기
-                        _uploadState.value = UiState.Success
+                if (isNewReview) {
+                    // 리뷰 새로 만들기
+                    val response = reviewRepository.createReview(token, facilityId, body)
+                    when (response) {
+                        is DefaultResponse.Success -> {
+                            Log.d("ReviewViewModel", "리뷰 등록 성공")
+                            _selectedImageUris.value = emptyList() // 성공 후 이미지 비우기
+                            _serverUrls.value = emptyList() // 성공 후 url 정보 비우기
+                            _uploadState.value = UiState.Success
+                        }
+                        is DefaultResponse.Error -> {
+                            throw Exception(response.message)
+                        }
                     }
-                    is DefaultResponse.Error -> {
-                        throw Exception(response.message)
+                } else {
+                    val reviewId = _targetReview.value?.id ?: 0
+                    // 리뷰 업데이트
+                    val response = reviewRepository.updateReview(token, reviewId, body)
+                    when (response) {
+                        is DefaultResponse.Success -> {
+                            Log.d("ReviewViewModel", "리뷰 업데이트 성공")
+                            _selectedImageUris.value = emptyList() // 성공 후 이미지 비우기
+                            _serverUrls.value = emptyList() // 성공 후 url 정보 비우기
+                            _uploadState.value = UiState.Success
+                        }
+                        is DefaultResponse.Error -> {
+                            throw Exception(response.message)
+                        }
                     }
                 }
+
             } catch (e: Exception) {
                 Log.e(TAG, "리뷰 등록 실패", e)
                 _uploadState.value = UiState.Error(e.message ?: "리뷰 등록에 실패했습니다.")
@@ -141,5 +190,24 @@ class ReviewViewModel @Inject constructor(
         }
     }
 
+    fun deleteReview(
+        reviewId: Int
+    ) {
+        viewModelScope.launch {
+            val token = getToken() ?: return@launch
 
+            val response = reviewRepository.deleteReview(token, reviewId)
+            when (response) {
+                is DefaultResponse.Success -> {
+                    Log.d(TAG, "리뷰 삭제 성공")
+                    _selectedImageUris.value = emptyList() // 성공 후 이미지 비우기
+                    _serverUrls.value = emptyList() // 성공 후 url 정보 비우기
+                    _uploadState.value = UiState.Success
+                }
+                is DefaultResponse.Error -> {
+                    throw Exception(response.message)
+                }
+            }
+        }
+    }
 }

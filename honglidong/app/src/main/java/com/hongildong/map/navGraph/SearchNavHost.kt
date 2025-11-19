@@ -3,6 +3,8 @@ package com.hongildong.map.navGraph
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.core.graphics.component1
+import androidx.core.graphics.component2
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -10,6 +12,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
+import com.hongildong.map.data.entity.ReviewInfo
 import com.hongildong.map.data.entity.SearchKeyword
 import com.hongildong.map.data.entity.SearchableNodeType
 import com.hongildong.map.ui.bookmark.BookmarkViewModel
@@ -180,6 +183,7 @@ fun SearchNavHost(
                 val parentEntry = remember(backStackEntry) {
                     searchNavController.getBackStackEntry(SEARCH_GRAPH_ROUTE)
                 }
+                val reviewViewModel: ReviewViewModel = hiltViewModel(parentEntry)
                 val searchKeywordViewmodel: SearchKeywordViewmodel = hiltViewModel(parentEntry)
                 val searchedWord = backStackEntry.arguments?.getString("searchedWord") ?: ""
 
@@ -197,33 +201,48 @@ fun SearchNavHost(
                         searchNavController.navigate(NavRoute.DirectionSearch.route)
                     },
                     onReview = {
-                        searchNavController.navigate(NavRoute.Review.route + "/${it.name}/${it.id}")
-                    }
+                        reviewViewModel.setTargetFacility(it)
+                        searchNavController.navigate(NavRoute.Review.route + "/$searchedWord/${it.id}/0")
+                    },
+                    onEditReview = { facilityId, reviewInfo ->
+                        reviewViewModel.setTargetReview(reviewInfo)
+                        searchNavController.navigate(NavRoute.Review.route + "/$searchedWord/${facilityId}/1")
+                    },
+                    onDeleteReview = {
+                        reviewViewModel.deleteReview(it)
+                    },
                 )
             }
             // 리뷰 작성 화면
             composable(
-                route = NavRoute.Review.route + "/{facilityName}/{facilityId}",
+                route = NavRoute.Review.route + "/{facilityName}/{facilityId}/{reviewMode}",
                 arguments = listOf(
                     navArgument("facilityName") { type = NavType.StringType },
-                    navArgument("facilityId") { type = NavType.IntType }
+                    navArgument("facilityId") { type = NavType.IntType },
+                    navArgument("reviewMode") { type = NavType.IntType }
                 )
             ) { backStackEntry ->
                 val parentEntry = remember(backStackEntry) {
                     searchNavController.getBackStackEntry(SEARCH_GRAPH_ROUTE)
                 }
-                val reviewViewModel: ReviewViewModel = hiltViewModel()
+                val reviewViewModel: ReviewViewModel = hiltViewModel(parentEntry)
                 val facilityName = backStackEntry.arguments?.getString("facilityName") ?: ""
                 val facilityId = backStackEntry.arguments?.getInt("facilityId") ?: 0
+                val reviewMode = backStackEntry.arguments?.getInt("reviewMode") ?: 0
 
                 ReviewScreen(
-                    reviewViewModel = reviewViewModel,
                     facilityName = facilityName,
+                    reviewViewModel = reviewViewModel,
                     onGoBack = {
+                        reviewViewModel.clearReviewInfo()
                         searchNavController.popBackStack()
                     },
                     onDone = {
-                        reviewViewModel.createReview(facilityId, it)
+                        reviewViewModel.updateReview(
+                            isNewReview = if (reviewMode == 0) true else false,
+                            facilityId = facilityId,
+                            content = it
+                        )
                     }
                 )
             }

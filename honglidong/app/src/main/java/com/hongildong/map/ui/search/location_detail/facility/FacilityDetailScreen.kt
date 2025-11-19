@@ -16,6 +16,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import com.hongildong.map.data.entity.FacilityInfo
+import com.hongildong.map.data.entity.ReviewInfo
 import com.hongildong.map.data.entity.SearchableNodeType
 import com.hongildong.map.data.entity.toSearchKeyword
 import com.hongildong.map.ui.bookmark.BookmarkFolderUpdateContent
@@ -39,7 +40,9 @@ fun FacilityDetailScreen(
     bottomSheetViewModel: BottomSheetViewModel,
     onGoBack: () -> Unit,
     onSearchDirection: () -> Unit,
-    onReview: (FacilityInfo) -> Unit
+    onReview: (FacilityInfo) -> Unit,
+    onEditReview: (Int, ReviewInfo) -> Unit,
+    onDeleteReview: (Int) -> Unit
 ) {
     val context = LocalContext.current
     val facilityInfo by searchViewmodel.facilityDetail.collectAsState()
@@ -177,7 +180,17 @@ fun FacilityDetailScreen(
                         } else {
                             onReview(facilityInfo!!)
                         }
-                    }
+                    },
+                    onEditReview = {
+                        if (facilityInfo == null) {
+                            Toast.makeText(context, "유효하지 않은 장소입니다.", Toast.LENGTH_SHORT).show()
+                        } else {
+                            onEditReview(facilityInfo!!.id, it)
+                        }
+                    },
+                    onDeleteReview = {
+                        onDeleteReview(it)
+                    },
                 )
             }
         }

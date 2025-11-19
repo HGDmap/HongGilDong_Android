@@ -252,7 +252,10 @@ fun ReviewScreen(
                 dismissMsg = "취소",
                 confirmMsg = "확인",
                 onDismissRequest = {showDialog = false},
-                onConfirmation = { onGoBack() }
+                onConfirmation = {
+                    showDialog = false
+                    onGoBack()
+                }
             )
         }
 
