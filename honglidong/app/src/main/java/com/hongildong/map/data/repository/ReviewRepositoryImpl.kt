@@ -13,8 +13,11 @@ class ReviewRepositoryImpl @Inject constructor(
     private val api: ReviewService
 ): ReviewRepository {
 
-    override suspend fun createPresignedUrl(body: ImageUploadRequest): DefaultResponse<List<ImageUploadResponse>> {
-        return safeApiCall { api.createPresignedUrl(body) }
+    override suspend fun createPresignedUrl(
+        accessToken: String,
+        body: ImageUploadRequest
+    ): DefaultResponse<List<ImageUploadResponse>> {
+        return safeApiCall { api.createPresignedUrl(accessToken, body) }
     }
 
     override suspend fun getOneReview(

@@ -23,6 +23,7 @@ interface ReviewService {
     // 3. 해당 api에서 받은 imageURL은 리뷰 등록 api로 보내기
     @POST("image/presigned-url")
     suspend fun createPresignedUrl(
+        @Header("Authorization") accessToken: String,
         @Body body: ImageUploadRequest
     ): ApiResponse<List<ImageUploadResponse>>
 
@@ -56,7 +57,7 @@ interface ReviewService {
     ): ApiResponse<ReviewInfo>
 
     // 리뷰 생성
-    @PATCH("review/{facilityId}")
+    @POST("review/{facilityId}")
     suspend fun createReview(
         @Header("Authorization") accessToken: String,
         @Path("facilityId") facilityId: Int,

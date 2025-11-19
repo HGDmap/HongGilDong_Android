@@ -9,6 +9,6 @@ data class ReviewInfo(
     val updatedAt: String,
     val writerId: Int,
     val writerNickname: String,
-    val writerProfilePic: String,
-    val likeCnt: Int
+    val writerProfilePic: String? = null,
+    val likeCnt: Int? = null
 )

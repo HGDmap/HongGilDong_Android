@@ -28,6 +28,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,6 +39,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.hongildong.map.R
 import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Black
@@ -51,23 +53,23 @@ import com.hongildong.map.ui.util.popup.ConfirmPopup
 
 @Composable
 fun ReviewScreen(
-    facilityId: Int,
+    reviewViewModel: ReviewViewModel = hiltViewModel(),
     facilityName: String,
     onGoBack: () -> Unit,
-    onDone: () -> Unit
+    onDone: (String) -> Unit
 ) {
     val scrollState = rememberScrollState()
     var textState by remember { mutableStateOf("") }
     var showDialog by remember { mutableStateOf(false) }
 
     // 고른 이미지 리스트
-    var selectedImageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
+    val images by reviewViewModel.selectedImageUris.collectAsState()
 
     // 이미지 고르기 런처
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickMultipleVisualMedia(),
         onResult = { uris ->
-            selectedImageUris = uris
+            reviewViewModel.addImage(uris)
         }
     )
 
@@ -174,13 +176,13 @@ fun ReviewScreen(
 
                     }
                     // 고른 이미지
-                    if (selectedImageUris.isNotEmpty()) {
+                    if (images.isNotEmpty()) {
                         LazyRow (
                             modifier = Modifier.weight(1f),
                             contentPadding = PaddingValues(horizontal = 5.dp),
                             horizontalArrangement = Arrangement.spacedBy(5.dp)
                         ) {
-                            items(selectedImageUris) { imageUri ->
+                            items(images) { imageUri ->
                                 NetworkImage(
                                     url = imageUri.toString(),
                                     width = 89.dp,
@@ -201,7 +203,6 @@ fun ReviewScreen(
                     CustomTextBox(
                         placeholderMessage = "장소가 마음에 들었나요?\n자세한 후기를 적어주세요!",
                         textState = textState,
-                        onDone = { onDone() },
                         onTextChange = { textState = it }
                     )
                 }
@@ -213,7 +214,7 @@ fun ReviewScreen(
                 buttonText = "작성 완료",
                 isButtonEnabled = if (textState.length > 10) true else false,
                 onClick = {
-                    onDone()
+                    onDone(textState)
                 }
             )
         }

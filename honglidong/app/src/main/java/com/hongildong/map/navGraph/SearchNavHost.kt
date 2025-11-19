@@ -1,11 +1,14 @@
 package com.hongildong.map.navGraph
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.hongildong.map.data.entity.SearchKeyword
 import com.hongildong.map.data.entity.SearchableNodeType
@@ -18,6 +21,7 @@ import com.hongildong.map.ui.search.direction.DirectionSearchScreen
 import com.hongildong.map.ui.search.location_detail.facility.FacilityDetailScreen
 import com.hongildong.map.ui.search.location_detail.LocationDetailScreen
 import com.hongildong.map.ui.search.location_detail.facility.ReviewScreen
+import com.hongildong.map.ui.search.location_detail.facility.ReviewViewModel
 import com.hongildong.map.ui.util.bottomsheet.BottomSheetViewModel
 import com.hongildong.map.ui.util.map.MapViewmodel
 
@@ -194,26 +198,35 @@ fun SearchNavHost(
                     },
                     onReview = {
                         searchNavController.navigate(NavRoute.Review.route + "/${it.name}/${it.id}")
+                        Log.d("디테일 스크린 여긴가?", "시설아이디: ${it.id}")
                     }
                 )
             }
             // 리뷰 작성 화면
-            composable(route = NavRoute.Review.route + "/{facilityName}" + "/{facilityId}") { backStackEntry ->
+            composable(
+                route = NavRoute.Review.route + "/{facilityName}/{facilityId}",
+                arguments = listOf(
+                    navArgument("facilityName") { type = NavType.StringType },
+                    navArgument("facilityId") { type = NavType.IntType }
+                )
+            ) { backStackEntry ->
                 val parentEntry = remember(backStackEntry) {
                     searchNavController.getBackStackEntry(SEARCH_GRAPH_ROUTE)
                 }
-                val searchKeywordViewmodel: SearchKeywordViewmodel = hiltViewModel(parentEntry)
+                val reviewViewModel: ReviewViewModel = hiltViewModel()
                 val facilityName = backStackEntry.arguments?.getString("facilityName") ?: ""
                 val facilityId = backStackEntry.arguments?.getInt("facilityId") ?: 0
+                Log.d("리뷰 스크린 여긴가?", "시설아이디: $facilityId")
 
                 ReviewScreen(
+                    reviewViewModel = reviewViewModel,
                     facilityName = facilityName,
-                    facilityId = facilityId,
                     onGoBack = {
                         searchNavController.popBackStack()
                     },
                     onDone = {
-
+                        reviewViewModel.createReview(facilityId, it)
+                        searchNavController.popBackStack()
                     }
                 )
             }
