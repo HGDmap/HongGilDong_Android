@@ -5,5 +5,5 @@ data class ProfileResponse(
     val id: Int,
     val name: String,
     val nickname: String,
-    val profilePic: String
+    val profilePic: String?
 )

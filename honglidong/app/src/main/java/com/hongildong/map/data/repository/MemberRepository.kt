@@ -5,14 +5,7 @@ import com.hongildong.map.data.remote.request.ProfileUpdateRequest
 import com.hongildong.map.data.remote.response.ImageUploadResponse
 import com.hongildong.map.data.remote.response.ProfileResponse
 import com.hongildong.map.data.remote.response.ReviewResponse
-import com.hongildong.map.data.util.ApiResponse
 import com.hongildong.map.data.util.DefaultResponse
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.Header
-import retrofit2.http.PATCH
-import retrofit2.http.POST
-import retrofit2.http.Query
 
 interface MemberRepository {
     // 프로필 사진 수정을 위한 s3 링크 받기

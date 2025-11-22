@@ -40,6 +40,23 @@ class MemberViewmodel @Inject constructor(
         return sharedPreferences.getString("access_token", null)
     }
 
+    private val _isUser = MutableStateFlow(false)
+    val isUser = _isUser.asStateFlow()
+
+    fun verifyUser() {
+        viewModelScope.launch {
+            val token = getToken()
+            Log.d("token check", "$token")
+            if (token != null) {
+                _isUser.value = true
+                return@launch
+            } else {
+                _isUser.value = false
+                return@launch
+            }
+        }
+    }
+
     private val _uploadState = MutableStateFlow<UiState>(UiState.Initial)
     val uploadState = _uploadState.asStateFlow()
 

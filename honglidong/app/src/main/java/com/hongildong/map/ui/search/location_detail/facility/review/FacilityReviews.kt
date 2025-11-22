@@ -86,11 +86,12 @@ fun FacilityReviewItem(
                 )
             }
 
-            // todo: 리뷰쓴 사람 == 사용자일때만 보이게 해야함
-            DropDownMenu(
-                onDelete = onDeleteItem,
-                onEdit = onEditItem
-            )
+            if (reviewItem.isMine) {
+                DropDownMenu(
+                    onDelete = onDeleteItem,
+                    onEdit = onEditItem
+                )
+            }
         }
         Row (
             modifier = Modifier.padding(vertical = 5.dp),

@@ -60,7 +60,7 @@ fun ProfileUpdateContent(
         Spacer(Modifier.height(20.dp))
         Box {
             ProfileImage(
-                profileUrl = profileUrl,
+                profileUrl = profileImage,
                 modifier = Modifier.size(88.dp)
             )
             Image(

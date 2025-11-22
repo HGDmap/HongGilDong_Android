@@ -18,6 +18,8 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -27,23 +29,45 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.hongildong.map.R
+import com.hongildong.map.ui.profile.MemberViewmodel
+import com.hongildong.map.ui.profile.ProfileUpdateContent
+import com.hongildong.map.ui.search.location_detail.facility.review.FacilityReviews
 import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Black
 import com.hongildong.map.ui.theme.Gray500
 import com.hongildong.map.ui.theme.Gray700
 import com.hongildong.map.ui.theme.PrimaryMid
 import com.hongildong.map.ui.theme.White
+import com.hongildong.map.ui.util.EmptyContents
 import com.hongildong.map.ui.util.ProfileImage
+import com.hongildong.map.ui.util.bottomsheet.BottomSheetViewModel
 
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(
+    bottomSheetViewModel: BottomSheetViewModel = hiltViewModel()
+) {
+    val memberViewModel: MemberViewmodel = hiltViewModel()
+
     val pages = listOf(
         ProfileTab(R.drawable.ic_profile_liked_reviews, "좋아요한 리뷰"),
         ProfileTab(R.drawable.ic_profile_my_review, "내 리뷰"),
         ProfileTab(R.drawable.ic_profile_location_suggest, "장소 제안"),
     )
     var tabState by remember { mutableIntStateOf(0) }
+
+    LaunchedEffect(Unit) {
+        memberViewModel.verifyUser()
+        memberViewModel.getProfile()
+        memberViewModel.getMyReviews()
+        memberViewModel.getLikedReview()
+    }
+
+    val profileInfo by memberViewModel.profileInfo.collectAsState()
+    val myReviews by memberViewModel.myReviews.collectAsState()
+    val likedReviews by memberViewModel.likedReviews.collectAsState()
+    val isUser by memberViewModel.isUser.collectAsState()
 
     Column (
         modifier = Modifier
@@ -58,12 +82,14 @@ fun ProfileScreen() {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             ProfileImage(
-                profileUrl = null
+                profileUrl = if (isUser) profileInfo?.profilePic else null
             )
             Text(
-                text = "홍길동",
+                text = if (isUser) profileInfo?.nickname ?: "홍길동" else "로그인 해주세요.",
                 style = AppTypography.Bold_18.copy(color = Black),
-                modifier = Modifier.weight(1f).padding(horizontal = 10.dp)
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 10.dp)
             )
             Image(
                 painter = painterResource(R.drawable.ic_edit),
@@ -72,7 +98,22 @@ fun ProfileScreen() {
                 modifier = Modifier
                     .size(24.dp)
                     .clickable {
-
+                        if (isUser) {
+                            bottomSheetViewModel.show {
+                                ProfileUpdateContent(
+                                    profileUrl = profileInfo?.profilePic,
+                                    nickname = profileInfo?.nickname ?: "",
+                                    onDone = { imageUri: String?, nickName: String ->
+                                        memberViewModel.updateProfile(
+                                            pickedImage = imageUri,
+                                            nickname = nickName,
+                                            userId = profileInfo?.id ?: 0,
+                                        )
+                                        bottomSheetViewModel.hide()
+                                    }
+                                )
+                            }
+                        }
                     }
             )
         }
@@ -117,15 +158,42 @@ fun ProfileScreen() {
         when (tabState) {
             0 -> {
                 // 좋아요한 리뷰 탭
+                if (isUser) {
+                    FacilityReviews(
+                        reviews = myReviews,
+                        onDeleteItem = {  },
+                        onEditItem = {  }
+                    )
+                } else {
+                    EmptyContents("로그인 후에 볼 수 있어요.")
+                }
             }
             1 -> {
                 // 리뷰 탭
+                if (isUser) {
+                    FacilityReviews(
+                        reviews = likedReviews,
+                        onDeleteItem = {  },
+                        onEditItem = {  }
+                    )
+                } else {
+                    EmptyContents("로그인 후에 볼 수 있어요.")
+                }
             }
             2 -> {
                 // 장소 제안 탭
             }
             else -> {
                 // 좋아요한 리뷰 탭
+                if (isUser) {
+                    FacilityReviews(
+                        reviews = myReviews,
+                        onDeleteItem = {  },
+                        onEditItem = {  }
+                    )
+                } else {
+                    EmptyContents("로그인 후에 볼 수 있어요.")
+                }
             }
         }
     }
