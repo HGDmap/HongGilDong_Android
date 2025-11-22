@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,6 +42,7 @@ import com.hongildong.map.ui.theme.Gray100
 import com.hongildong.map.ui.theme.Gray300
 import com.hongildong.map.ui.theme.PrimaryMid
 import com.hongildong.map.ui.theme.White
+import com.hongildong.map.ui.util.EmptyContents
 import com.hongildong.map.ui.util.popup.ConfirmPopup
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
@@ -52,7 +55,8 @@ fun FacilityReviewTab(
     facilityId: Int,
     onReview: () -> Unit,
     onEditReview: (ReviewInfo) -> Unit,
-    onDeleteReview: (Int) -> Unit
+    onDeleteReview: (Int) -> Unit,
+    onLikeItem: (Int) -> Unit
 ) {
     val reviews by searchViewmodel.facilityReviews.collectAsState()
     var targetReviewId by remember { mutableStateOf(-1) }
@@ -87,16 +91,29 @@ fun FacilityReviewTab(
                 FacilityReviewInfo()
                 HorizontalDivider(thickness = 3.dp, color = Gray100)
 
-                FacilityReviews(
-                    reviews = reviews,
-                    onDeleteItem = {
-                        targetReviewId = it
-                        enablePopup = true
-                    },
-                    onEditItem = {
-                        onEditReview(it)
-                    },
+                Text(
+                    "리뷰",
+                    style = AppTypography.Bold_20.copy(color = Black),
+                    modifier = Modifier.padding(vertical = 25.dp)
                 )
+                if (reviews.isEmpty()) {
+                    EmptyContents("등록된 리뷰가 아직 없어요.")
+                } else {
+                    FacilityReviews(
+                        reviews = reviews,
+                        onDeleteItem = {
+                            targetReviewId = it
+                            enablePopup = true
+                        },
+                        onEditItem = {
+                            onEditReview(it)
+                        },
+                        onLikeItem = {
+                            onLikeItem(it)
+                        }
+                    )
+                }
+
             } else {
                 Box(
                     modifier = Modifier.fillMaxSize()
@@ -118,9 +135,19 @@ fun FacilityReviewTab(
                         FacilityReviewInfo()
                         HorizontalDivider(thickness = 3.dp, color = Gray100)
 
-                        FacilityReviews(
-                            reviews = emptyList(),
+                        Text(
+                            "리뷰",
+                            style = AppTypography.Bold_20.copy(color = Black),
+                            modifier = Modifier.padding(vertical = 25.dp)
                         )
+                        if (reviews.isEmpty()) {
+                            EmptyContents("등록된 리뷰가 아직 없어요.")
+                        } else {
+                            FacilityReviews(
+                                reviews = emptyList(),
+                            )
+                        }
+
                     }
                     BlockNonUser(
                         title = "리뷰",

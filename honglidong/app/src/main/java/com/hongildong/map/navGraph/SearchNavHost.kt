@@ -92,7 +92,7 @@ fun SearchNavHost(
                                     }
                                     SearchableNodeType.BUILDING.apiName -> {
                                         searchKeywordViewmodel.onSearchBuildingInfo(keyword.id)
-                                        searchNavController.navigate(NavRoute.LocationDetail.route + "/${nodeName}/${keyword.id}")
+                                        searchNavController.navigate(NavRoute.BuildingDetail.route + "/${nodeName}/${keyword.id}")
                                     }
                                 }
                             }

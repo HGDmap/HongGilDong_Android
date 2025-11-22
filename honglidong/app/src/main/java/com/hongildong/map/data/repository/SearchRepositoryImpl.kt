@@ -4,10 +4,8 @@ import com.hongildong.map.data.entity.AutoCompleteSearchKeyword
 import com.hongildong.map.data.entity.FacilityInfo
 import com.hongildong.map.data.entity.NodeInfo
 import com.hongildong.map.data.remote.api.SearchService
-import com.hongildong.map.data.remote.request.ImageUploadRequest
 import com.hongildong.map.data.remote.request.PhotoRequest
 import com.hongildong.map.data.remote.response.DirectionResponse
-import com.hongildong.map.data.remote.response.ImageUploadResponse
 import com.hongildong.map.data.remote.response.PhotoResponse
 import com.hongildong.map.data.remote.response.RawSearchResponse
 import com.hongildong.map.data.remote.response.ReviewResponse

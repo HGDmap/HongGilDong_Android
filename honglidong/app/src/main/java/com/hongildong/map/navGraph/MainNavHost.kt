@@ -108,7 +108,9 @@ fun MainNavHost(
                 )
             }
             composable(route = NavRoute.Profile.route) {
-                ProfileScreen()
+                ProfileScreen(
+                    bottomSheetViewModel = bottomSheetViewModel,
+                )
             }
         }
     }

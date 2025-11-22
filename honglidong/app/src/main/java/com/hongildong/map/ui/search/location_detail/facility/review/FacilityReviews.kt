@@ -14,6 +14,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -31,30 +35,23 @@ import com.hongildong.map.ui.util.popup.DropDownMenu
 fun FacilityReviews(
     reviews: List<ReviewInfo>,
     onDeleteItem: (Int) -> Unit = {},
-    onEditItem: (ReviewInfo) -> Unit = {}
+    onEditItem: (ReviewInfo) -> Unit = {},
+    onLikeItem: (Int) -> Unit = {}
 ) {
-    Column {
-        Text(
-            "리뷰",
-            style = AppTypography.Bold_20.copy(color = Black),
-            modifier = Modifier.padding(vertical = 25.dp)
-        )
-        if (reviews.isEmpty()) {
-            EmptyContents("등록된 리뷰가 아직 없어요.")
-        } else {
-            LazyColumn {
-                items(reviews) { review ->
-                    FacilityReviewItem(
-                        reviewItem = review,
-                        onDeleteItem = {
-                            onDeleteItem(review.id)
-                        },
-                        onEditItem = {
-                            onEditItem(review)
-                        }
-                    )
+    LazyColumn {
+        items(reviews) { review ->
+            FacilityReviewItem(
+                reviewItem = review,
+                onDeleteItem = {
+                    onDeleteItem(review.id)
+                },
+                onEditItem = {
+                    onEditItem(review)
+                },
+                onLikeItem = {
+                    onLikeItem(review.id)
                 }
-            }
+            )
         }
     }
 }
@@ -63,8 +60,12 @@ fun FacilityReviews(
 fun FacilityReviewItem(
     reviewItem: ReviewInfo,
     onDeleteItem: () -> Unit,
-    onEditItem: () -> Unit
+    onEditItem: () -> Unit,
+    onLikeItem: () -> Unit
 ) {
+    var likeCnt by remember { mutableStateOf(reviewItem.likeCnt ?: 0) }
+    var isLiked by remember { mutableStateOf(reviewItem.isLiked) }
+
     Column {
         Row (
             modifier = Modifier
@@ -86,11 +87,12 @@ fun FacilityReviewItem(
                 )
             }
 
-            // todo: 리뷰쓴 사람 == 사용자일때만 보이게 해야함
-            DropDownMenu(
-                onDelete = onDeleteItem,
-                onEdit = onEditItem
-            )
+            if (reviewItem.isMine) {
+                DropDownMenu(
+                    onDelete = onDeleteItem,
+                    onEdit = onEditItem
+                )
+            }
         }
         Row (
             modifier = Modifier.padding(vertical = 5.dp),
@@ -129,7 +131,18 @@ fun FacilityReviewItem(
                 }
             }
         }
-        // todo: 좋아요 아이콘
+
+        Spacer(Modifier.height(8.dp))
+
+        LikedReviewIcon(
+            isLiked = isLiked,
+            onClick = {
+                isLiked = !isLiked
+                onLikeItem()
+                if (isLiked) likeCnt++ else likeCnt--
+            },
+            likedCnt = likeCnt
+        )
 
 
         Spacer(Modifier.height(12.dp))

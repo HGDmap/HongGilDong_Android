@@ -10,5 +10,6 @@ data class ReviewInfo(
     val writerId: Int, // 변경 예정 -> isMine 필드로
     val writerNickname: String,
     val writerProfilePic: String? = null,
-    val likeCnt: Int? = null
+    val likeCnt: Int? = null,
+    val isMine: Boolean
 )

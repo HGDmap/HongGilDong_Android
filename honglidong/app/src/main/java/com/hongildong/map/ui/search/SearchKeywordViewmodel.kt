@@ -381,6 +381,24 @@ class SearchKeywordViewmodel @Inject constructor(
         }
     }
 
+    fun updateLikedReview(
+        reviewId: Int
+    ) {
+        viewModelScope.launch {
+            val token = getToken() ?: return@launch
+
+            val response = reviewRepository.saveReview(token, reviewId)
+            when (response) {
+                is DefaultResponse.Success -> {
+                    Log.d(TAG, "리뷰 좋아요 성공 $response")
+                }
+                is DefaultResponse.Error -> {
+                    Log.d(TAG, "리뷰 좋아요 실패 $response")
+                }
+            }
+        }
+    }
+
     fun eraseFacilityData() {
         viewModelScope.launch {
             _facilityPhotoInfo.value = null

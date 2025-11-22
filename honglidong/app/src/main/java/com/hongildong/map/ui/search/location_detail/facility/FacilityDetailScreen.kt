@@ -200,6 +200,11 @@ fun FacilityDetailScreen(
                             onDeleteReview(it)
                         }
                     },
+                    onLikeReview = {
+                        if (facilityInfo != null) {
+                            searchViewmodel.updateLikedReview(it)
+                        }
+                    },
                 )
             }
         }
