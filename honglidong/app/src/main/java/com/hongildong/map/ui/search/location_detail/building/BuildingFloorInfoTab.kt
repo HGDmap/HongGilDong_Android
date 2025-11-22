@@ -1,6 +1,5 @@
 package com.hongildong.map.ui.search.location_detail.building
 
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -25,17 +24,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.hongildong.map.R
 import com.hongildong.map.data.entity.FacilityInfo
+import com.hongildong.map.data.entity.Floor
 import com.hongildong.map.data.entity.FloorFacility
 import com.hongildong.map.data.entity.FloorInfo
 import com.hongildong.map.ui.theme.AppTypography
+import com.hongildong.map.ui.theme.Gray300
 import com.hongildong.map.ui.theme.Gray600
 import com.hongildong.map.ui.theme.PrimaryLight
 import com.hongildong.map.ui.theme.PrimaryMid
@@ -52,8 +50,8 @@ fun BuildingFloorInfoTab(
         items(buildingInfo.floorFacilities!!) {
             FloorInfoItem(
                 floorInfo = it,
-                onClickFacility = {
-                    onClickFacility(it)
+                onClickFacility = { facilityInfo ->
+                    onClickFacility(facilityInfo)
                 }
             )
         }
@@ -98,9 +96,9 @@ fun FloorItem(
     Row(
         modifier = Modifier
             .padding(3.dp)
-            .shadow(elevation = 3.dp, shape = RoundedCornerShape(12.dp))
+            //.shadow(elevation = 3.dp, shape = RoundedCornerShape(12.dp))
             .fillMaxWidth()
-            .border(width = 1.dp, color = if (isExpanded) PrimaryMid else Color.Transparent, shape = RoundedCornerShape(12.dp))
+            .border(width = 1.dp, color = if (isExpanded) PrimaryMid else Gray300, shape = RoundedCornerShape(12.dp))
             .background(color = if (isExpanded) PrimaryLight.copy(alpha = 0.4f) else White, shape = RoundedCornerShape(12.dp))
             .padding(10.dp)
             .clickable {
@@ -115,7 +113,7 @@ fun FloorItem(
             modifier = Modifier.padding(horizontal = 5.dp)
         )
         Text(
-            text = floor + "층",
+            text = Floor.fromApiName(floor)?.displayName ?: "?층",
             style = AppTypography.Medium_15.copy(color = if (isExpanded) PrimaryMid else Gray600),
             modifier = Modifier.weight(1f)
         )
@@ -140,14 +138,16 @@ fun FacilityItem(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 3.dp)
+            .padding(5.dp)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable {
                     onClickFacility()
-                }
+                },
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
                 text = facility.name,
