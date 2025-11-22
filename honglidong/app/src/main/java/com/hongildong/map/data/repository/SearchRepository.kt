@@ -3,21 +3,12 @@ package com.hongildong.map.data.repository
 import com.hongildong.map.data.entity.AutoCompleteSearchKeyword
 import com.hongildong.map.data.entity.FacilityInfo
 import com.hongildong.map.data.entity.NodeInfo
-import com.hongildong.map.data.remote.request.ImageUploadRequest
 import com.hongildong.map.data.remote.request.PhotoRequest
 import com.hongildong.map.data.remote.response.DirectionResponse
-import com.hongildong.map.data.remote.response.ImageUploadResponse
 import com.hongildong.map.data.remote.response.PhotoResponse
 import com.hongildong.map.data.remote.response.RawSearchResponse
 import com.hongildong.map.data.remote.response.ReviewResponse
-import com.hongildong.map.data.util.ApiResponse
 import com.hongildong.map.data.util.DefaultResponse
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.Header
-import retrofit2.http.POST
-import retrofit2.http.Path
-import retrofit2.http.Query
 
 interface SearchRepository {
     suspend fun searchWithId(accessToken: String, nodeId: Long): DefaultResponse<NodeInfo>

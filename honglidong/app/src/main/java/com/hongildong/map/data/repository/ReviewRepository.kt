@@ -1,11 +1,10 @@
 package com.hongildong.map.data.repository
 
 import com.hongildong.map.data.entity.ReviewInfo
-import com.hongildong.map.data.remote.request.ImageUploadRequest
+import com.hongildong.map.data.remote.request.ReviewImageUploadRequest
 import com.hongildong.map.data.remote.request.ReviewUpdateRequest
 import com.hongildong.map.data.remote.response.ImageUploadResponse
 import com.hongildong.map.data.util.DefaultResponse
-import retrofit2.http.Header
 
 interface ReviewRepository {
     // 시설 리뷰 등록시 사진 등록 - s3 업로드용 링크 받기
@@ -15,7 +14,7 @@ interface ReviewRepository {
     // 3. 해당 api에서 받은 imageURL은 리뷰 등록 api로 보내기
     suspend fun createPresignedUrl(
         accessToken: String,
-        body: ImageUploadRequest
+        body: ReviewImageUploadRequest
     ): DefaultResponse<List<ImageUploadResponse>>
 
     // 특정한 하나의 리뷰 조회

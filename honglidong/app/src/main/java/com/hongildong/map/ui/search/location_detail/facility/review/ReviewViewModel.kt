@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hongildong.map.data.entity.FacilityInfo
 import com.hongildong.map.data.entity.ReviewInfo
-import com.hongildong.map.data.remote.request.ImageUploadRequest
+import com.hongildong.map.data.remote.request.ReviewImageUploadRequest
 import com.hongildong.map.data.remote.request.ReviewUpdateRequest
 import com.hongildong.map.data.remote.response.ImageUploadResponse
 import com.hongildong.map.data.repository.ReviewRepository
@@ -101,14 +101,14 @@ class ReviewViewModel @Inject constructor(
                         imageRepository.getFileName(uri) ?: ""
                     }
 
-                    val imageUploadRequest = ImageUploadRequest(
+                    val reviewImageUploadRequest = ReviewImageUploadRequest(
                         facilityId = facilityId,
                         fileNames = fileNames
                     )
-                    Log.d(TAG, "create presigned url 요청: $imageUploadRequest")
+                    Log.d(TAG, "create presigned url 요청: $reviewImageUploadRequest")
 
                     val presignedUrlResponse =
-                        reviewRepository.createPresignedUrl(token, imageUploadRequest)
+                        reviewRepository.createPresignedUrl(token, reviewImageUploadRequest)
                     when (presignedUrlResponse) {
                         is DefaultResponse.Success -> {
                             Log.d(TAG, "create presigned url 응답 성공: $presignedUrlResponse")
