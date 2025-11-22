@@ -1,7 +1,7 @@
 package com.hongildong.map.data.entity
 
 data class FacilityInfo(
-    val description: String,
+    val description: String?,
     val name: String,
     val id: Int, // 시설의 id
     val isBookmarked: Boolean,
@@ -13,7 +13,9 @@ data class FacilityInfo(
     val open: String? = null,
     val phone: String? = null,
     val photoList: List<String?>,
-    val type: String
+    val type: String,
+    // building일때만 씀
+    val floorFacilities: List<FloorInfo>? = null
 )
 
 fun FacilityInfo.toSearchKeyword(): SearchKeyword {
