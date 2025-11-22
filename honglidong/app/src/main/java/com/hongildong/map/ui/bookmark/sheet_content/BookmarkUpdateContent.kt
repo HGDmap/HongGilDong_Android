@@ -1,4 +1,4 @@
-package com.hongildong.map.ui.bookmark
+package com.hongildong.map.ui.bookmark.sheet_content
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.hongildong.map.R
 import com.hongildong.map.data.entity.BookmarkFolder
 import com.hongildong.map.data.entity.FolderColor
+import com.hongildong.map.ui.bookmark.SelectableBookmarkFolderItem
 import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.BookmarkRed
 import com.hongildong.map.ui.theme.Gray300

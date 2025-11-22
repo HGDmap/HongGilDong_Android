@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.hongildong.map.R
+import com.hongildong.map.data.entity.BookmarkInfo
 import com.hongildong.map.data.entity.FolderColor
 import com.hongildong.map.data.entity.NodeInfo
 import com.hongildong.map.ui.theme.BookmarkRed
@@ -15,6 +16,7 @@ import com.hongildong.map.ui.theme.Gray600
 import com.hongildong.map.ui.theme.PrimaryMid
 import com.hongildong.map.ui.theme.White
 import com.hongildong.map.ui.util.BookmarkIcon
+import com.hongildong.map.ui.util.SearchResultIcon
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.compose.CircleOverlay
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
@@ -32,7 +34,8 @@ import com.naver.maps.map.overlay.OverlayImage
 @Composable
 fun MapBackground(
     viewModel: MapViewmodel,
-    onClickBookmark: () -> Unit
+    onClickBookmark: (BookmarkInfo) -> Unit = {},
+    onClickSearchResult: (NodeInfo) -> Unit = {},
 ) {
     // 마커
     val markers by viewModel.markers.collectAsState()
@@ -40,6 +43,8 @@ fun MapBackground(
     val pathNodes by viewModel.pathNodes.collectAsState()
     // 북마크
     val bookmarks by viewModel.bookmarks.collectAsState()
+    // 검색 결과
+    val searchResult by viewModel.searchResult.collectAsState()
     // 사용자 위치 따라가기 모드 제어용
     val locationTrackingMode by viewModel.locationTrackingMode.collectAsState()
 
@@ -57,6 +62,9 @@ fun MapBackground(
         // 마커
         markers.forEach { markerInfo ->
             Marker(
+                icon = OverlayImage.fromResource(R.drawable.ic_pin),
+                width = 50.dp,
+                height = 62.5.dp,
                 state = MarkerState(position = markerInfo.position),
                 captionText = markerInfo.name
             )
@@ -67,17 +75,33 @@ fun MapBackground(
             folderInfo.bookmarkList.forEach { bookmark ->
                 MarkerComposable(
                     state = MarkerState(position = LatLng(bookmark.latitude, bookmark.longitude)),
-                    captionText = bookmark.name ?: bookmark.nodeName ?: "",
+                    captionText = bookmark.name,
                     onClick = {
-                        // todo: 북마크 버블 클릭시 해당 건물/시설 검색해야함
+                        onClickBookmark(bookmark)
                         false
                     }
                 ) {
                     BookmarkIcon(
-                        size = 20.dp,
+                        size = 10.dp,
                         color = folderColor
                     )
                 }
+            }
+        }
+
+        searchResult.forEach { result ->
+            //val folderColor = FolderColor.fromColorName(folderInfo.color)?.color ?: BookmarkRed
+            MarkerComposable(
+                state = MarkerState(position = LatLng(result.latitude, result.longitude)),
+                captionText = result.name ?: "",
+                onClick = {
+                    onClickSearchResult(result)
+                    false
+                }
+            ) {
+                SearchResultIcon(
+                    size = 10.dp
+                )
             }
         }
 

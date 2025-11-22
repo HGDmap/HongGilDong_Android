@@ -19,8 +19,8 @@ import com.hongildong.map.data.entity.FacilityInfo
 import com.hongildong.map.data.entity.ReviewInfo
 import com.hongildong.map.data.entity.SearchableNodeType
 import com.hongildong.map.data.entity.toSearchKeyword
-import com.hongildong.map.ui.bookmark.BookmarkFolderUpdateContent
-import com.hongildong.map.ui.bookmark.BookmarkUpdateContent
+import com.hongildong.map.ui.bookmark.sheet_content.BookmarkFolderUpdateContent
+import com.hongildong.map.ui.bookmark.sheet_content.BookmarkUpdateContent
 import com.hongildong.map.ui.bookmark.BookmarkViewModel
 import com.hongildong.map.ui.search.SearchKeywordViewmodel
 import com.hongildong.map.ui.search.location_detail.SearchBarWithGoBack
@@ -33,6 +33,7 @@ import com.naver.maps.map.compose.ExperimentalNaverMapApi
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalNaverMapApi::class)
 @Composable
 fun FacilityDetailScreen(
+    searchedFacilityId: Int = 0,
     searchedWord: String = "",
     searchViewmodel: SearchKeywordViewmodel,
     mapViewmodel: MapViewmodel,
@@ -49,6 +50,12 @@ fun FacilityDetailScreen(
     val directionResult by searchViewmodel.directionResult.collectAsState()
     val isUser by bookmarkViewModel.isUser.collectAsState()
     val allBookmarks by bookmarkViewModel.allBookmarkInfo.collectAsState()
+
+    LaunchedEffect(Unit) {
+        // 검색 결과 바탕으로 시설 상세 정보 api 호출
+        searchViewmodel.onSearchFacilityInfo(searchedFacilityId)
+        bookmarkViewModel.getAllBookmarks()
+    }
 
     LaunchedEffect(key1 = facilityInfo, key2 = directionResult) {
         bookmarkViewModel.verifyUser()

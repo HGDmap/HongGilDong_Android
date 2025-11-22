@@ -28,6 +28,12 @@ interface SearchService {
         @Path("nodeId") nodeId: Long
     ): ApiResponse<NodeInfo>
 
+    // 빌딩 정보 검색: type이 Building인 경우
+    @GET("building/{buildingId}/details")
+    suspend fun getBuildingDetail(
+        @Path("buildingId") buildingId: Int
+    ): ApiResponse<FacilityInfo>
+
     // 시설 정보 검색: type이 facility인 경우
     @GET("facility/{facilityId}/details")
     suspend fun getFacilityDetail(

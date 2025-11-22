@@ -26,6 +26,11 @@ interface SearchRepository {
 
     suspend fun direct(from: Int, to: Int): DefaultResponse<DirectionResponse>
 
+
+    suspend fun getBuildingDetail(
+        buildingId: Int
+    ): DefaultResponse<FacilityInfo>
+
     // 시설 정보 검색: type이 facility인 경우
     suspend fun getFacilityDetail(
         facilityId: Int

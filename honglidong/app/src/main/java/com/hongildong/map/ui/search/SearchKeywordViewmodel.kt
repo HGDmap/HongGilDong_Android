@@ -137,10 +137,10 @@ class SearchKeywordViewmodel @Inject constructor(
         viewModelScope.launch {
             when {
                 keyword.nodeCode == SearchableNodeType.BUILDING.apiName -> {
-                    onSearchBuildingInfo(keyword)
+                    onSearchBuildingInfo(keyword.id)
                 }
                 keyword.nodeCode == SearchableNodeType.FACILITY.apiName -> {
-                    onSearchFacilityInfo(keyword)
+                    onSearchFacilityInfo(keyword.id)
                 }
             }
         }
@@ -151,7 +151,7 @@ class SearchKeywordViewmodel @Inject constructor(
     val facilityDetail = _facilityDetail.asStateFlow()
 
     // 건물의 detial info 받아오기
-    fun onSearchFacilityInfo(keyword: SearchKeyword) {
+    fun onSearchFacilityInfo(facilityId: Int) {
         viewModelScope.launch {
             /*val token = getToken()
             if (token == null) {
@@ -159,7 +159,7 @@ class SearchKeywordViewmodel @Inject constructor(
                 return@launch
             }*/
 
-            val response = searchRepository.getFacilityDetail(keyword.id)
+            val response = searchRepository.getFacilityDetail(facilityId = facilityId)
             when (response) {
                 is DefaultResponse.Success -> {
                     Log.d(TAG, "응답 성공: $response")
@@ -184,38 +184,27 @@ class SearchKeywordViewmodel @Inject constructor(
         }
     }
 
+    private val _searchedBuildingInfo = MutableStateFlow<FacilityInfo?>(null)
+    val searchedBuildingInfo: StateFlow<FacilityInfo?> = _searchedBuildingInfo.asStateFlow()
+
     // 검색시 호출
-    fun onSearchBuildingInfo(keyword: SearchKeyword) {
+    fun onSearchBuildingInfo(id: Int) {
         viewModelScope.launch {
+            val response = searchRepository.getBuildingDetail(id)
 
-            // 임시 검색 로직
-            // todo: 실제 검색 로직이 생기면 바꿀 것
-            val token = getToken()
-            if (token == null) {
-                Log.e(TAG, "토큰이 없습니다")
-                return@launch
-            }
-
-            val keywordValue = keyword.nodeId.toLong()
-            if (keywordValue == null) {
-                _isSearchSuccess.value = UiState.Error("유효하지 않은 검색어입니다.")
-                return@launch
-            }
-            // todo: 타입별로 검색 api 달라지면 when절로 타입별 검색하기
-            val response = searchRepository.searchWithId(token, keywordValue)
             when (response) {
                 is DefaultResponse.Success -> {
                     Log.d(TAG, "응답 성공: $response")
-                    _searchResult.value = response.data
-                    Log.d(TAG, "searchResult: ${searchResult.value}")
+                    _searchedBuildingInfo.value = response.data
+                    Log.d(TAG, "searchResult: ${searchedBuildingInfo.value}")
                     _isSearchSuccess.value = UiState.Success
 
                     searchKeywordDao.insertKeyword(
                         SearchKeyword(
-                            nodeName = response.data.name ?: "temp",
+                            nodeName = response.data.name,
                             nodeId = response.data.nodeId,
-                            nodeCode = response.data.nodeCode ?: "",
-                            id = response.data.nodeId
+                            nodeCode = response.data.type,
+                            id = response.data.id
                         )
                     )
                 }
@@ -272,6 +261,7 @@ class SearchKeywordViewmodel @Inject constructor(
             return
         }
         viewModelScope.launch {
+            Log.d(TAG, "길찾기 from=${_departPlaceInfo.value} to=${_arrivalPlaceInfo.value}")
             val response = searchRepository.direct(
                 from = _departPlaceInfo.value!!.nodeId,
                 to = _arrivalPlaceInfo.value!!.nodeId
@@ -343,7 +333,6 @@ class SearchKeywordViewmodel @Inject constructor(
 
     // 현재 리뷰 페이지
     private val _reviewPage = MutableStateFlow<Int>(0)
-    val reviewPage = _reviewPage.asStateFlow()
 
     // 시설 리뷰 리스트
     private val _facilityReviewInfo = MutableStateFlow<ReviewResponse?>(null)

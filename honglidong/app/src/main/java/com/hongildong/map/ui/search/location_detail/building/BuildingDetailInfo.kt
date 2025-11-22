@@ -1,4 +1,4 @@
-package com.hongildong.map.ui.search.location_detail.facility
+package com.hongildong.map.ui.search.location_detail.building
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
@@ -15,7 +16,6 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -24,46 +24,34 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.hongildong.map.R
 import com.hongildong.map.data.entity.FacilityInfo
-import com.hongildong.map.data.entity.ReviewInfo
-import com.hongildong.map.ui.bookmark.BookmarkViewModel
-import com.hongildong.map.ui.search.SearchKeywordViewmodel
-import com.hongildong.map.ui.search.location_detail.facility.photo.FacilityPhotoTab
-import com.hongildong.map.ui.search.location_detail.facility.review.FacilityReviewTab
+import com.hongildong.map.data.entity.FloorFacility
 import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Black
 import com.hongildong.map.ui.theme.Gray500
 import com.hongildong.map.ui.theme.Gray600
-import com.hongildong.map.ui.theme.PrimaryMid
 import com.hongildong.map.ui.theme.White
 import com.hongildong.map.ui.util.ButtonWithIcon
 
 @Composable
-fun FacilityDetailInfo(
-    modifier: Modifier = Modifier,
-    facilityInfo: FacilityInfo,
+fun BuildingDetailInfo(
+    buildingInfo: FacilityInfo,
     onDepart: () -> Unit,
     onArrival: () -> Unit,
-    onBookmarkChange: () -> Unit,
-    onReview: () -> Unit,
-    searchViewmodel: SearchKeywordViewmodel = hiltViewModel(),
-    bookmarkViewmodel: BookmarkViewModel = hiltViewModel(),
-    onEditReview: (ReviewInfo) -> Unit,
-    onDeleteReview: (Int) -> Unit
+    onClickFacility: (FloorFacility) -> Unit
 ) {
-    val pages = listOf("시설 정보", "리뷰", "사진")
+    val pages = listOf("층별 안내")
     var tabState by remember { mutableIntStateOf(0) }
 
-    val isUser by bookmarkViewmodel.isUser.collectAsState()
-
-    Column {
-        FacilityDetailHeader(
-            facilityInfo,
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        BuildingDetailHeader(
+            searchResult = buildingInfo,
             onDepart = onDepart,
-            onArrival = onArrival,
-            onBookmarkChange = onBookmarkChange
+            onArrival = onArrival
         )
         Spacer(Modifier.height(16.dp))
         TabRow (
@@ -100,52 +88,33 @@ fun FacilityDetailInfo(
                 )
             }
         }
-        HorizontalDivider(Modifier.height(1.dp), color = Gray500)
         when (tabState) {
             0 -> {
                 // 시설 정보 탭
-                FacilityInfoTab(facilityInfo)
-            }
-            1 -> {
-                // 리뷰 탭
-                FacilityReviewTab(
-                    searchViewmodel = searchViewmodel,
-                    isUser = isUser,
-                    onReview = onReview,
-                    facilityId = facilityInfo.id,
-                    onEditReview = {
-                        onEditReview(it)
-                    },
-                    onDeleteReview = {
-                        onDeleteReview(it)
-                    }
-                )
-            }
-            2 -> {
-                // 사진 탭
-                FacilityPhotoTab(
-                    searchViewmodel = searchViewmodel,
-                    isUser = isUser,
-                    onUpdate = {
-                        searchViewmodel.getFacilityPhotos(facilityInfo.id)
+                BuildingFloorInfoTab(
+                    buildingInfo,
+                    onClickFacility = {
+                        onClickFacility(it)
                     }
                 )
             }
             else -> {
-                // 시설 정보 탭
-                FacilityInfoTab(facilityInfo)
+                BuildingFloorInfoTab(
+                    buildingInfo,
+                    onClickFacility = {
+                        onClickFacility(it)
+                    }
+                )
             }
         }
-
     }
 }
 
 @Composable
-fun FacilityDetailHeader(
+fun BuildingDetailHeader(
     searchResult: FacilityInfo,
     onDepart: () -> Unit,
-    onArrival: () -> Unit,
-    onBookmarkChange: () -> Unit
+    onArrival: () -> Unit
 ) {
 
     Column(
@@ -166,17 +135,6 @@ fun FacilityDetailHeader(
             ) {
                 Image(
                     painterResource(
-                        if (searchResult.isBookmarked) R.drawable.ic_bookmark_true else R.drawable.ic_bookmark_false,
-                    ),
-                    contentDescription = "",
-                    modifier = Modifier
-                        .clickable {
-                            onBookmarkChange()
-                        }
-                )
-                Spacer(Modifier.width(10.dp))
-                Image(
-                    painterResource(
                         id = R.drawable.ic_share
                     ),
                     contentDescription = "",
@@ -190,18 +148,6 @@ fun FacilityDetailHeader(
             text = searchResult.nodeName,
             style = AppTypography.Medium_13.copy(color = Gray600)
         )
-        Spacer(Modifier.height(4.dp))
-        Row {
-            Text(
-                text = searchResult.open ?: "영업중",
-                style = AppTypography.Bold_13.copy(color = PrimaryMid)
-            )
-            Spacer(Modifier.width(3.dp))
-            Text(
-                text = "21:00까지",
-                style = AppTypography.Medium_13.copy(color = Gray600)
-            )
-        }
         Spacer(Modifier.height(5.dp))
         Row(
             modifier = Modifier.align(Alignment.End)

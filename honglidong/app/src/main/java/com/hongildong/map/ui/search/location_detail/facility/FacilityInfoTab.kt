@@ -26,7 +26,7 @@ fun FacilityInfoTab(
     Column(
         modifier = Modifier.fillMaxSize(1f)
     ) {
-        IconWithText(icon = R.drawable.ic_location_info, text = facilityInfo.description)
+        IconWithText(icon = R.drawable.ic_location_info, text = facilityInfo.description ?: facilityInfo.nodeName)
         IconWithText(icon = R.drawable.ic_location_open, text = facilityInfo.open ?: "영업중")
         if (!facilityInfo.phone.isNullOrEmpty()) {
             IconWithText(icon = R.drawable.ic_location_phone, text = facilityInfo.phone)

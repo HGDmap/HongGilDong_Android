@@ -1,10 +1,9 @@
 package com.hongildong.map.navGraph
 
+import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.core.graphics.component1
-import androidx.core.graphics.component2
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -12,7 +11,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
-import com.hongildong.map.data.entity.ReviewInfo
 import com.hongildong.map.data.entity.SearchKeyword
 import com.hongildong.map.data.entity.SearchableNodeType
 import com.hongildong.map.ui.bookmark.BookmarkViewModel
@@ -23,8 +21,9 @@ import com.hongildong.map.ui.search.direction.DirectionScreen
 import com.hongildong.map.ui.search.direction.DirectionSearchScreen
 import com.hongildong.map.ui.search.location_detail.facility.FacilityDetailScreen
 import com.hongildong.map.ui.search.location_detail.LocationDetailScreen
-import com.hongildong.map.ui.search.location_detail.facility.ReviewScreen
-import com.hongildong.map.ui.search.location_detail.facility.ReviewViewModel
+import com.hongildong.map.ui.search.location_detail.building.BuildingDetailScreen
+import com.hongildong.map.ui.search.location_detail.facility.review.ReviewScreen
+import com.hongildong.map.ui.search.location_detail.facility.review.ReviewViewModel
 import com.hongildong.map.ui.util.bottomsheet.BottomSheetViewModel
 import com.hongildong.map.ui.util.map.MapViewmodel
 
@@ -41,15 +40,35 @@ fun SearchNavHost(
     searchNavController: NavHostController,
     mapViewmodel: MapViewmodel,
     bookmarkViewModel: BookmarkViewModel,
-    bottomSheetViewModel: BottomSheetViewModel
+    bottomSheetViewModel: BottomSheetViewModel,
+    startType: String?,
+    startName: String?,
+    startId: Int?
 ) {
+
+    val initialRoute = if (startType != null && startName != null && startId != null) {
+        when (startType) {
+            SearchableNodeType.FACILITY.apiName -> {
+                NavRoute.FacilityDetail.route + "/${Uri.encode(startName)}/$startId"
+            }
+            SearchableNodeType.BUILDING.apiName -> {
+                NavRoute.BuildingDetail.route + "/${Uri.encode(startName)}/$startId"
+            }
+            else -> {
+                NavRoute.Search.route + "/$LOCATION_SEARCH_MODE"
+            }
+        }
+    } else {
+        NavRoute.Search.route + "/$LOCATION_SEARCH_MODE"
+    }
+
     NavHost(
         navController = searchNavController,
         startDestination = SEARCH_GRAPH_ROUTE
     ) {
         navigation(
             route = SEARCH_GRAPH_ROUTE,
-            startDestination = NavRoute.Search.route + "/$LOCATION_SEARCH_MODE"
+            startDestination = initialRoute
         ) {
             // 검색 화면 - 검색 기록, 자동 완성 모두 여기임
             composable(route = NavRoute.Search.route + "/{searchMode}") { backStackEntry ->
@@ -64,10 +83,17 @@ fun SearchNavHost(
                     onSearch = { keyword ->
                         when (searchMode) {
                             LOCATION_SEARCH_MODE -> {
-                                if (keyword.nodeCode == SearchableNodeType.FACILITY.apiName) {
-                                    searchNavController.navigate(NavRoute.FacilityDetail.route + "/${keyword.nodeName}")
-                                } else {
-                                    searchNavController.navigate(NavRoute.LocationDetail.route + "/${keyword.nodeName}")
+                                val nodeName = Uri.encode(keyword.nodeName)
+
+                                when (keyword.nodeCode) {
+                                    SearchableNodeType.FACILITY.apiName -> {
+                                        searchKeywordViewmodel.onSearchFacilityInfo(keyword.id)
+                                        searchNavController.navigate(NavRoute.FacilityDetail.route + "/${nodeName}/${keyword.id}")
+                                    }
+                                    SearchableNodeType.BUILDING.apiName -> {
+                                        searchKeywordViewmodel.onSearchBuildingInfo(keyword.id)
+                                        searchNavController.navigate(NavRoute.LocationDetail.route + "/${nodeName}/${keyword.id}")
+                                    }
                                 }
                             }
                             DIRECTION_SEARCH_MODE_FROM -> {
@@ -87,7 +113,7 @@ fun SearchNavHost(
                     onRawSearch = { query ->
                         when (searchMode) {
                             LOCATION_SEARCH_MODE -> {
-                                searchNavController.navigate(NavRoute.RawSearch.route + "/${query}")
+                                searchNavController.navigate(NavRoute.RawSearch.route + "/${Uri.encode(query)}")
                             }
                         }
                     },
@@ -95,7 +121,7 @@ fun SearchNavHost(
                         when (searchMode) {
                             LOCATION_SEARCH_MODE -> {
                                 rootNavController.navigate(NavRoute.MainFlow.route) {
-                                    popUpTo(NavRoute.SearchFlow.route) { inclusive = true }
+                                    popUpTo(NavRoute.SearchFlow.route()) { inclusive = true }
                                 }
                             }
                             else -> {
@@ -118,33 +144,33 @@ fun SearchNavHost(
 
                 SearchedFacilityListScreen(
                     searchViewmodel = searchKeywordViewmodel,
+                    mapViewModel = mapViewmodel,
                     searchedWord = searchedWord,
                     onDirectItem = {
                         val target = SearchKeyword(
                             nodeName = it.name ?: it.nodeName ?: "temp",
                             id = it.id ?: 0,
                             nodeId = it.nodeId,
-                            nodeCode = it.nodeCode ?: "",
+                            nodeCode = it.type ?: "",
                         )
                         // 길찾기 버튼 클릭시 해당 장소를 도착지로 설정
                         searchKeywordViewmodel.setArrival(target)
                         // 길찾기 화면으로 이동
                         searchNavController.navigate(NavRoute.DirectionSearch.route)
                     },
-                    onClickItem = {
-                        val target = SearchKeyword(
-                            nodeName = it.name ?: it.nodeName ?: "temp",
-                            id = it.id ?: 0,
-                            nodeId = it.nodeId,
-                            nodeCode = it.nodeCode ?: "",
-                        )
+                    onClickItem = { node ->
                         // 아이템 클릭시 해당 장소 상세 정보 검색
-                        searchKeywordViewmodel.onSearch(target)
-                        // 장소 상세 정보 화면으로 이동
-                        if (target.nodeCode == SearchableNodeType.FACILITY.apiName) {
-                            searchNavController.navigate(NavRoute.FacilityDetail.route + "/${target.nodeName}")
-                        } else {
-                            searchNavController.navigate(NavRoute.LocationDetail.route + "/${target.nodeName}")
+                        //searchKeywordViewmodel.onSearch(target)
+                        val nodeName = Uri.encode(node.name)
+                        when (node.type) {
+                            SearchableNodeType.FACILITY.apiName -> {
+                                searchKeywordViewmodel.onSearchFacilityInfo(node.id!!)
+                                searchNavController.navigate(NavRoute.FacilityDetail.route + "/${nodeName}/${node.id}")
+                            }
+                            SearchableNodeType.BUILDING.apiName -> {
+                                searchKeywordViewmodel.onSearchBuildingInfo(node.id!!)
+                                searchNavController.navigate(NavRoute.BuildingDetail.route + "/${nodeName}/${node.id}")
+                            }
                         }
                     },
                     onGoBack = {
@@ -178,16 +204,56 @@ fun SearchNavHost(
                     },
                 )
             }
+            // 건물 상세 정보 화면
+            composable(
+                route = NavRoute.BuildingDetail.route + "/{searchedWord}/{buildingId}",
+                arguments = listOf(
+                    navArgument("searchedWord") { type = NavType.StringType },
+                    navArgument("buildingId") { type = NavType.IntType }
+                )
+            ) { backStackEntry ->
+                val parentEntry = remember(backStackEntry) {
+                    searchNavController.getBackStackEntry(SEARCH_GRAPH_ROUTE)
+                }
+                val searchKeywordViewmodel: SearchKeywordViewmodel = hiltViewModel(parentEntry)
+                val searchedWord = backStackEntry.arguments?.getString("searchedWord") ?: ""
+                val buildingId = backStackEntry.arguments?.getInt("buildingId") ?: 0
+
+                BuildingDetailScreen(
+                    searchedBuildingId = buildingId,
+                    searchedWord = searchedWord,
+                    searchViewmodel = searchKeywordViewmodel,
+                    mapViewmodel = mapViewmodel,
+                    onGoBack = {
+                        searchNavController.popBackStack()
+                    },
+                    onSearchDirection = {
+                        searchNavController.navigate(NavRoute.DirectionSearch.route)
+                    },
+                    onClickFacility = { facility ->
+                        searchNavController.navigate(NavRoute.FacilityDetail.route + "/${Uri.encode(facility.name)}/${facility.id}")
+                    }
+                )
+
+            }
             // 시설 상세 정보 화면
-            composable(route = NavRoute.FacilityDetail.route + "/{searchedWord}") { backStackEntry ->
+            composable(
+                route = NavRoute.FacilityDetail.route + "/{searchedWord}/{facilityId}",
+                arguments = listOf(
+                    navArgument("searchedWord") { type = NavType.StringType },
+                    navArgument("facilityId") { type = NavType.IntType }
+                )
+            ) { backStackEntry ->
                 val parentEntry = remember(backStackEntry) {
                     searchNavController.getBackStackEntry(SEARCH_GRAPH_ROUTE)
                 }
                 val reviewViewModel: ReviewViewModel = hiltViewModel(parentEntry)
                 val searchKeywordViewmodel: SearchKeywordViewmodel = hiltViewModel(parentEntry)
                 val searchedWord = backStackEntry.arguments?.getString("searchedWord") ?: ""
+                val facilityId = backStackEntry.arguments?.getInt("facilityId") ?: 0
 
                 FacilityDetailScreen(
+                    searchedFacilityId = facilityId,
                     searchedWord = searchedWord,
                     searchViewmodel = searchKeywordViewmodel,
                     mapViewmodel = mapViewmodel,
@@ -195,18 +261,23 @@ fun SearchNavHost(
                     bottomSheetViewModel = bottomSheetViewModel,
                     onGoBack = {
                         searchKeywordViewmodel.eraseFacilityData()
-                        searchNavController.popBackStack()
+
+                        // 메인화면에서 바로 여기로 이동한 경우 pop backstack == false임.
+                        // 그럼 메인 네비 컨트롤러에서 pop 해줘야함
+                        if (!searchNavController.popBackStack()) {
+                            rootNavController.popBackStack()
+                        }
                     },
                     onSearchDirection = {
                         searchNavController.navigate(NavRoute.DirectionSearch.route)
                     },
                     onReview = {
                         reviewViewModel.setTargetFacility(it)
-                        searchNavController.navigate(NavRoute.Review.route + "/$searchedWord/${it.id}/0")
+                        searchNavController.navigate(NavRoute.Review.route + "/${Uri.encode(searchedWord)}/${it.id}/0")
                     },
                     onEditReview = { facilityId, reviewInfo ->
                         reviewViewModel.setTargetReview(reviewInfo)
-                        searchNavController.navigate(NavRoute.Review.route + "/$searchedWord/${facilityId}/1")
+                        searchNavController.navigate(NavRoute.Review.route + "/${Uri.encode(searchedWord)}/${facilityId}/1")
                     },
                     onDeleteReview = {
                         reviewViewModel.deleteReview(it)
