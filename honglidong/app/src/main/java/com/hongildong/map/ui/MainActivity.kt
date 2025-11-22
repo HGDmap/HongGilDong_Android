@@ -1,6 +1,7 @@
 package com.hongildong.map.ui
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -13,13 +14,21 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.hongildong.map.data.entity.NodeInfo
+import com.hongildong.map.data.entity.SearchableNodeType
 import com.hongildong.map.navGraph.AppNavHost
 import com.hongildong.map.navGraph.BottomNavigationBar
 import com.hongildong.map.navGraph.MainNavHost
+import com.hongildong.map.navGraph.NavRoute
+import com.hongildong.map.ui.bookmark.BookmarkViewModel
 import com.hongildong.map.ui.theme.HongildongTheme
+import com.hongildong.map.ui.util.bottomsheet.BottomSheetViewModel
+import com.hongildong.map.ui.util.bottomsheet.SharedBottomSheetHost
 import com.hongildong.map.ui.util.map.MapBackground
 import com.hongildong.map.ui.util.map.MapViewmodel
 import dagger.hilt.android.AndroidEntryPoint
@@ -33,7 +42,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             HongildongTheme {
                 Surface(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize(),
                     color = Color.White
                 ) {
                     AppNavHost()
@@ -45,17 +55,29 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainScreen(
-    rootNavController: NavHostController
+    rootNavController: NavHostController,
+    bookmarkViewModel: BookmarkViewModel
 ) {
     val navController = rememberNavController()
-    val mapViewmodel: MapViewmodel = hiltViewModel()
+    val mapViewModel: MapViewmodel = hiltViewModel()
+    val bottomSheetViewModel: BottomSheetViewModel = hiltViewModel()
+
+    val context = LocalContext.current
 
     Scaffold(
         bottomBar = { BottomNavigationBar(navController) },
         modifier = Modifier.fillMaxSize()
     ) { paddingValues ->
         MapBackground(
-            viewModel = mapViewmodel
+            viewModel = mapViewModel,
+            onClickBookmark = { bookmarkInfo ->
+                if (!bookmarkInfo.type.isNullOrEmpty()) {
+                    rootNavController.navigate(NavRoute.SearchFlow
+                        .createRoute(bookmarkInfo.type, bookmarkInfo.name, bookmarkInfo.id))
+                } else {
+                    Toast.makeText(context, bookmarkInfo.type, Toast.LENGTH_SHORT).show()
+                }
+            }
         )
         Box(
             modifier = Modifier
@@ -66,9 +88,14 @@ fun MainScreen(
             MainNavHost(
                 rootNavController = rootNavController,
                 mainNavController = navController,
-                mapViewmodel = mapViewmodel
+                mapViewmodel = mapViewModel,
+                bookmarkViewModel = bookmarkViewModel,
+                bottomSheetViewModel = bottomSheetViewModel
             )
         }
+
+        // 모달 바텀시트를 위한 내용
+        SharedBottomSheetHost(viewModel = bottomSheetViewModel)
     }
 }
 

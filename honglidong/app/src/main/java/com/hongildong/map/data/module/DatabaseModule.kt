@@ -22,7 +22,9 @@ object DatabaseModule {
             context,
             SearchDatabase::class.java,
             "search_keyword_db"
-        ).build()
+        )
+            .fallbackToDestructiveMigration(true)
+            .build()
     }
 
     @Provides
