@@ -52,7 +52,7 @@ fun SearchNavHost(
                 NavRoute.FacilityDetail.route + "/$startName/$startId"
             }
             SearchableNodeType.BUILDING.apiName -> {
-                NavRoute.LocationDetail.route + "/$startName"
+                NavRoute.BuildingDetail.route + "/$startName/$startId"
             }
             else -> {
                 NavRoute.Search.route + "/$LOCATION_SEARCH_MODE"

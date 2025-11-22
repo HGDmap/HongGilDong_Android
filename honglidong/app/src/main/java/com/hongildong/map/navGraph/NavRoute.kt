@@ -1,5 +1,7 @@
 package com.hongildong.map.navGraph
 
+import android.net.Uri
+
 
 sealed class NavRoute(val route: String) {
     // flow
@@ -13,7 +15,7 @@ sealed class NavRoute(val route: String) {
         // type: 시설/이벤트/건물인지
         // name: 검색어
         // id: 시설/이벤트/건물 id
-        fun createRoute(type: String, name: String, id: Int) = "search_flow?type=$type&name=$name&id=$id"
+        fun createRoute(type: String, name: String, id: Int) = "search_flow?type=$type&name=${Uri.encode(name)}&id=$id"
     }
 
     // home

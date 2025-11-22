@@ -47,7 +47,7 @@ fun BuildingFloorInfoTab(
     LazyColumn(
         contentPadding = PaddingValues(top = 10.dp)
     ) {
-        items(buildingInfo.floorFacilities!!) {
+        items(buildingInfo.floorFacilities ?: emptyList()) {
             FloorInfoItem(
                 floorInfo = it,
                 onClickFacility = { facilityInfo ->
