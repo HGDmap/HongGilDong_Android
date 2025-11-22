@@ -1,4 +1,4 @@
-package com.hongildong.map.ui.search.location_detail.facility
+package com.hongildong.map.ui.search.location_detail.facility.review
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

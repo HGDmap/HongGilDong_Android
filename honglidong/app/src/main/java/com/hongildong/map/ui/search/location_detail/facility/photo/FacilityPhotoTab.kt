@@ -1,4 +1,4 @@
-package com.hongildong.map.ui.search.location_detail.facility
+package com.hongildong.map.ui.search.location_detail.facility.photo
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

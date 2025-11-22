@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -31,9 +29,9 @@ import com.hongildong.map.R
 import com.hongildong.map.data.entity.FacilityInfo
 import com.hongildong.map.data.entity.ReviewInfo
 import com.hongildong.map.ui.bookmark.BookmarkViewModel
-import com.hongildong.map.ui.home.RecommendPlaceItem
-import com.hongildong.map.ui.home.places
 import com.hongildong.map.ui.search.SearchKeywordViewmodel
+import com.hongildong.map.ui.search.location_detail.facility.photo.FacilityPhotoTab
+import com.hongildong.map.ui.search.location_detail.facility.review.FacilityReviewTab
 import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Black
 import com.hongildong.map.ui.theme.Gray500

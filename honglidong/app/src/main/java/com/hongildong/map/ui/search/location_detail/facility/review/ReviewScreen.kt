@@ -1,6 +1,5 @@
-package com.hongildong.map.ui.search.location_detail.facility
+package com.hongildong.map.ui.search.location_detail.facility.review
 
-import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -44,6 +43,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.hongildong.map.R
+import com.hongildong.map.ui.search.location_detail.facility.review.ReviewViewModel
 import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Black
 import com.hongildong.map.ui.theme.Gray300

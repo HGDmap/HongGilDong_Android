@@ -1,8 +1,7 @@
-package com.hongildong.map.ui.search.location_detail.facility
+package com.hongildong.map.ui.search.location_detail.facility.review
 
 import android.content.Context
 import android.net.Uri
-import android.provider.OpenableColumns
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -17,15 +16,12 @@ import com.hongildong.map.data.util.ImageRepository
 import com.hongildong.map.ui.util.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.forEach
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -131,7 +127,8 @@ class ReviewViewModel @Inject constructor(
                     coroutineScope {
                         val uploadJobs = _serverUrls.value.map { (uri, response) ->
                             async {
-                                val result = imageRepository.uploadImageToS3(response.presignedURL, uri)
+                                val result =
+                                    imageRepository.uploadImageToS3(response.presignedURL, uri)
                                 if (result.isFailure) {
                                     Log.e(TAG, "s3 업로드 실패: ${result.exceptionOrNull()?.message}")
                                     throw Exception("s3 이미지 업로드 실패: ${result.exceptionOrNull()?.message}")
