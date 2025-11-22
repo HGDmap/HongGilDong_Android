@@ -7,6 +7,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -45,7 +46,9 @@ fun BuildingFloorInfoTab(
     buildingInfo: FacilityInfo,
     onClickFacility: (FloorFacility) -> Unit
 ) {
-    LazyColumn {
+    LazyColumn(
+        contentPadding = PaddingValues(top = 10.dp)
+    ) {
         items(buildingInfo.floorFacilities!!) {
             FloorInfoItem(
                 floorInfo = it,
@@ -62,7 +65,6 @@ fun FloorInfoItem(
     floorInfo: FloorInfo,
     onClickFacility: (FloorFacility) -> Unit
 ) {
-    val context = LocalContext.current
     var isExpanded by remember { mutableStateOf(false) }
 
     Column {
@@ -71,19 +73,16 @@ fun FloorInfoItem(
             isExpanded = isExpanded,
             onClick = {
                 isExpanded = !isExpanded
-                Toast.makeText(context, floorInfo.floor + isExpanded.toString(), Toast.LENGTH_SHORT).show()
             }
         )
         if (isExpanded) {
-            LazyColumn {
-                items(floorInfo.facilities) { facility ->
-                    FacilityItem(
-                        facility = facility,
-                        onClickFacility = {
-                            onClickFacility(facility)
-                        }
-                    )
-                }
+            floorInfo.facilities.forEach { facility ->
+                FacilityItem(
+                    facility = facility,
+                    onClickFacility = {
+                        onClickFacility(facility)
+                    }
+                )
             }
         }
     }
@@ -102,7 +101,7 @@ fun FloorItem(
             .shadow(elevation = 3.dp, shape = RoundedCornerShape(12.dp))
             .fillMaxWidth()
             .border(width = 1.dp, color = if (isExpanded) PrimaryMid else Color.Transparent, shape = RoundedCornerShape(12.dp))
-            .background(color = if (isExpanded) PrimaryLight else White, shape = RoundedCornerShape(12.dp))
+            .background(color = if (isExpanded) PrimaryLight.copy(alpha = 0.4f) else White, shape = RoundedCornerShape(12.dp))
             .padding(10.dp)
             .clickable {
                 onClick()
