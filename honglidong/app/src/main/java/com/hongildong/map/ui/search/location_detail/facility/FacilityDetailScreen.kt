@@ -1,53 +1,29 @@
-package com.hongildong.map.ui.search.location_detail
+package com.hongildong.map.ui.search.location_detail.facility
 
-import android.util.Log
 import android.widget.Toast
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
-import com.hongildong.map.R
-import com.hongildong.map.data.entity.NodeInfo
+import com.hongildong.map.data.entity.FacilityInfo
+import com.hongildong.map.data.entity.ReviewInfo
 import com.hongildong.map.data.entity.SearchableNodeType
 import com.hongildong.map.data.entity.toSearchKeyword
 import com.hongildong.map.ui.bookmark.BookmarkFolderUpdateContent
 import com.hongildong.map.ui.bookmark.BookmarkUpdateContent
 import com.hongildong.map.ui.bookmark.BookmarkViewModel
 import com.hongildong.map.ui.search.SearchKeywordViewmodel
-import com.hongildong.map.ui.theme.AppTypography
-import com.hongildong.map.ui.theme.Black
-import com.hongildong.map.ui.theme.Gray400
-import com.hongildong.map.ui.theme.White
+import com.hongildong.map.ui.search.location_detail.SearchBarWithGoBack
 import com.hongildong.map.ui.util.bottomsheet.AnchoredDraggableBottomSheet
 import com.hongildong.map.ui.util.bottomsheet.BottomSheetViewModel
 import com.hongildong.map.ui.util.map.MapViewmodel
@@ -56,7 +32,7 @@ import com.naver.maps.map.compose.ExperimentalNaverMapApi
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalNaverMapApi::class)
 @Composable
-fun LocationDetailScreen(
+fun FacilityDetailScreen(
     searchedWord: String = "",
     searchViewmodel: SearchKeywordViewmodel,
     mapViewmodel: MapViewmodel,
@@ -64,18 +40,23 @@ fun LocationDetailScreen(
     bottomSheetViewModel: BottomSheetViewModel,
     onGoBack: () -> Unit,
     onSearchDirection: () -> Unit,
+    onReview: (FacilityInfo) -> Unit,
+    onEditReview: (Int, ReviewInfo) -> Unit,
+    onDeleteReview: (Int) -> Unit
 ) {
     val context = LocalContext.current
-    val searchResult by searchViewmodel.searchResult.collectAsState()
+    val facilityInfo by searchViewmodel.facilityDetail.collectAsState()
     val directionResult by searchViewmodel.directionResult.collectAsState()
     val isUser by bookmarkViewModel.isUser.collectAsState()
     val allBookmarks by bookmarkViewModel.allBookmarkInfo.collectAsState()
 
-    LaunchedEffect(key1 = searchResult, key2 = directionResult) {
-        // searchResult가 null이 아닐 때만 실행
-        searchResult?.let { result ->
+    LaunchedEffect(key1 = facilityInfo, key2 = directionResult) {
+        bookmarkViewModel.verifyUser()
+
+        // facilityInfo가 null이 아닐 때만 실행
+        facilityInfo?.let { result ->
             val newPosition = LatLng(result.latitude, result.longitude)
-            mapViewmodel.showMarkerAndMoveCamera(newPosition, result.name ?: "")
+            mapViewmodel.showMarkerAndMoveCamera(newPosition, result.name)
         }
 
         directionResult?.let { response ->
@@ -107,46 +88,60 @@ fun LocationDetailScreen(
                 maxHeight = fullHeight,
                 isFullScreen = true
             ) {
-                LocationDetailInfo(
+                FacilityDetailInfo(
                     modifier = Modifier.nestedScroll(nestedScrollConnection),
-                    searchResult = searchResult ?: NodeInfo(0.0,0.0,"temp", "", "",0, nodeId = 0),
+                    searchViewmodel = searchViewmodel,
+                    bookmarkViewmodel = bookmarkViewModel,
+                    facilityInfo = facilityInfo ?: FacilityInfo(
+                        "임시 데이터",
+                        "임시 시설",
+                        0,
+                        false,
+                        0.0,
+                        "",
+                        0.0,
+                        0,
+                        "temp",
+                        null,
+                        "",
+                        emptyList(),
+                        ""
+                    ),
                     onDepart = {
-                        if (searchResult != null) {
+                        if (facilityInfo != null) {
                             // 검색 결과를 바탕으로 출발지 설정
-                            val keyword = searchResult!!.toSearchKeyword()
+                            val keyword = facilityInfo!!.toSearchKeyword()
 
                             // 출발지 설정
                             searchViewmodel.setDepart(keyword)
                             // 경로 검색 화면으로 화면 전환
                             onSearchDirection()
-                        }
-                        else Toast.makeText(context, "유효하지 않은 장소입니다.", Toast.LENGTH_SHORT).show()
-
-                        /*mapViewmodel.clearMarker()
-                        searchViewmodel.direct()*/
+                        } else Toast.makeText(context, "유효하지 않은 장소입니다.", Toast.LENGTH_SHORT).show()
                     },
                     onArrival = {
-                        if (searchResult != null) {
+                        if (facilityInfo != null) {
                             // 검색 결과를 바탕으로 도착지 설정
-                            val keyword = searchResult!!.toSearchKeyword()
+                            val keyword = facilityInfo!!.toSearchKeyword()
 
                             // 도착지 설정
                             searchViewmodel.setArrival(keyword)
                             // 경로 검색 화면으로 화면 전환
                             onSearchDirection()
-                        }
-                        else Toast.makeText(context, "유효하지 않은 장소입니다.", Toast.LENGTH_SHORT).show()
+                        } else Toast.makeText(context, "유효하지 않은 장소입니다.", Toast.LENGTH_SHORT).show()
                     },
                     onBookmarkChange = {
-                        if (isUser) {
+                        if (isUser && (facilityInfo != null)) {
                             bottomSheetViewModel.show {
                                 BookmarkUpdateContent(
-                                    title = searchResult?.name ?: searchResult?.nodeName ?: "",
+                                    title = facilityInfo?.name ?: "",
                                     addFolder = {
                                         bottomSheetViewModel.change {
                                             BookmarkFolderUpdateContent(
                                                 onDone = {
-                                                    bookmarkViewModel.addFolder(it.folderName, it.folderColor)
+                                                    bookmarkViewModel.addFolder(
+                                                        it.folderName,
+                                                        it.folderColor
+                                                    )
                                                     bottomSheetViewModel.restore()
                                                 }
                                             )
@@ -154,23 +149,20 @@ fun LocationDetailScreen(
                                     },
                                     folders = allBookmarks,
                                     onDone = { folderNumber ->
-                                        val targetId = if (searchResult?.nodeCode == SearchableNodeType.FACILITY.apiName) {
-                                            searchResult?.id
-                                        } else {
-                                            searchResult?.nodeId
-                                        }
+                                        val targetId = facilityInfo?.id
                                         targetId?.let {
                                             if (folderNumber == 0) {
                                                 // 0: 폴더 선택하지 않은 경우 -> 북마크 삭제
                                                 bookmarkViewModel.deleteBookmark(
-                                                    type = searchResult?.nodeCode ?: SearchableNodeType.FACILITY.apiName,
+                                                    type = facilityInfo?.type
+                                                        ?: SearchableNodeType.FACILITY.apiName,
                                                     targetId = targetId
                                                 )
-                                            }
-                                            else {
+                                            } else {
                                                 // 0이 아님: 폴더를 선택하거나 바꾼 경우 -> 북마크 업데이트
                                                 bookmarkViewModel.updateBookmark(
-                                                    type = searchResult?.nodeCode ?: SearchableNodeType.FACILITY.apiName,
+                                                    type = facilityInfo?.type
+                                                        ?: SearchableNodeType.FACILITY.apiName,
                                                     targetId = targetId,
                                                     folderId = folderNumber
                                                 )
@@ -181,54 +173,28 @@ fun LocationDetailScreen(
                                 )
                             }
                         }
-                    }
+                    },
+                    onReview = {
+                        if (facilityInfo == null) {
+                            Toast.makeText(context, "유효하지 않은 장소입니다.", Toast.LENGTH_SHORT).show()
+                        } else {
+                            onReview(facilityInfo!!)
+                        }
+                    },
+                    onEditReview = {
+                        if (facilityInfo == null) {
+                            Toast.makeText(context, "유효하지 않은 장소입니다.", Toast.LENGTH_SHORT).show()
+                        } else {
+                            onEditReview(facilityInfo!!.id, it)
+                        }
+                    },
+                    onDeleteReview = {
+                        if (facilityInfo != null) {
+                            onDeleteReview(it)
+                        }
+                    },
                 )
             }
-        }
-    }
-}
-
-
-@Composable
-fun SearchBarWithGoBack(
-    searchedWord: String,
-    onGoBack: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .shadow(3.dp)
-            .background(White)
-            .fillMaxWidth()
-            .windowInsetsPadding(WindowInsets.statusBars)
-            .padding(top = 16.dp, start = 10.dp, end = 10.dp, bottom = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center,
-    ) {
-        Image(
-            painter = painterResource(R.drawable.ic_back),
-            contentDescription = stringResource(R.string.go_back),
-            modifier = Modifier
-                .clickable {
-                    onGoBack()
-                }
-        )
-        Spacer(
-            modifier = Modifier.width(15.dp)
-        )
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(53.dp)
-                .background(color = White, shape = RoundedCornerShape(size = 10.dp))
-                .border(1.dp, color = Gray400, shape = RoundedCornerShape(size = 10.dp)),
-            contentAlignment = Alignment.CenterStart
-        ) {
-            Text(
-                text = searchedWord,
-                color = Black,
-                style = AppTypography.Regular_15,
-                modifier = Modifier.padding(start = 16.dp)
-            )
         }
     }
 }

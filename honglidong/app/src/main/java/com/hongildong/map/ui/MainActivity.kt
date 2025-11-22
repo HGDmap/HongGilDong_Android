@@ -36,7 +36,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             HongildongTheme {
                 Surface(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize(),
                     color = Color.White
                 ) {
                     AppNavHost()

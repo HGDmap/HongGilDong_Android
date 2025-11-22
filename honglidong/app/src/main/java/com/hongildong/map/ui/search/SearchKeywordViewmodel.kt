@@ -3,16 +3,23 @@ package com.hongildong.map.ui.search
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.runtime.key
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hongildong.map.data.dao.SearchKeywordDao
 import com.hongildong.map.data.entity.AutoCompleteSearchKeyword
+import com.hongildong.map.data.entity.FacilityInfo
 import com.hongildong.map.data.entity.NodeInfo
+import com.hongildong.map.data.entity.ReviewInfo
 import com.hongildong.map.data.entity.SearchKeyword
+import com.hongildong.map.data.entity.SearchableNodeType
+import com.hongildong.map.data.remote.request.PhotoRequest
 import com.hongildong.map.data.remote.response.DirectionResponse
+import com.hongildong.map.data.remote.response.PhotoResponse
+import com.hongildong.map.data.remote.response.ReviewResponse
+import com.hongildong.map.data.repository.ReviewRepository
 import com.hongildong.map.data.repository.SearchRepository
 import com.hongildong.map.data.util.DefaultResponse
+import com.hongildong.map.data.util.ImageRepository
 import com.hongildong.map.ui.util.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -28,6 +35,8 @@ import javax.inject.Inject
 class SearchKeywordViewmodel @Inject constructor(
     private val searchKeywordDao: SearchKeywordDao,
     private val searchRepository: SearchRepository,
+    private val reviewRepository: ReviewRepository,
+    private val imageRepository: ImageRepository,
     @ApplicationContext private val context: Context
 ): ViewModel() {
 
@@ -124,8 +133,59 @@ class SearchKeywordViewmodel @Inject constructor(
         }
     }
 
-    // 검색시 호출
     fun onSearch(keyword: SearchKeyword) {
+        viewModelScope.launch {
+            when {
+                keyword.nodeCode == SearchableNodeType.BUILDING.apiName -> {
+                    onSearchBuildingInfo(keyword)
+                }
+                keyword.nodeCode == SearchableNodeType.FACILITY.apiName -> {
+                    onSearchFacilityInfo(keyword)
+                }
+            }
+        }
+    }
+
+    // 건물의 detail info
+    private val _facilityDetail = MutableStateFlow<FacilityInfo?>(null)
+    val facilityDetail = _facilityDetail.asStateFlow()
+
+    // 건물의 detial info 받아오기
+    fun onSearchFacilityInfo(keyword: SearchKeyword) {
+        viewModelScope.launch {
+            /*val token = getToken()
+            if (token == null) {
+                Log.e(TAG, "토큰이 없습니다")
+                return@launch
+            }*/
+
+            val response = searchRepository.getFacilityDetail(keyword.id)
+            when (response) {
+                is DefaultResponse.Success -> {
+                    Log.d(TAG, "응답 성공: $response")
+                    _facilityDetail.value = response.data
+                    Log.d(TAG, "searched facility detail: ${_facilityDetail.value}")
+                    _isSearchSuccess.value = UiState.Success
+
+                    searchKeywordDao.insertKeyword(
+                        SearchKeyword(
+                            nodeName = response.data.name,
+                            nodeId = response.data.nodeId,
+                            nodeCode = response.data.type,
+                            id = response.data.id
+                        )
+                    )
+                }
+                is DefaultResponse.Error -> {
+                    Log.d(TAG, "응답 실패: $response")
+                    _isSearchSuccess.value = UiState.Error("유효하지 않은 검색어입니다.")
+                }
+            }
+        }
+    }
+
+    // 검색시 호출
+    fun onSearchBuildingInfo(keyword: SearchKeyword) {
         viewModelScope.launch {
 
             // 임시 검색 로직
@@ -228,6 +288,116 @@ class SearchKeywordViewmodel @Inject constructor(
                     _isSearchSuccess.value = UiState.Error(response.message)
                 }
             }
+        }
+    }
+
+    private val _facilityPhotoInfo = MutableStateFlow<PhotoResponse?>(null)
+    val facilityPhotoInfo = _facilityPhotoInfo.asStateFlow()
+
+    // 시설 사진 받기 api
+    fun getFacilityPhotos(
+        facilityId: Int,
+    ) {
+        viewModelScope.launch {
+            val token = getToken()
+            if (token == null) {
+                Log.e(TAG, "토큰이 없습니다")
+                return@launch
+            }
+
+            var request: PhotoRequest
+            if (_facilityPhotoInfo.value == null) {
+                // 처음 요청시
+                request = PhotoRequest(
+                    size = 20
+                )
+            } else {
+                if (_facilityPhotoInfo.value!!.isLast) {
+                    // 다음 요청시
+                    request = PhotoRequest(
+                        continuationToken = _facilityPhotoInfo.value!!.continuationToken,
+                        size = 20
+                    )
+                } else {
+                    // 다음 요청 - 마지막 페이지의 경우
+                    Toast.makeText(context, "마지막 페이지입니다.", Toast.LENGTH_SHORT).show()
+                    return@launch
+                }
+            }
+
+            val response = searchRepository.getFacilityPhoto(token, facilityId, request)
+            when (response) {
+                is DefaultResponse.Success -> {
+                    Log.d(TAG, "응답 성공: $response")
+                    _facilityPhotoInfo.value = response.data
+                    Log.d(TAG, "_facilityPhotoInfo: ${_facilityPhotoInfo.value}")
+                    _isSearchSuccess.value = UiState.Success
+                }
+                is DefaultResponse.Error -> {
+                    Log.d(TAG, "응답 실패: $response")
+                    _isSearchSuccess.value = UiState.Error(response.message)
+                }
+            }
+        }
+    }
+
+    // 현재 리뷰 페이지
+    private val _reviewPage = MutableStateFlow<Int>(0)
+    val reviewPage = _reviewPage.asStateFlow()
+
+    // 시설 리뷰 리스트
+    private val _facilityReviewInfo = MutableStateFlow<ReviewResponse?>(null)
+    val facilityReviewInfo = _facilityReviewInfo.asStateFlow()
+
+    // 시설 리뷰
+    private val _facilityReviews = MutableStateFlow<List<ReviewInfo>>(listOf())
+    val facilityReviews = _facilityReviews.asStateFlow()
+
+    // 시설 리뷰 조회
+    fun getFacilityReview(facilityId: Int) {
+        viewModelScope.launch {
+            val token = getToken()
+            if (token == null) {
+                Log.e(TAG, "토큰이 없습니다")
+                return@launch
+            }
+
+            /*if (_facilityReviewInfo.value != null) {
+                if (!_facilityReviewInfo.value!!.isLast) {
+                    // 다음 요청 - 마지막 페이지의 경우
+                    Toast.makeText(context, "마지막 페이지입니다.", Toast.LENGTH_SHORT).show()
+                    return@launch
+                }
+                // 다음 요청 - 마지막 페이지가 아니라면
+                _reviewPage.value += 1
+            } else {
+                // 처음 요청
+                _reviewPage.value = 0
+            }*/
+
+            val response = searchRepository.getFacilityReview(token, facilityId, 0, 20)
+            when (response) {
+                is DefaultResponse.Success -> {
+                    Log.d(TAG, "응답 성공: $response")
+                    _facilityReviewInfo.value = response.data
+                    _facilityReviews.value = response.data.reviewList
+                    Log.d(TAG, "_facilityReviewInfo: ${_facilityReviewInfo.value}")
+                    _isSearchSuccess.value = UiState.Success
+                }
+                is DefaultResponse.Error -> {
+                    Log.d(TAG, "응답 실패: $response")
+                    _isSearchSuccess.value = UiState.Error(response.message)
+                }
+            }
+        }
+    }
+
+    fun eraseFacilityData() {
+        viewModelScope.launch {
+            _facilityPhotoInfo.value = null
+            _facilityDetail.value = null
+            _reviewPage.value = 0
+            _facilityReviewInfo.value = null
         }
     }
 }
