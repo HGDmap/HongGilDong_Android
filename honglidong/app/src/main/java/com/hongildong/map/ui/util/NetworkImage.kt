@@ -59,7 +59,7 @@ fun DummyImage(
 @Composable
 fun ProfileImage(
     profileUrl: String? = null,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier.size(45.dp)
 ) {
     if (profileUrl.isNullOrEmpty()) {
         // 프로필 정해져있지 않으면 기본 프로필
@@ -68,7 +68,6 @@ fun ProfileImage(
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = modifier
-                .size(45.dp)
                 .clip(
                     shape = CircleShape
                 )
@@ -80,7 +79,6 @@ fun ProfileImage(
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = modifier
-                .size(45.dp)
                 .clip(
                     shape = CircleShape
                 )
