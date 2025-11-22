@@ -46,6 +46,8 @@ class MapViewmodel @Inject constructor(
     @OptIn(ExperimentalNaverMapApi::class)
     fun showMarkerAndMoveCamera(position: LatLng, name: String) {
         viewModelScope.launch {
+            resetMapState()
+
             // 카메라 이동 전 화면 위치 사용자 따라가는 옵션 삭제
             _locationTrackingMode.value = LocationTrackingMode.NoFollow
             // 마커 목록 업데이트
@@ -67,6 +69,8 @@ class MapViewmodel @Inject constructor(
 
     fun showBookmarks(infos: List<BookmarkFolder>) {
         viewModelScope.launch {
+            resetMapState()
+
             if (infos.isEmpty()) {
                 _bookmarks.value = infos
                 return@launch
@@ -82,6 +86,8 @@ class MapViewmodel @Inject constructor(
     @OptIn(ExperimentalNaverMapApi::class)
     fun showSearchResult(infos: List<NodeInfo>) {
         viewModelScope.launch {
+            resetMapState()
+
             if (infos.isEmpty()) {
                 _searchResult.value = infos
                 return@launch
@@ -104,6 +110,8 @@ class MapViewmodel @Inject constructor(
     @OptIn(ExperimentalNaverMapApi::class)
     fun showPath(nodes: List<NodeInfo>) {
         viewModelScope.launch {
+            resetMapState()
+
             _locationTrackingMode.value = LocationTrackingMode.NoFollow
             _pathNodes.value = nodes.map { it -> LatLng(it.latitude, it.longitude) }
 
@@ -134,13 +142,11 @@ class MapViewmodel @Inject constructor(
         }
     }
 
-    fun clearOverlay() {
-        viewModelScope.launch {
-            _locationTrackingMode.value = LocationTrackingMode.Follow
-            _markers.value = listOf()
-            _pathNodes.value = listOf()
-            _searchResult.value = listOf()
-            _bookmarks.value = listOf()
-        }
+    fun resetMapState() {
+        _locationTrackingMode.value = LocationTrackingMode.Follow
+        _markers.value = listOf()
+        _pathNodes.value = listOf()
+        _searchResult.value = listOf()
+        _bookmarks.value = listOf()
     }
 }
