@@ -1,19 +1,17 @@
 package com.hongildong.map.ui.profile
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -26,12 +24,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hongildong.map.R
-import com.hongildong.map.data.entity.FolderColor
-import com.hongildong.map.ui.bookmark.SelectableBookmarkFolderItem
 import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Black
-import com.hongildong.map.ui.theme.BookmarkRed
-import com.hongildong.map.ui.theme.Gray300
 import com.hongildong.map.ui.theme.Gray500
 import com.hongildong.map.ui.util.BottomButton
 import com.hongildong.map.ui.util.CustomTextField
@@ -46,6 +40,14 @@ fun ProfileUpdateContent(
     var profileImage by remember { mutableStateOf(profileUrl) }
     var textState by remember { mutableStateOf(nickname) }
 
+    // 이미지 고르기 런처
+    val photoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = { uri ->
+            profileImage = uri.toString()
+        }
+    )
+    
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -66,7 +68,11 @@ fun ProfileUpdateContent(
                     .align(Alignment.BottomEnd)
                     .padding(10.dp)
                     .clickable {
-
+                        photoPickerLauncher.launch(
+                            input = PickVisualMediaRequest(
+                                ActivityResultContracts.PickVisualMedia.ImageOnly
+                            )
+                        )
                     }
             )
         }
