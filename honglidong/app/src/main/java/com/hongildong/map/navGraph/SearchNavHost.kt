@@ -166,7 +166,7 @@ fun SearchNavHost(
                             }
                             SearchableNodeType.BUILDING.apiName -> {
                                 searchKeywordViewmodel.onSearchBuildingInfo(node.id!!)
-                                searchNavController.navigate(NavRoute.LocationDetail.route + "/${node.nodeName}/${node.id}")
+                                searchNavController.navigate(NavRoute.BuildingDetail.route + "/${node.nodeName}/${node.id}")
                             }
                         }
                     },

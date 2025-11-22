@@ -25,7 +25,7 @@ fun SearchRootScreen(
     bookmarkViewModel: BookmarkViewModel,
     type: String? = null,
     name: String? = null,
-    id: Int? = null
+    id: Int = 0
 ) {
     val navController = rememberNavController()
     val mapViewModel: MapViewmodel = hiltViewModel()

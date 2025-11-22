@@ -85,7 +85,7 @@ fun AppNavHost() {
 
                     val type = backStackEntry.arguments?.getString("type")
                     val name = backStackEntry.arguments?.getString("name")
-                    val id = backStackEntry.arguments?.getInt("id")
+                    val id = backStackEntry.arguments?.getInt("id") ?: 0
 
                     SearchRootScreen(
                         rootNavController = rootNavController,
