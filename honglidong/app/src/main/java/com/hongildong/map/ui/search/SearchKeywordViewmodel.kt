@@ -140,7 +140,7 @@ class SearchKeywordViewmodel @Inject constructor(
                     onSearchBuildingInfo(keyword)
                 }
                 keyword.nodeCode == SearchableNodeType.FACILITY.apiName -> {
-                    onSearchFacilityInfo(keyword)
+                    onSearchFacilityInfo(keyword.id)
                 }
             }
         }
@@ -151,7 +151,7 @@ class SearchKeywordViewmodel @Inject constructor(
     val facilityDetail = _facilityDetail.asStateFlow()
 
     // 건물의 detial info 받아오기
-    fun onSearchFacilityInfo(keyword: SearchKeyword) {
+    fun onSearchFacilityInfo(facilityId: Int) {
         viewModelScope.launch {
             /*val token = getToken()
             if (token == null) {
@@ -159,7 +159,7 @@ class SearchKeywordViewmodel @Inject constructor(
                 return@launch
             }*/
 
-            val response = searchRepository.getFacilityDetail(keyword.id)
+            val response = searchRepository.getFacilityDetail(facilityId = facilityId)
             when (response) {
                 is DefaultResponse.Success -> {
                     Log.d(TAG, "응답 성공: $response")
@@ -214,7 +214,7 @@ class SearchKeywordViewmodel @Inject constructor(
                         SearchKeyword(
                             nodeName = response.data.name ?: "temp",
                             nodeId = response.data.nodeId,
-                            nodeCode = response.data.nodeCode ?: "",
+                            nodeCode = response.data.type ?: "",
                             id = response.data.nodeId
                         )
                     )

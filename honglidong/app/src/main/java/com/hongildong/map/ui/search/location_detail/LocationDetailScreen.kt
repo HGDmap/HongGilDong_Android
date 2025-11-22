@@ -154,7 +154,7 @@ fun LocationDetailScreen(
                                     },
                                     folders = allBookmarks,
                                     onDone = { folderNumber ->
-                                        val targetId = if (searchResult?.nodeCode == SearchableNodeType.FACILITY.apiName) {
+                                        val targetId = if (searchResult?.type == SearchableNodeType.FACILITY.apiName) {
                                             searchResult?.id
                                         } else {
                                             searchResult?.nodeId
@@ -163,14 +163,14 @@ fun LocationDetailScreen(
                                             if (folderNumber == 0) {
                                                 // 0: 폴더 선택하지 않은 경우 -> 북마크 삭제
                                                 bookmarkViewModel.deleteBookmark(
-                                                    type = searchResult?.nodeCode ?: SearchableNodeType.FACILITY.apiName,
+                                                    type = searchResult?.type ?: SearchableNodeType.FACILITY.apiName,
                                                     targetId = targetId
                                                 )
                                             }
                                             else {
                                                 // 0이 아님: 폴더를 선택하거나 바꾼 경우 -> 북마크 업데이트
                                                 bookmarkViewModel.updateBookmark(
-                                                    type = searchResult?.nodeCode ?: SearchableNodeType.FACILITY.apiName,
+                                                    type = searchResult?.type ?: SearchableNodeType.FACILITY.apiName,
                                                     targetId = targetId,
                                                     folderId = folderNumber
                                                 )

@@ -45,7 +45,7 @@ fun MainNavHost(
 
                 NearbyScreen(
                     onSearch = {
-                        rootNavController.navigate(NavRoute.SearchFlow.route) {
+                        rootNavController.navigate(NavRoute.SearchFlow.route()) {
                             popUpTo(mainNavController.graph.findStartDestination().id) {
                                 saveState = true
                             }
@@ -66,7 +66,7 @@ fun MainNavHost(
 
                 BookmarkScreen(
                     onSearch = {
-                        rootNavController.navigate(NavRoute.SearchFlow.route) {
+                        rootNavController.navigate(NavRoute.SearchFlow.route()) {
                             popUpTo(mainNavController.graph.findStartDestination().id) {
                                 saveState = true
                             }

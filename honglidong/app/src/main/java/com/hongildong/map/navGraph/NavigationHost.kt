@@ -3,10 +3,12 @@ package com.hongildong.map.navGraph
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.hongildong.map.ui.MainScreen
 import com.hongildong.map.ui.bookmark.BookmarkViewModel
 import com.hongildong.map.ui.search.SearchRootScreen
@@ -56,7 +58,24 @@ fun AppNavHost() {
 
             navigation(
                 route = NavRoute.SearchFlow.route,
-                startDestination = NavRoute.SearchRoot.route
+                startDestination = NavRoute.SearchRoot.route,
+                arguments = listOf(
+                    navArgument("type") {
+                        type = NavType.StringType
+                        nullable = true
+                        defaultValue = null
+                    },
+                    navArgument("name") {
+                        type = NavType.StringType
+                        nullable = true
+                        defaultValue = null
+                    },
+                    navArgument("id") {
+                        type = NavType.IntType
+                        nullable = false
+                        defaultValue = 0
+                    }
+                )
             ) {
                 composable(NavRoute.SearchRoot.route) { backStackEntry ->
                     val parentEntry = remember(backStackEntry) {
@@ -64,9 +83,16 @@ fun AppNavHost() {
                     }
                     val bookmarkViewModel: BookmarkViewModel = hiltViewModel(parentEntry)
 
+                    val type = backStackEntry.arguments?.getString("type")
+                    val name = backStackEntry.arguments?.getString("name")
+                    val id = backStackEntry.arguments?.getInt("id")
+
                     SearchRootScreen(
                         rootNavController = rootNavController,
-                        bookmarkViewModel = bookmarkViewModel
+                        bookmarkViewModel = bookmarkViewModel,
+                        type = type,
+                        name = name,
+                        id = id,
                     )
                 }
             }

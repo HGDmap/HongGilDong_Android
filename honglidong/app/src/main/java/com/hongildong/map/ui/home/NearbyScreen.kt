@@ -66,6 +66,11 @@ fun NearbyScreen(
     LaunchedEffect(Unit) {
         bookmarkViewModel.getAllBookmarks()
     }
+    LaunchedEffect(allBookmarks) {
+        if (allBookmarks.isNotEmpty()) {
+            mapViewModel.showBookmarks(allBookmarks)
+        }
+    }
 
     Box(
         modifier = Modifier

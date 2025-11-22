@@ -1,5 +1,6 @@
 package com.hongildong.map.ui.search
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,7 +22,10 @@ import com.hongildong.map.ui.util.map.MapViewmodel
 @Composable
 fun SearchRootScreen(
     rootNavController: NavHostController,
-    bookmarkViewModel: BookmarkViewModel
+    bookmarkViewModel: BookmarkViewModel,
+    type: String? = null,
+    name: String? = null,
+    id: Int? = null
 ) {
     val navController = rememberNavController()
     val mapViewModel: MapViewmodel = hiltViewModel()
@@ -45,7 +49,10 @@ fun SearchRootScreen(
                 searchNavController = navController,
                 mapViewmodel = mapViewModel,
                 bookmarkViewModel = bookmarkViewModel,
-                bottomSheetViewModel = bottomSheetViewModel
+                bottomSheetViewModel = bottomSheetViewModel,
+                startType = type,
+                startName = name,
+                startId = id
             )
         }
 

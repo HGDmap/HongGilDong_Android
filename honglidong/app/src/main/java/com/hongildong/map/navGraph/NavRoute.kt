@@ -5,7 +5,16 @@ sealed class NavRoute(val route: String) {
     // flow
     object EnterFlow: NavRoute("enter_flow")
     object MainFlow: NavRoute("main_flow")
-    object SearchFlow: NavRoute("search_flow")
+    object SearchFlow: NavRoute("search_flow?type={type}&name={name}&id={id}") {
+        // 일반 검색 루틴 -> 검색 화면으로 이동
+        fun route() = "search_flow"
+
+        // 이벤트/건물/시설 상세 화면으로 이동
+        // type: 시설/이벤트/건물인지
+        // name: 검색어
+        // id: 시설/이벤트/건물 id
+        fun createRoute(type: String, name: String, id: Int) = "search_flow?type=$type&name=$name&id=$id"
+    }
 
     // home
     object Nearby : NavRoute("nearby")

@@ -33,6 +33,7 @@ import com.naver.maps.map.compose.ExperimentalNaverMapApi
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalNaverMapApi::class)
 @Composable
 fun FacilityDetailScreen(
+    searchedFacilityId: Int = 0,
     searchedWord: String = "",
     searchViewmodel: SearchKeywordViewmodel,
     mapViewmodel: MapViewmodel,
@@ -49,6 +50,11 @@ fun FacilityDetailScreen(
     val directionResult by searchViewmodel.directionResult.collectAsState()
     val isUser by bookmarkViewModel.isUser.collectAsState()
     val allBookmarks by bookmarkViewModel.allBookmarkInfo.collectAsState()
+
+    LaunchedEffect(Unit) {
+        // 검색 결과 바탕으로 시설 상세 정보 api 호출
+        searchViewmodel.onSearchFacilityInfo(searchedFacilityId)
+    }
 
     LaunchedEffect(key1 = facilityInfo, key2 = directionResult) {
         bookmarkViewModel.verifyUser()

@@ -32,7 +32,7 @@ import com.naver.maps.map.overlay.OverlayImage
 @Composable
 fun MapBackground(
     viewModel: MapViewmodel,
-    onClickBookmark: () -> Unit
+    onClickBookmark: (NodeInfo) -> Unit
 ) {
     // 마커
     val markers by viewModel.markers.collectAsState()
@@ -57,6 +57,9 @@ fun MapBackground(
         // 마커
         markers.forEach { markerInfo ->
             Marker(
+                icon = OverlayImage.fromResource(R.drawable.ic_pin),
+                width = 50.dp,
+                height = 62.5.dp,
                 state = MarkerState(position = markerInfo.position),
                 captionText = markerInfo.name
             )
@@ -70,11 +73,12 @@ fun MapBackground(
                     captionText = bookmark.name ?: bookmark.nodeName ?: "",
                     onClick = {
                         // todo: 북마크 버블 클릭시 해당 건물/시설 검색해야함
+                        onClickBookmark(bookmark)
                         false
                     }
                 ) {
                     BookmarkIcon(
-                        size = 20.dp,
+                        size = 10.dp,
                         color = folderColor
                     )
                 }
