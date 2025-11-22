@@ -14,7 +14,7 @@ data class BookmarkFolder (
     val folderId: Int,
     val folderName: String,
     val color: String,
-    val bookmarkList: List<NodeInfo>,
+    val bookmarkList: List<BookmarkInfo>,
     val bookmarkCount: Int
 )
 

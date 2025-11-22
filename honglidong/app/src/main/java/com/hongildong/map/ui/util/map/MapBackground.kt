@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.hongildong.map.R
+import com.hongildong.map.data.entity.BookmarkInfo
 import com.hongildong.map.data.entity.FolderColor
 import com.hongildong.map.data.entity.NodeInfo
 import com.hongildong.map.ui.theme.BookmarkRed
@@ -32,7 +33,7 @@ import com.naver.maps.map.overlay.OverlayImage
 @Composable
 fun MapBackground(
     viewModel: MapViewmodel,
-    onClickBookmark: (NodeInfo) -> Unit
+    onClickBookmark: (BookmarkInfo) -> Unit
 ) {
     // 마커
     val markers by viewModel.markers.collectAsState()
@@ -70,7 +71,7 @@ fun MapBackground(
             folderInfo.bookmarkList.forEach { bookmark ->
                 MarkerComposable(
                     state = MarkerState(position = LatLng(bookmark.latitude, bookmark.longitude)),
-                    captionText = bookmark.name ?: bookmark.nodeName ?: "",
+                    captionText = bookmark.name ?: "",
                     onClick = {
                         // todo: 북마크 버블 클릭시 해당 건물/시설 검색해야함
                         onClickBookmark(bookmark)
