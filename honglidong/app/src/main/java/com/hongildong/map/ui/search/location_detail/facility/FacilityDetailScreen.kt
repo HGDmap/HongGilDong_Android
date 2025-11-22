@@ -19,8 +19,8 @@ import com.hongildong.map.data.entity.FacilityInfo
 import com.hongildong.map.data.entity.ReviewInfo
 import com.hongildong.map.data.entity.SearchableNodeType
 import com.hongildong.map.data.entity.toSearchKeyword
-import com.hongildong.map.ui.bookmark.BookmarkFolderUpdateContent
-import com.hongildong.map.ui.bookmark.BookmarkUpdateContent
+import com.hongildong.map.ui.bookmark.sheet_content.BookmarkFolderUpdateContent
+import com.hongildong.map.ui.bookmark.sheet_content.BookmarkUpdateContent
 import com.hongildong.map.ui.bookmark.BookmarkViewModel
 import com.hongildong.map.ui.search.SearchKeywordViewmodel
 import com.hongildong.map.ui.search.location_detail.SearchBarWithGoBack

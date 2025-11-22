@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.hongildong.map.ui.bookmark.BookmarkFolderHeader
 import com.hongildong.map.ui.bookmark.BookmarkFolderList
-import com.hongildong.map.ui.bookmark.BookmarkFolderUpdateContent
+import com.hongildong.map.ui.bookmark.sheet_content.BookmarkFolderUpdateContent
 import com.hongildong.map.ui.bookmark.BookmarkViewModel
 import com.hongildong.map.ui.util.bottomsheet.BottomSheetViewModel
 import com.hongildong.map.ui.util.bottomsheet.FlexibleBottomSheet
@@ -35,6 +35,7 @@ import com.hongildong.map.ui.util.popup.ConfirmPopup
 @Composable
 fun BookmarkScreen(
     onSearch: () -> Unit,
+    onClickFolder: (Int) -> Unit,
     bottomSheetViewModel: BottomSheetViewModel,
     bookmarkViewModel: BookmarkViewModel = hiltViewModel()
 ) {
@@ -49,6 +50,7 @@ fun BookmarkScreen(
 
     LaunchedEffect(isUser) {
         bookmarkViewModel.verifyUser()
+        bookmarkViewModel.getAllBookmarks()
     }
 
     Box(
@@ -94,7 +96,7 @@ fun BookmarkScreen(
                 BookmarkFolderList(
                     allBookmarkInfo,
                     onClickFolder = { folder ->
-                        // todo: 폴더 클릭시 폴더에 속한 아이템 리스트 api + 화면 전환
+                        onClickFolder(folder.folderId)
                     },
                     onDeleteFolder = { folderId ->
                         showDialog = true

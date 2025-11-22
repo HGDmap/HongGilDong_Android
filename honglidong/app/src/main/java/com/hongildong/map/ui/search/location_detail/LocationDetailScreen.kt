@@ -1,6 +1,5 @@
 package com.hongildong.map.ui.search.location_detail
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -40,8 +39,8 @@ import com.hongildong.map.R
 import com.hongildong.map.data.entity.NodeInfo
 import com.hongildong.map.data.entity.SearchableNodeType
 import com.hongildong.map.data.entity.toSearchKeyword
-import com.hongildong.map.ui.bookmark.BookmarkFolderUpdateContent
-import com.hongildong.map.ui.bookmark.BookmarkUpdateContent
+import com.hongildong.map.ui.bookmark.sheet_content.BookmarkFolderUpdateContent
+import com.hongildong.map.ui.bookmark.sheet_content.BookmarkUpdateContent
 import com.hongildong.map.ui.bookmark.BookmarkViewModel
 import com.hongildong.map.ui.search.SearchKeywordViewmodel
 import com.hongildong.map.ui.theme.AppTypography

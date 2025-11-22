@@ -1,4 +1,4 @@
-package com.hongildong.map.ui.bookmark
+package com.hongildong.map.ui.bookmark.sheet_content
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

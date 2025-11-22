@@ -22,6 +22,9 @@ sealed class NavRoute(val route: String) {
     object Profile : NavRoute("profile")
     object Main: NavRoute("main")
 
+    // 북마크 폴더
+    object BookmarkFolderInside: NavRoute("bookmark_folder_inside")
+
     // user
     object Enter: NavRoute("enter")
     object Login: NavRoute("login")

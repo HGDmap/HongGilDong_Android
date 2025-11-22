@@ -5,9 +5,12 @@ import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
+import androidx.navigation.navArgument
+import com.hongildong.map.ui.bookmark.BookmarkFolderInsideScreen
 import com.hongildong.map.ui.bookmark.BookmarkViewModel
 import com.hongildong.map.ui.home.BookmarkScreen
 import com.hongildong.map.ui.home.NearbyScreen
@@ -74,8 +77,34 @@ fun MainNavHost(
                             restoreState = true
                         }
                     },
+                    onClickFolder = { folderId ->
+                        mainNavController.navigate(NavRoute.BookmarkFolderInside.route + "/$folderId")
+                    },
                     bottomSheetViewModel = bottomSheetViewModel,
-                    bookmarkViewModel = bookmarkViewModel
+                    bookmarkViewModel = bookmarkViewModel,
+                )
+            }
+            composable(
+                route = NavRoute.BookmarkFolderInside.route + "/{folderId}",
+                arguments = listOf(
+                    navArgument("folderId") { type = NavType.IntType }
+                )
+            ) {
+                val folderId = it.arguments?.getInt("folderId") ?: 0
+                BookmarkFolderInsideScreen(
+                    folderId = folderId,
+                    bottomSheetViewModel = bottomSheetViewModel,
+                    bookmarkViewModel = bookmarkViewModel,
+                    onClickBookmark = { bookmarkInfo ->
+                        rootNavController.navigate(NavRoute.SearchFlow.createRoute(
+                            type = bookmarkInfo.type,
+                            name = bookmarkInfo.name,
+                            id = bookmarkInfo.id
+                        ))
+                    },
+                    onGoBack = {
+                        mainNavController.popBackStack()
+                    }
                 )
             }
             composable(route = NavRoute.Profile.route) {
