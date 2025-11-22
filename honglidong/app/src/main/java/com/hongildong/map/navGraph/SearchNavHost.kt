@@ -46,7 +46,6 @@ fun SearchNavHost(
 ) {
 
     val initialRoute = if (startType != null && startName != null && startId != null) {
-        Log.d("여기입니다", "SearchNavHost: $startType $startName $startId")
         when (startType) {
             SearchableNodeType.FACILITY.apiName -> {
                 NavRoute.FacilityDetail.route + "/$startName/$startId"
@@ -59,7 +58,6 @@ fun SearchNavHost(
             }
         }
     } else {
-        Log.d("여기입니다", "SearchNavHost: $startType $startName $startId")
         NavRoute.Search.route + "/$LOCATION_SEARCH_MODE"
     }
 
@@ -143,6 +141,7 @@ fun SearchNavHost(
 
                 SearchedFacilityListScreen(
                     searchViewmodel = searchKeywordViewmodel,
+                    mapViewModel = mapViewmodel,
                     searchedWord = searchedWord,
                     onDirectItem = {
                         val target = SearchKeyword(

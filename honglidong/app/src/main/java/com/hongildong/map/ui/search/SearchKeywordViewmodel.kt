@@ -261,6 +261,7 @@ class SearchKeywordViewmodel @Inject constructor(
             return
         }
         viewModelScope.launch {
+            Log.d(TAG, "길찾기 from=${_departPlaceInfo.value} to=${_arrivalPlaceInfo.value}")
             val response = searchRepository.direct(
                 from = _departPlaceInfo.value!!.nodeId,
                 to = _arrivalPlaceInfo.value!!.nodeId

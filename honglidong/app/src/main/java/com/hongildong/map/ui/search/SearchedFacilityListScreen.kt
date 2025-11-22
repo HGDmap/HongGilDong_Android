@@ -48,6 +48,7 @@ import com.hongildong.map.ui.theme.White
 import com.hongildong.map.ui.util.ButtonWithIcon
 import com.hongildong.map.ui.util.bottomsheet.BottomSheetViewModel
 import com.hongildong.map.ui.util.bottomsheet.FlexibleBottomSheet
+import com.hongildong.map.ui.util.map.MapViewmodel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,6 +56,7 @@ fun SearchedFacilityListScreen(
     searchViewmodel: SearchKeywordViewmodel,
     bottomSheetViewModel: BottomSheetViewModel,
     bookmarkViewModel: BookmarkViewModel,
+    mapViewModel: MapViewmodel,
     searchedWord: String,
     onDirectItem: (NodeInfo) -> Unit,
     onClickItem: (NodeInfo) -> Unit,
@@ -70,6 +72,11 @@ fun SearchedFacilityListScreen(
 
     LaunchedEffect(Unit) {
         bookmarkViewModel.getAllBookmarks()
+        //searchViewmodel.onSearchRawWord(searchedWord)
+    }
+
+    LaunchedEffect(searchResult) {
+        mapViewModel.showSearchResult(searchResult)
     }
 
     Box(

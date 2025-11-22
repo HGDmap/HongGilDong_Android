@@ -72,7 +72,8 @@ fun MainScreen(
             viewModel = mapViewModel,
             onClickBookmark = { bookmarkInfo ->
                 if (!bookmarkInfo.type.isNullOrEmpty()) {
-                    rootNavController.navigate(NavRoute.SearchFlow.createRoute(bookmarkInfo.type, bookmarkInfo.name!!, bookmarkInfo.id!!))
+                    rootNavController.navigate(NavRoute.SearchFlow
+                        .createRoute(bookmarkInfo.type, bookmarkInfo.name, bookmarkInfo.id))
                 } else {
                     Toast.makeText(context, bookmarkInfo.type, Toast.LENGTH_SHORT).show()
                 }

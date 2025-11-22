@@ -67,13 +67,37 @@ class MapViewmodel @Inject constructor(
 
     fun showBookmarks(infos: List<BookmarkFolder>) {
         viewModelScope.launch {
-            // todo: infos의 각 아이템 위치에 마커 xx 점찍기
             if (infos.isEmpty()) {
                 _bookmarks.value = infos
                 return@launch
             }
 
             _bookmarks.value = infos
+        }
+    }
+
+    private val _searchResult = MutableStateFlow<List<NodeInfo>>(emptyList())
+    val searchResult = _searchResult.asStateFlow()
+
+    @OptIn(ExperimentalNaverMapApi::class)
+    fun showSearchResult(infos: List<NodeInfo>) {
+        viewModelScope.launch {
+            if (infos.isEmpty()) {
+                _searchResult.value = infos
+                return@launch
+            }
+
+            _searchResult.value = infos
+
+            val lat = _searchResult.value.map { it.latitude }.average()
+            val lng = _searchResult.value.map { it.longitude }.average()
+            val position = LatLng(lat, lng)
+            val targetZoom = 18.0
+            val cameraUpdate = CameraUpdate
+                .toCameraPosition(
+                    CameraPosition(position, targetZoom)
+                ).animate(CameraAnimation.Easing)
+            cameraPositionState.move(cameraUpdate)
         }
     }
 
@@ -115,6 +139,8 @@ class MapViewmodel @Inject constructor(
             _locationTrackingMode.value = LocationTrackingMode.Follow
             _markers.value = listOf()
             _pathNodes.value = listOf()
+            _searchResult.value = listOf()
+            _bookmarks.value = listOf()
         }
     }
 }
