@@ -51,7 +51,8 @@ fun FacilityDetailInfo(
     searchViewmodel: SearchKeywordViewmodel = hiltViewModel(),
     bookmarkViewmodel: BookmarkViewModel = hiltViewModel(),
     onEditReview: (ReviewInfo) -> Unit,
-    onDeleteReview: (Int) -> Unit
+    onDeleteReview: (Int) -> Unit,
+    onLikeReview: (Int) -> Unit
 ) {
     val pages = listOf("시설 정보", "리뷰", "사진")
     var tabState by remember { mutableIntStateOf(0) }
@@ -118,6 +119,9 @@ fun FacilityDetailInfo(
                     },
                     onDeleteReview = {
                         onDeleteReview(it)
+                    },
+                    onLikeItem = {
+                        onLikeReview(it)
                     }
                 )
             }

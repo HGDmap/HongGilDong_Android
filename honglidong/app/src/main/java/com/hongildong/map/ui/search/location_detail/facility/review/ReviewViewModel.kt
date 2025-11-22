@@ -199,7 +199,6 @@ class ReviewViewModel @Inject constructor(
                     Log.d(TAG, "리뷰 삭제 성공")
                     _selectedImageUris.value = emptyList() // 성공 후 이미지 비우기
                     _serverUrls.value = emptyList() // 성공 후 url 정보 비우기
-                    _uploadState.value = UiState.Success
                 }
                 is DefaultResponse.Error -> {
                     Log.d(TAG, "리뷰 삭제 실패")
@@ -207,4 +206,6 @@ class ReviewViewModel @Inject constructor(
             }
         }
     }
+
+
 }

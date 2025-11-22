@@ -159,11 +159,15 @@ fun ProfileScreen(
             0 -> {
                 // 좋아요한 리뷰 탭
                 if (isUser) {
-                    FacilityReviews(
-                        reviews = myReviews,
-                        onDeleteItem = {  },
-                        onEditItem = {  }
-                    )
+                    if (!likedReviews.isEmpty()) {
+                        FacilityReviews(
+                            reviews = likedReviews,
+                            onDeleteItem = {  },
+                            onEditItem = {  }
+                        )
+                    } else {
+                        EmptyContents("아직 좋아요한 리뷰가 없어요.")
+                    }
                 } else {
                     EmptyContents("로그인 후에 볼 수 있어요.")
                 }
@@ -171,11 +175,15 @@ fun ProfileScreen(
             1 -> {
                 // 리뷰 탭
                 if (isUser) {
-                    FacilityReviews(
-                        reviews = likedReviews,
-                        onDeleteItem = {  },
-                        onEditItem = {  }
-                    )
+                    if (!myReviews.isEmpty()) {
+                        FacilityReviews(
+                            reviews = myReviews,
+                            onDeleteItem = {  },
+                            onEditItem = {  }
+                        )
+                    } else {
+                        EmptyContents("아직 작성한 리뷰가 없어요.")
+                    }
                 } else {
                     EmptyContents("로그인 후에 볼 수 있어요.")
                 }
