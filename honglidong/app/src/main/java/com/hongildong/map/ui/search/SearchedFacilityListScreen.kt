@@ -21,6 +21,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -66,6 +67,10 @@ fun SearchedFacilityListScreen(
 
     val isUser by bookmarkViewModel.isUser.collectAsState()
     val allBookmarks by bookmarkViewModel.allBookmarkInfo.collectAsState()
+
+    LaunchedEffect(Unit) {
+        bookmarkViewModel.getAllBookmarks()
+    }
 
     Box(
         modifier = Modifier.background(Color.Transparent)
@@ -115,8 +120,8 @@ fun SearchedFacilityListScreen(
                                         addFolder = {
                                             bottomSheetViewModel.change {
                                                 BookmarkFolderUpdateContent(
-                                                    onDone = {
-                                                        bookmarkViewModel.addFolder(it.folderName, it.folderColor)
+                                                    onDone = { request ->
+                                                        bookmarkViewModel.addFolder(request.folderName, request.folderColor)
                                                         bottomSheetViewModel.restore()
                                                     }
                                                 )
@@ -126,18 +131,18 @@ fun SearchedFacilityListScreen(
                                         onDone = { folderNumber ->
                                             if (folderNumber == 0) {
                                                 // 0: 폴더 선택하지 않은 경우 -> 북마크 삭제
-                                                if (it.type == SearchableNodeType.FACILITY.apiName) it.id else it.nodeId.let { targetId ->
+                                                if (it.type == SearchableNodeType.FACILITY.apiName) {
                                                     bookmarkViewModel.deleteBookmark(
                                                         type = it.type ?: SearchableNodeType.FACILITY.apiName,
-                                                        targetId = targetId
+                                                        targetId = it.id ?: it.nodeId ?: 0
                                                     )
                                                 }
                                             } else {
                                                 // 0이 아님: 폴더를 선택하거나 바꾼 경우 -> 북마크 업데이트
-                                                if (it.type == SearchableNodeType.FACILITY.apiName) it.id else it.nodeId.let { targetId ->
+                                                if (it.type == SearchableNodeType.FACILITY.apiName) {
                                                     bookmarkViewModel.updateBookmark(
                                                         type = it.type ?: SearchableNodeType.FACILITY.apiName,
-                                                        targetId = targetId,
+                                                        targetId = it.id ?: it.nodeId ?: 0,
                                                         folderId = folderNumber
                                                     )
                                                 }

@@ -55,7 +55,7 @@ fun BookmarkFolderInsideItem(
                 )
                 Spacer(Modifier.height(3.dp))
                 Text(
-                    bookmark.location,
+                    bookmark.location ?: "",
                     style = AppTypography.Medium_13.copy(color = Gray600)
                 )
             }

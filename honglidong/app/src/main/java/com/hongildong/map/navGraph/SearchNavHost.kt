@@ -164,9 +164,9 @@ fun SearchNavHost(
                         searchKeywordViewmodel.onSearch(target)
                         // 장소 상세 정보 화면으로 이동
                         if (target.nodeCode == SearchableNodeType.FACILITY.apiName) {
-                            searchNavController.navigate(NavRoute.FacilityDetail.route + "/${target.nodeName}")
+                            searchNavController.navigate(NavRoute.FacilityDetail.route + "/${target.nodeName}/${target.id}")
                         } else {
-                            searchNavController.navigate(NavRoute.LocationDetail.route + "/${target.nodeName}")
+                            searchNavController.navigate(NavRoute.LocationDetail.route + "/${target.nodeName}/${target.id}")
                         }
                     },
                     onGoBack = {

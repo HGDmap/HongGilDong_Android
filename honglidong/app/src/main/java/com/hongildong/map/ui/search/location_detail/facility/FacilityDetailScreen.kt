@@ -54,6 +54,7 @@ fun FacilityDetailScreen(
     LaunchedEffect(Unit) {
         // 검색 결과 바탕으로 시설 상세 정보 api 호출
         searchViewmodel.onSearchFacilityInfo(searchedFacilityId)
+        bookmarkViewModel.getAllBookmarks()
     }
 
     LaunchedEffect(key1 = facilityInfo, key2 = directionResult) {
