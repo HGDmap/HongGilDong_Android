@@ -18,6 +18,8 @@ import com.hongildong.map.ui.theme.White
 import com.hongildong.map.ui.util.BookmarkIcon
 import com.hongildong.map.ui.util.SearchResultIcon
 import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.clustering.ClusterMarkerInfo
+import com.naver.maps.map.clustering.ClusterMarkerUpdater
 import com.naver.maps.map.compose.CircleOverlay
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
 import com.naver.maps.map.compose.MapProperties
@@ -90,7 +92,6 @@ fun MapBackground(
         }
 
         searchResult.forEach { result ->
-            //val folderColor = FolderColor.fromColorName(folderInfo.color)?.color ?: BookmarkRed
             MarkerComposable(
                 state = MarkerState(position = LatLng(result.latitude, result.longitude)),
                 captionText = result.name ?: "",

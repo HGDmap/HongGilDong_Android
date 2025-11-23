@@ -290,7 +290,7 @@ fun SearchNavHost(
                 arguments = listOf(
                     navArgument("facilityName") { type = NavType.StringType },
                     navArgument("facilityId") { type = NavType.IntType },
-                    navArgument("reviewMode") { type = NavType.IntType }
+                    navArgument("reviewMode") { type = NavType.IntType } // 0이면 새로 생성 1이면 수정
                 )
             ) { backStackEntry ->
                 val parentEntry = remember(backStackEntry) {

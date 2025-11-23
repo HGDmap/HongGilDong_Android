@@ -15,6 +15,9 @@ import com.hongildong.map.ui.bookmark.BookmarkViewModel
 import com.hongildong.map.ui.home.BookmarkScreen
 import com.hongildong.map.ui.home.NearbyScreen
 import com.hongildong.map.ui.home.ProfileScreen
+import com.hongildong.map.ui.search.SearchKeywordViewmodel
+import com.hongildong.map.ui.search.location_detail.facility.review.ReviewScreen
+import com.hongildong.map.ui.search.location_detail.facility.review.ReviewViewModel
 import com.hongildong.map.ui.util.bottomsheet.BottomSheetViewModel
 import com.hongildong.map.ui.util.map.MapViewmodel
 
@@ -107,9 +110,56 @@ fun MainNavHost(
                     }
                 )
             }
-            composable(route = NavRoute.Profile.route) {
+            composable(route = NavRoute.Profile.route) { backStackEntry ->
+                // MAIN_GRAPH_ROUTE를 찾아 ViewModel을 공유
+                val parentEntry = remember(backStackEntry) {
+                    mainNavController.getBackStackEntry(MAIN_GRAPH_ROUTE)
+                }
+                val reviewViewmodel = hiltViewModel<ReviewViewModel>(parentEntry)
+
                 ProfileScreen(
                     bottomSheetViewModel = bottomSheetViewModel,
+                    onDeleteReview = {
+                        reviewViewmodel.deleteReview(it)
+                    },
+                    onUpdateReview = {
+                        reviewViewmodel.setTargetReview(it)
+                        mainNavController.navigate(NavRoute.Review.route + "/${it.facilityName}/${it.facilityId}")
+                    },
+                )
+            }
+
+            // 리뷰 작성 화면
+            composable(
+                route = NavRoute.Review.route + "/{facilityName}/{facilityId}",
+                arguments = listOf(
+                    navArgument("facilityName") { type = NavType.StringType },
+                    navArgument("facilityId") { type = NavType.IntType }
+                )
+            ) { backStackEntry ->
+                // MAIN_GRAPH_ROUTE를 찾아 ViewModel을 공유
+                val parentEntry = remember(backStackEntry) {
+                    mainNavController.getBackStackEntry(MAIN_GRAPH_ROUTE)
+                }
+                val reviewViewmodel = hiltViewModel<ReviewViewModel>(parentEntry)
+                val facilityName = backStackEntry.arguments?.getString("facilityName") ?: ""
+                val facilityId = backStackEntry.arguments?.getInt("facilityId") ?: 0
+
+                ReviewScreen(
+                    facilityName = facilityName,
+                    reviewViewModel = reviewViewmodel,
+                    reviewMode = 1,
+                    onGoBack = {
+                        reviewViewmodel.clearReviewInfo()
+                        mainNavController.popBackStack()
+                    },
+                    onDone = {
+                        reviewViewmodel.updateReview(
+                            isNewReview = false,
+                            facilityId = facilityId,
+                            content = it
+                        )
+                    }
                 )
             }
         }

@@ -31,7 +31,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.hongildong.map.R
+import com.hongildong.map.data.entity.ReviewInfo
 import com.hongildong.map.ui.profile.MemberViewmodel
+import com.hongildong.map.ui.profile.MyReviews
 import com.hongildong.map.ui.profile.ProfileUpdateContent
 import com.hongildong.map.ui.search.location_detail.facility.review.FacilityReviews
 import com.hongildong.map.ui.theme.AppTypography
@@ -46,7 +48,9 @@ import com.hongildong.map.ui.util.bottomsheet.BottomSheetViewModel
 
 @Composable
 fun ProfileScreen(
-    bottomSheetViewModel: BottomSheetViewModel = hiltViewModel()
+    bottomSheetViewModel: BottomSheetViewModel = hiltViewModel(),
+    onDeleteReview: (Int) -> Unit,
+    onUpdateReview: (ReviewInfo) -> Unit,
 ) {
     val memberViewModel: MemberViewmodel = hiltViewModel()
 
@@ -162,8 +166,12 @@ fun ProfileScreen(
                     if (!likedReviews.isEmpty()) {
                         FacilityReviews(
                             reviews = likedReviews,
-                            onDeleteItem = {  },
-                            onEditItem = {  }
+                            onDeleteItem = {
+                                onDeleteReview(it)
+                            },
+                            onEditItem = {
+                                onUpdateReview(it)
+                            }
                         )
                     } else {
                         EmptyContents("아직 좋아요한 리뷰가 없어요.")
@@ -173,13 +181,17 @@ fun ProfileScreen(
                 }
             }
             1 -> {
-                // 리뷰 탭
+                // 내가 쓴 리뷰 탭
                 if (isUser) {
                     if (!myReviews.isEmpty()) {
-                        FacilityReviews(
+                        MyReviews(
                             reviews = myReviews,
-                            onDeleteItem = {  },
-                            onEditItem = {  }
+                            onDeleteItem = {
+                                onDeleteReview(it)
+                            },
+                            onEditItem = {
+                                onUpdateReview(it)
+                            }
                         )
                     } else {
                         EmptyContents("아직 작성한 리뷰가 없어요.")
@@ -190,22 +202,30 @@ fun ProfileScreen(
             }
             2 -> {
                 // 장소 제안 탭
+                EmptyContents("제안하고 싶은 장소가 있다면 직접 등록해보세요.")
             }
             else -> {
                 // 좋아요한 리뷰 탭
                 if (isUser) {
-                    FacilityReviews(
-                        reviews = myReviews,
-                        onDeleteItem = {  },
-                        onEditItem = {  }
-                    )
+                    if (!likedReviews.isEmpty()) {
+                        FacilityReviews(
+                            reviews = myReviews,
+                            onDeleteItem = {
+                                onDeleteReview(it)
+                            },
+                            onEditItem = {
+                                onUpdateReview(it)
+                            }
+                        )
+                    } else {
+                        EmptyContents("아직 좋아요한 리뷰가 없어요.")
+                    }
                 } else {
                     EmptyContents("로그인 후에 볼 수 있어요.")
                 }
             }
         }
     }
-
 }
 
 

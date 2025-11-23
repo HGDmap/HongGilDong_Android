@@ -1,4 +1,4 @@
-package com.hongildong.map.ui.search.location_detail.facility.review
+package com.hongildong.map.ui.profile
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,17 +22,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.hongildong.map.data.entity.ReviewInfo
+import com.hongildong.map.ui.search.location_detail.facility.review.LikedReviewIcon
+import com.hongildong.map.ui.search.location_detail.facility.review.RateImage
 import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Black
 import com.hongildong.map.ui.theme.Gray300
 import com.hongildong.map.ui.theme.Gray500
-import com.hongildong.map.ui.util.EmptyContents
 import com.hongildong.map.ui.util.NetworkImage
-import com.hongildong.map.ui.util.ProfileImage
 import com.hongildong.map.ui.util.popup.DropDownMenu
 
 @Composable
-fun FacilityReviews(
+fun MyReviews(
     reviews: List<ReviewInfo>,
     onDeleteItem: (Int) -> Unit = {},
     onEditItem: (ReviewInfo) -> Unit = {},
@@ -40,7 +40,7 @@ fun FacilityReviews(
 ) {
     LazyColumn {
         items(reviews) { review ->
-            FacilityReviewItem(
+            ReviewItem (
                 reviewItem = review,
                 onDeleteItem = {
                     onDeleteItem(review.id)
@@ -57,7 +57,7 @@ fun FacilityReviews(
 }
 
 @Composable
-fun FacilityReviewItem(
+fun ReviewItem(
     reviewItem: ReviewInfo,
     onDeleteItem: () -> Unit,
     onEditItem: () -> Unit,
@@ -74,18 +74,10 @@ fun FacilityReviewItem(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Row (
-                verticalAlignment = Alignment.CenterVertically
-            ){
-                ProfileImage(
-                    profileUrl = reviewItem.writerProfilePic
-                )
-                Spacer(Modifier.width(4.dp))
-                Text(
-                    reviewItem.writerNickname ?: "홍길동",
-                    style = AppTypography.Bold_18.copy(color = Black)
-                )
-            }
+            Text(
+                reviewItem.facilityName ?: "temp",
+                style = AppTypography.Bold_18.copy(color = Black)
+            )
 
             if (reviewItem.isMine ?: true) {
                 DropDownMenu(
@@ -101,7 +93,7 @@ fun FacilityReviewItem(
             RateImage(
                 width = 101.dp,
                 height = 19.dp,
-                rate = 0.8f
+                rate = reviewItem.rating ?: 0.8f
             )
             Spacer(Modifier.width(4.dp))
             Text(

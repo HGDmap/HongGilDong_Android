@@ -35,7 +35,7 @@ interface MemberService {
     ): ApiResponse<ProfileResponse>
 
     // 내가 쓴 리뷰 조회
-    @GET("member/mypage/review")
+    @GET("member/mypage/reviews")
     suspend fun getMyReviews(
         @Header("Authorization") accessToken: String,
         @Query("page") page: Int,
