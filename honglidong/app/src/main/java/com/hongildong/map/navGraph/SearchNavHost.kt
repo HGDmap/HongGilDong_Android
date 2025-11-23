@@ -309,11 +309,13 @@ fun SearchNavHost(
                         reviewViewModel.clearReviewInfo()
                         searchNavController.popBackStack()
                     },
-                    onDone = {
+                    onDone = { content: String, recommend: String, rating: String ->
                         reviewViewModel.updateReview(
                             isNewReview = if (reviewMode == 0) true else false,
                             facilityId = facilityId,
-                            content = it
+                            content = content,
+                            recommend = recommend,
+                            rating = rating
                         )
                     }
                 )

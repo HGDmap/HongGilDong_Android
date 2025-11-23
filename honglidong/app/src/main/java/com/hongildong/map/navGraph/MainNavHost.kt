@@ -153,11 +153,13 @@ fun MainNavHost(
                         reviewViewmodel.clearReviewInfo()
                         mainNavController.popBackStack()
                     },
-                    onDone = {
+                    onDone = { content: String, recommend: String, rating: String ->
                         reviewViewmodel.updateReview(
                             isNewReview = false,
                             facilityId = facilityId,
-                            content = it
+                            content = content,
+                            recommend = recommend,
+                            rating = rating
                         )
                     }
                 )

@@ -84,6 +84,8 @@ class ReviewViewModel @Inject constructor(
         isNewReview: Boolean = true,
         facilityId: Int = 0,
         content: String,
+        recommend: String,
+        rating: String
     ) {
         viewModelScope.launch {
             try {
@@ -146,7 +148,9 @@ class ReviewViewModel @Inject constructor(
                 // imageUrl로 api 요청
                 val body = ReviewUpdateRequest(
                     content = content,
-                    photoList = uploadedImageUrls
+                    photoList = uploadedImageUrls,
+                    recommend = recommend,
+                    rating = rating.toFloat()
                 )
 
                 if (isNewReview) {

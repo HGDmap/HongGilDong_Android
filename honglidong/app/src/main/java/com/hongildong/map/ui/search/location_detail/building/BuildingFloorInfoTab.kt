@@ -96,7 +96,6 @@ fun FloorItem(
     Row(
         modifier = Modifier
             .padding(3.dp)
-            //.shadow(elevation = 3.dp, shape = RoundedCornerShape(12.dp))
             .fillMaxWidth()
             .border(width = 1.dp, color = if (isExpanded) PrimaryMid else Gray300, shape = RoundedCornerShape(12.dp))
             .background(color = if (isExpanded) PrimaryLight.copy(alpha = 0.4f) else White, shape = RoundedCornerShape(12.dp))
