@@ -71,7 +71,7 @@ fun ReviewScreen(
     val scrollState = rememberScrollState()
 
     // rate
-    var rateValue by remember { mutableStateOf("5") }
+    var rateValue by remember { mutableStateOf("5.0") }
 
     // 기존 리뷰 정보 - reviewmode == 1(수정)일때 사용
     val targetReview by reviewViewModel.targetReview.collectAsState()
@@ -169,7 +169,7 @@ fun ReviewScreen(
                         .fillMaxWidth()
                         //.width(220.dp)
                         .padding(horizontal = 10.dp),
-                    items = (10 downTo 1).map { it.toString() },
+                    items = listOf("5.0", "4.5", "4.0", "3.5", "3.0", "2.5", "2.0", "1.5", "1.0", "0.5"),
                     initialItem = rateValue,
                     onItemSelected = { index, selectedValue ->
                         rateValue = selectedValue
@@ -184,12 +184,12 @@ fun ReviewScreen(
                             RateImage(
                                 width = 181.dp,
                                 height = 31.dp,
-                                rate = item.toFloat() / 10,
+                                rate = item.toFloat(),
                                 color = if (isSelected) PrimaryMid else Gray500
                             )
                             Spacer(Modifier.width(8.dp))
                             Text(
-                                text = "${item.toFloat() / 2}",
+                                text = item.toString(),
                                 style = AppTypography.Medium_15.copy(color = if (isSelected) Black else Gray500),
                             )
                         }
@@ -312,3 +312,4 @@ fun ReviewScreen(
         }
     }
 }
+

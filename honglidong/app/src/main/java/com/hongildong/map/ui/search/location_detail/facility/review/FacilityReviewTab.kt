@@ -239,7 +239,7 @@ fun RateImage(
     width: Dp = 185.dp,
     height: Dp = 35.dp,
     color: Color = PrimaryMid,
-    rate: Float = 0.5f // 0.5 = 0.1 / 2.5 = 0.5 / 5.0 = 1
+    rate: Float = 5.0f // 0.5 = 0.1 / 2.5 = 0.5 / 5.0 = 1
 ) {
     Box(
         modifier = Modifier.size(width, height)
@@ -252,7 +252,7 @@ fun RateImage(
 
         Box(
             modifier = Modifier
-                .size((width * rate), height)
+                .size((width * rate / 5), height)
                 .background(color)
         )
 
