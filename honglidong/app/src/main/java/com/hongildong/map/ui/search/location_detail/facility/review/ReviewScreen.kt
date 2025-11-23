@@ -363,7 +363,7 @@ fun RecommendTypeItem(
         Image(
             painter = painterResource(type.icon),
             contentDescription = null,
-            modifier = Modifier.padding(horizontal = 5.dp)
+            modifier = Modifier.size(30.dp).padding(horizontal = 5.dp)
         )
         Text(
             text = type.displayName,
@@ -374,7 +374,7 @@ fun RecommendTypeItem(
             Text(
                 text = selectedCnt.toString(),
                 style = AppTypography.Medium_15.copy(color = if (isSelected) PrimaryMid else Gray600),
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
             )
         }
     }

@@ -94,7 +94,7 @@ fun ReviewItem(
             RateImage(
                 width = 101.dp,
                 height = 19.dp,
-                rate = (reviewItem.rating?.div(20)) ?: 0.8f
+                rate = (reviewItem.rating) ?: 4.5f
             )
             Spacer(Modifier.width(4.dp))
             Text(

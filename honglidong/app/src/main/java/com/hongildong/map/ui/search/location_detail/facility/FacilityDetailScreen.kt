@@ -96,6 +96,7 @@ fun FacilityDetailScreen(
                 isFullScreen = true
             ) {
                 FacilityDetailInfo(
+                    nestedScrollConnection = nestedScrollConnection,
                     modifier = Modifier.nestedScroll(nestedScrollConnection),
                     searchViewmodel = searchViewmodel,
                     bookmarkViewmodel = bookmarkViewModel,

@@ -22,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -42,6 +43,7 @@ import com.hongildong.map.ui.util.ButtonWithIcon
 
 @Composable
 fun FacilityDetailInfo(
+    nestedScrollConnection: NestedScrollConnection,
     modifier: Modifier = Modifier,
     facilityInfo: FacilityInfo,
     onDepart: () -> Unit,
@@ -110,6 +112,7 @@ fun FacilityDetailInfo(
             1 -> {
                 // 리뷰 탭
                 FacilityReviewTab(
+                    nestedScrollConnection = nestedScrollConnection,
                     searchViewmodel = searchViewmodel,
                     isUser = isUser,
                     onReview = onReview,

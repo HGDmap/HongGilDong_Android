@@ -36,7 +36,6 @@ import com.hongildong.map.ui.profile.LikedReviews
 import com.hongildong.map.ui.profile.MemberViewmodel
 import com.hongildong.map.ui.profile.MyReviews
 import com.hongildong.map.ui.profile.ProfileUpdateContent
-import com.hongildong.map.ui.search.location_detail.facility.review.FacilityReviews
 import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Black
 import com.hongildong.map.ui.theme.Gray500

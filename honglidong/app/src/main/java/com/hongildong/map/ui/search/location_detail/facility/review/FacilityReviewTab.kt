@@ -1,5 +1,6 @@
 package com.hongildong.map.ui.search.location_detail.facility.review
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -31,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
@@ -57,6 +59,7 @@ import dev.chrisbanes.haze.materials.HazeMaterials
 
 @Composable
 fun FacilityReviewTab(
+    nestedScrollConnection: NestedScrollConnection,
     searchViewmodel: SearchKeywordViewmodel,
     isUser: Boolean,
     facilityId: Int,
@@ -65,8 +68,6 @@ fun FacilityReviewTab(
     onDeleteReview: (Int) -> Unit,
     onLikeItem: (Int) -> Unit
 ) {
-    val nestedScrollConnection = rememberNestedScrollInteropConnection()
-
     val reviews by searchViewmodel.facilityReviews.collectAsState()
 
     val recommendInfo by searchViewmodel.facilityRecommendInfo.collectAsState()
@@ -74,106 +75,95 @@ fun FacilityReviewTab(
     var targetReviewId by remember { mutableStateOf(-1) }
     var enablePopup by remember { mutableStateOf(false) }
 
+    val hazeState = remember { HazeState() }
+
     LaunchedEffect(Unit) {
         if (isUser) {
             searchViewmodel.getFacilityReview(facilityId)
             searchViewmodel.getFacilityRecommendInfo(facilityId)
         }
     }
-/*
-    LaunchedEffect(enablePopup) {
-        if (enablePopup) {
-            searchViewmodel.getFacilityReview(facilityId)
-        }
-    }*/
 
     Box {
-        Column(
+        LazyColumn (
             modifier = Modifier
-                .fillMaxSize()
                 .nestedScroll(nestedScrollConnection)
         ) {
-            val hazeState = remember { HazeState() }
-
             if (isUser) {
-                // if (리뷰를 단 적이 없으면) {
-                // 리뷰 유도 박스
-                FacilityReviewInduceItem(
-                    onClick = onReview
-                )
-                HorizontalDivider(thickness = 3.dp, color = Gray100)
-                // }
-
-                FacilityReviewInfo(recommendInfo ?: ReviewRecommendResponse())
-                HorizontalDivider(thickness = 3.dp, color = Gray100)
-
-                Text(
-                    "리뷰",
-                    style = AppTypography.Bold_20.copy(color = Black),
-                    modifier = Modifier.padding(vertical = 25.dp)
-                )
-                if (reviews.isEmpty()) {
-                    EmptyContents("등록된 리뷰가 아직 없어요.")
-                } else {
-                    FacilityReviews(
-                        nestedScrollConnection = nestedScrollConnection,
-                        reviews = reviews,
-                        onDeleteItem = {
-                            targetReviewId = it
-                            enablePopup = true
-                        },
-                        onEditItem = {
-                            onEditReview(it)
-                        },
-                        onLikeItem = {
-                            onLikeItem(it)
-                        }
+                item {
+                    // if (리뷰를 단 적이 없으면) {
+                    // 리뷰 유도 박스
+                    FacilityReviewInduceItem(
+                        onClick = onReview
                     )
+                    HorizontalDivider(thickness = 3.dp, color = Gray100)
+                    // }
+
+                    FacilityReviewInfo(recommendInfo ?: ReviewRecommendResponse())
+                    HorizontalDivider(thickness = 3.dp, color = Gray100)
+
+                    Text(
+                        "리뷰",
+                        style = AppTypography.Bold_20.copy(color = Black),
+                        modifier = Modifier.padding(vertical = 25.dp)
+                    )
+                }
+
+                if (reviews.isEmpty()) {
+                    item  { EmptyContents("등록된 리뷰가 아직 없어요.") }
+                } else {
+                    items(reviews) { review ->
+                        FacilityReviewItem(
+                            reviewItem = review,
+                            onDeleteItem = {
+                                onDeleteReview(review.id)
+                            },
+                            onEditItem = {
+                                onEditReview(review)
+                            },
+                            onLikeItem = {
+                                onLikeItem(review.id)
+                            }
+                        )
+                    }
                 }
 
             } else {
-                Box(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .haze(
-                                state = hazeState,
-                                style = HazeMaterials.thick(containerColor = White)
-                            )
+                item {
+                    Box(
+                        modifier = Modifier.fillMaxSize()
                     ) {
-                        // if (리뷰를 단 적이 없으면) {
-                        // 리뷰 유도 박스
-                        FacilityReviewInduceItem()
-                        HorizontalDivider(thickness = 3.dp, color = Gray100)
-                        // }
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .haze(
+                                    state = hazeState,
+                                    style = HazeMaterials.thick(containerColor = White)
+                                )
+                        ) {
+                            // if (리뷰를 단 적이 없으면) {
+                            // 리뷰 유도 박스
+                            FacilityReviewInduceItem()
+                            HorizontalDivider(thickness = 3.dp, color = Gray100)
+                            // }
 
-                        FacilityReviewInfo(recommendInfo ?: ReviewRecommendResponse())
-                        HorizontalDivider(thickness = 3.dp, color = Gray100)
+                            FacilityReviewInfo(recommendInfo ?: ReviewRecommendResponse())
+                            HorizontalDivider(thickness = 3.dp, color = Gray100)
 
-                        Text(
-                            "리뷰",
-                            style = AppTypography.Bold_20.copy(color = Black),
-                            modifier = Modifier.padding(vertical = 25.dp)
-                        )
-                        if (reviews.isEmpty()) {
-                            EmptyContents("등록된 리뷰가 아직 없어요.")
-                        } else {
-                            FacilityReviews(
-                                nestedScrollConnection = nestedScrollConnection,
-                                reviews = emptyList(),
+                            Text(
+                                "리뷰",
+                                style = AppTypography.Bold_20.copy(color = Black),
+                                modifier = Modifier.padding(vertical = 25.dp)
                             )
+                            EmptyContents("등록된 리뷰가 아직 없어요.")
                         }
-
+                        BlockNonUser(
+                            title = "리뷰",
+                            hazeState = hazeState,
+                        )
                     }
-                    BlockNonUser(
-                        title = "리뷰",
-                        hazeState = hazeState,
-                    )
                 }
             }
-
         }
 
         if (enablePopup) {

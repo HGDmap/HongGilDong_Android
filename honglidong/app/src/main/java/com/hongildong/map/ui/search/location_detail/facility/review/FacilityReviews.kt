@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
@@ -33,34 +34,6 @@ import com.hongildong.map.ui.util.NetworkImage
 import com.hongildong.map.ui.util.ProfileImage
 import com.hongildong.map.ui.util.formatDate
 import com.hongildong.map.ui.util.popup.DropDownMenu
-
-@Composable
-fun FacilityReviews(
-    nestedScrollConnection: NestedScrollConnection,
-    reviews: List<ReviewInfo>,
-    onDeleteItem: (Int) -> Unit = {},
-    onEditItem: (ReviewInfo) -> Unit = {},
-    onLikeItem: (Int) -> Unit = {}
-) {
-    LazyColumn(
-        modifier = Modifier.nestedScroll(nestedScrollConnection)
-    ) {
-        items(reviews) { review ->
-            FacilityReviewItem(
-                reviewItem = review,
-                onDeleteItem = {
-                    onDeleteItem(review.id)
-                },
-                onEditItem = {
-                    onEditItem(review)
-                },
-                onLikeItem = {
-                    onLikeItem(review.id)
-                }
-            )
-        }
-    }
-}
 
 @Composable
 fun FacilityReviewItem(
@@ -107,7 +80,7 @@ fun FacilityReviewItem(
             RateImage(
                 width = 101.dp,
                 height = 19.dp,
-                rate = (reviewItem.rating?.div(20)) ?: 0.8f
+                rate = (reviewItem.rating) ?: 4.5f
             )
             Spacer(Modifier.width(4.dp))
             Text(
