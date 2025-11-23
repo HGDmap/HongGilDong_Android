@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.hongildong.map.R
 import com.hongildong.map.data.entity.ReviewInfo
+import com.hongildong.map.data.remote.response.ReviewRecommendResponse
 import com.hongildong.map.ui.search.SearchKeywordViewmodel
 import com.hongildong.map.ui.search.location_detail.facility.photo.BlockNonUser
 import com.hongildong.map.ui.theme.AppTypography
@@ -60,11 +61,17 @@ fun FacilityReviewTab(
     onLikeItem: (Int) -> Unit
 ) {
     val reviews by searchViewmodel.facilityReviews.collectAsState()
+
+    val recommendInfo by searchViewmodel.facilityRecommendInfo.collectAsState()
+
     var targetReviewId by remember { mutableStateOf(-1) }
     var enablePopup by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        searchViewmodel.getFacilityReview(facilityId)
+        if (isUser) {
+            searchViewmodel.getFacilityReview(facilityId)
+            searchViewmodel.getFacilityRecommendInfo(facilityId)
+        }
     }
 /*
     LaunchedEffect(enablePopup) {
@@ -89,7 +96,7 @@ fun FacilityReviewTab(
                 HorizontalDivider(thickness = 3.dp, color = Gray100)
                 // }
 
-                FacilityReviewInfo()
+                FacilityReviewInfo(recommendInfo ?: ReviewRecommendResponse())
                 HorizontalDivider(thickness = 3.dp, color = Gray100)
 
                 Text(
@@ -133,7 +140,7 @@ fun FacilityReviewTab(
                         HorizontalDivider(thickness = 3.dp, color = Gray100)
                         // }
 
-                        FacilityReviewInfo()
+                        FacilityReviewInfo(recommendInfo ?: ReviewRecommendResponse())
                         HorizontalDivider(thickness = 3.dp, color = Gray100)
 
                         Text(
@@ -178,28 +185,44 @@ fun FacilityReviewTab(
 }
 
 
-@Preview
 @Composable
-fun FacilityReviewInfo() {
-    Row (
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 25.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            "4.0",
-            style = AppTypography.Bold_22.copy(color = Black)
-        )
-        Spacer(Modifier.width(4.dp))
-        RateImage(
-            width = 101.dp,
-            height = 19.dp,
-            rate = 0.8f
-        )
+fun FacilityReviewInfo(
+    recommendInfo: ReviewRecommendResponse
+) {
+    Column {
+        Row (
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 25.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                String.format("%.1f", recommendInfo.avgRating),
+                style = AppTypography.Bold_22.copy(color = Black)
+            )
+            Spacer(Modifier.width(4.dp))
+            RateImage(
+                width = 101.dp,
+                height = 19.dp,
+                rate = String.format("%.1f", recommendInfo.avgRating).toFloat()
+            )
+        }
+
+        FacilityRecommendType.entries.forEach {
+            RecommendTypeItem(
+                type = it,
+                selectedCnt = when (it) {
+                    FacilityRecommendType.STUDY -> recommendInfo.recommendation.studyCnt
+                    FacilityRecommendType.FOOD -> recommendInfo.recommendation.foodCnt
+                    FacilityRecommendType.MEETING -> recommendInfo.recommendation.meetingCnt
+                    FacilityRecommendType.VIEW -> recommendInfo.recommendation.viewCnt
+                    FacilityRecommendType.REST -> recommendInfo.recommendation.restCnt
+                },
+                isSelected = false,
+                onClick = {}
+            )
+        }
     }
-    
-    // 나중에 ~하기 좋아요 추가한다고 하면 Column으로 감싸고 여기에 추가하면 됨
 }
 
 @Composable

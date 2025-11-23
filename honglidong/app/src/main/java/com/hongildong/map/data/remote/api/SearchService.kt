@@ -7,6 +7,7 @@ import com.hongildong.map.data.remote.request.PhotoRequest
 import com.hongildong.map.data.remote.response.DirectionResponse
 import com.hongildong.map.data.remote.response.PhotoResponse
 import com.hongildong.map.data.remote.response.RawSearchResponse
+import com.hongildong.map.data.remote.response.ReviewRecommendResponse
 import com.hongildong.map.data.remote.response.ReviewResponse
 import com.hongildong.map.data.util.ApiResponse
 import retrofit2.http.Body
@@ -44,6 +45,13 @@ interface SearchService {
         @Query("page") page: Int, // 받아올 페이지 번호. 처음 받아올때는 0으로
         @Query("size") size: Int // 한번에 받아올 페이지의 크기 (리뷰 개수)
     ): ApiResponse<ReviewResponse>
+
+    // 시설의 전체 평점 및 추천 항목 현황 조회
+    @GET("/facility/{facilityId}/rating")
+    suspend fun getFacilityRecommend(
+        @Header("Authorization") accessToken: String, // 리뷰는 회원 기능
+        @Path("facilityId") facilityId: Int,
+    ): ApiResponse<ReviewRecommendResponse>
 
     // 시설 사진 조회
     @POST("facility/{facilityId}/photos")
