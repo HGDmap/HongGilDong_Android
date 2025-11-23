@@ -3,6 +3,8 @@ package com.hongildong.map.ui.search.location_detail.facility.review
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.rememberScrollableState
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,7 +31,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -60,6 +65,8 @@ fun FacilityReviewTab(
     onDeleteReview: (Int) -> Unit,
     onLikeItem: (Int) -> Unit
 ) {
+    val nestedScrollConnection = rememberNestedScrollInteropConnection()
+
     val reviews by searchViewmodel.facilityReviews.collectAsState()
 
     val recommendInfo by searchViewmodel.facilityRecommendInfo.collectAsState()
@@ -84,6 +91,7 @@ fun FacilityReviewTab(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .nestedScroll(nestedScrollConnection)
         ) {
             val hazeState = remember { HazeState() }
 
@@ -108,6 +116,7 @@ fun FacilityReviewTab(
                     EmptyContents("등록된 리뷰가 아직 없어요.")
                 } else {
                     FacilityReviews(
+                        nestedScrollConnection = nestedScrollConnection,
                         reviews = reviews,
                         onDeleteItem = {
                             targetReviewId = it
@@ -152,6 +161,7 @@ fun FacilityReviewTab(
                             EmptyContents("등록된 리뷰가 아직 없어요.")
                         } else {
                             FacilityReviews(
+                                nestedScrollConnection = nestedScrollConnection,
                                 reviews = emptyList(),
                             )
                         }

@@ -20,6 +20,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import com.hongildong.map.data.entity.ReviewInfo
 import com.hongildong.map.ui.theme.AppTypography
@@ -34,12 +36,15 @@ import com.hongildong.map.ui.util.popup.DropDownMenu
 
 @Composable
 fun FacilityReviews(
+    nestedScrollConnection: NestedScrollConnection,
     reviews: List<ReviewInfo>,
     onDeleteItem: (Int) -> Unit = {},
     onEditItem: (ReviewInfo) -> Unit = {},
     onLikeItem: (Int) -> Unit = {}
 ) {
-    LazyColumn {
+    LazyColumn(
+        modifier = Modifier.nestedScroll(nestedScrollConnection)
+    ) {
         items(reviews) { review ->
             FacilityReviewItem(
                 reviewItem = review,

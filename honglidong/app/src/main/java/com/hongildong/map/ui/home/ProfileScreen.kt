@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.hongildong.map.R
 import com.hongildong.map.data.entity.ReviewInfo
+import com.hongildong.map.ui.profile.LikedReviews
 import com.hongildong.map.ui.profile.MemberViewmodel
 import com.hongildong.map.ui.profile.MyReviews
 import com.hongildong.map.ui.profile.ProfileUpdateContent
@@ -167,7 +168,7 @@ fun ProfileScreen(
                     // 좋아요한 리뷰 탭
                     if (isUser) {
                         if (!likedReviews.isEmpty()) {
-                            FacilityReviews(
+                            LikedReviews(
                                 reviews = likedReviews,
                                 onDeleteItem = {
                                     onDeleteReview(it)
@@ -211,7 +212,7 @@ fun ProfileScreen(
                     // 좋아요한 리뷰 탭
                     if (isUser) {
                         if (!likedReviews.isEmpty()) {
-                            FacilityReviews(
+                            LikedReviews(
                                 reviews = myReviews,
                                 onDeleteItem = {
                                     onDeleteReview(it)
