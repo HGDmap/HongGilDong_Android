@@ -29,6 +29,7 @@ import com.hongildong.map.ui.theme.Gray500
 import com.hongildong.map.ui.util.EmptyContents
 import com.hongildong.map.ui.util.NetworkImage
 import com.hongildong.map.ui.util.ProfileImage
+import com.hongildong.map.ui.util.formatDate
 import com.hongildong.map.ui.util.popup.DropDownMenu
 
 @Composable
@@ -101,11 +102,11 @@ fun FacilityReviewItem(
             RateImage(
                 width = 101.dp,
                 height = 19.dp,
-                rate = 0.8f
+                rate = (reviewItem.rating?.div(20)) ?: 0.8f
             )
             Spacer(Modifier.width(4.dp))
             Text(
-                reviewItem.updatedAt,
+                formatDate(reviewItem.updatedAt),
                 style = AppTypography.Medium_13.copy(color = Gray500)
             )
         }

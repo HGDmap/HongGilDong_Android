@@ -159,69 +159,73 @@ fun ProfileScreen(
             }
         }
         HorizontalDivider(Modifier.height(1.dp), color = Gray500)
-        when (tabState) {
-            0 -> {
-                // 좋아요한 리뷰 탭
-                if (isUser) {
-                    if (!likedReviews.isEmpty()) {
-                        FacilityReviews(
-                            reviews = likedReviews,
-                            onDeleteItem = {
-                                onDeleteReview(it)
-                            },
-                            onEditItem = {
-                                onUpdateReview(it)
-                            }
-                        )
+        Column (
+            modifier = Modifier.padding(horizontal = 20.dp)
+        ) {
+            when (tabState) {
+                0 -> {
+                    // 좋아요한 리뷰 탭
+                    if (isUser) {
+                        if (!likedReviews.isEmpty()) {
+                            FacilityReviews(
+                                reviews = likedReviews,
+                                onDeleteItem = {
+                                    onDeleteReview(it)
+                                },
+                                onEditItem = {
+                                    onUpdateReview(it)
+                                }
+                            )
+                        } else {
+                            EmptyContents("아직 좋아요한 리뷰가 없어요.")
+                        }
                     } else {
-                        EmptyContents("아직 좋아요한 리뷰가 없어요.")
+                        EmptyContents("로그인 후에 볼 수 있어요.")
                     }
-                } else {
-                    EmptyContents("로그인 후에 볼 수 있어요.")
                 }
-            }
-            1 -> {
-                // 내가 쓴 리뷰 탭
-                if (isUser) {
-                    if (!myReviews.isEmpty()) {
-                        MyReviews(
-                            reviews = myReviews,
-                            onDeleteItem = {
-                                onDeleteReview(it)
-                            },
-                            onEditItem = {
-                                onUpdateReview(it)
-                            }
-                        )
+                1 -> {
+                    // 내가 쓴 리뷰 탭
+                    if (isUser) {
+                        if (!myReviews.isEmpty()) {
+                            MyReviews(
+                                reviews = myReviews,
+                                onDeleteItem = {
+                                    onDeleteReview(it)
+                                },
+                                onEditItem = {
+                                    onUpdateReview(it)
+                                }
+                            )
+                        } else {
+                            EmptyContents("아직 작성한 리뷰가 없어요.")
+                        }
                     } else {
-                        EmptyContents("아직 작성한 리뷰가 없어요.")
+                        EmptyContents("로그인 후에 볼 수 있어요.")
                     }
-                } else {
-                    EmptyContents("로그인 후에 볼 수 있어요.")
                 }
-            }
-            2 -> {
-                // 장소 제안 탭
-                EmptyContents("제안하고 싶은 장소가 있다면 직접 등록해보세요.")
-            }
-            else -> {
-                // 좋아요한 리뷰 탭
-                if (isUser) {
-                    if (!likedReviews.isEmpty()) {
-                        FacilityReviews(
-                            reviews = myReviews,
-                            onDeleteItem = {
-                                onDeleteReview(it)
-                            },
-                            onEditItem = {
-                                onUpdateReview(it)
-                            }
-                        )
+                2 -> {
+                    // 장소 제안 탭
+                    EmptyContents("제안하고 싶은 장소가 있다면 직접 등록해보세요.")
+                }
+                else -> {
+                    // 좋아요한 리뷰 탭
+                    if (isUser) {
+                        if (!likedReviews.isEmpty()) {
+                            FacilityReviews(
+                                reviews = myReviews,
+                                onDeleteItem = {
+                                    onDeleteReview(it)
+                                },
+                                onEditItem = {
+                                    onUpdateReview(it)
+                                }
+                            )
+                        } else {
+                            EmptyContents("아직 좋아요한 리뷰가 없어요.")
+                        }
                     } else {
-                        EmptyContents("아직 좋아요한 리뷰가 없어요.")
+                        EmptyContents("로그인 후에 볼 수 있어요.")
                     }
-                } else {
-                    EmptyContents("로그인 후에 볼 수 있어요.")
                 }
             }
         }

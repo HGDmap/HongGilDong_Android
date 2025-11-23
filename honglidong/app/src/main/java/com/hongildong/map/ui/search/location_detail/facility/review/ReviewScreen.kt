@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -47,6 +48,7 @@ import com.hongildong.map.ui.search.location_detail.facility.review.ReviewViewMo
 import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Black
 import com.hongildong.map.ui.theme.Gray300
+import com.hongildong.map.ui.theme.Gray500
 import com.hongildong.map.ui.theme.PrimaryMid
 import com.hongildong.map.ui.theme.White
 import com.hongildong.map.ui.util.BottomButton
@@ -54,6 +56,7 @@ import com.hongildong.map.ui.util.CustomLoading
 import com.hongildong.map.ui.util.CustomTextBox
 import com.hongildong.map.ui.util.NetworkImage
 import com.hongildong.map.ui.util.UiState
+import com.hongildong.map.ui.util.WheelPicker
 import com.hongildong.map.ui.util.popup.ConfirmPopup
 
 @Composable
@@ -66,6 +69,9 @@ fun ReviewScreen(
 ) {
     val context = LocalContext.current
     val scrollState = rememberScrollState()
+
+    // rate
+    var rateValue by remember { mutableStateOf("5") }
 
     // 기존 리뷰 정보 - reviewmode == 1(수정)일때 사용
     val targetReview by reviewViewModel.targetReview.collectAsState()
@@ -98,6 +104,7 @@ fun ReviewScreen(
         if (reviewMode == 1 && targetReview != null) {
             // 리뷰 수정 상황이라면 기존 리뷰 컨텐츠 덮어쓰기
             textState = targetReview!!.content
+            rateValue = targetReview!!.rating.toString()
         }
     }
 
@@ -154,11 +161,40 @@ fun ReviewScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Spacer(Modifier.height(25.dp))
-                RateImage(
-                    width = 181.dp,
-                    height = 31.dp,
-                    rate = 0.9f
+
+                // rate picker
+                WheelPicker(
+                    modifier = Modifier
+                        .height(150.dp)
+                        .fillMaxWidth()
+                        //.width(220.dp)
+                        .padding(horizontal = 10.dp),
+                    items = (10 downTo 1).map { it.toString() },
+                    initialItem = rateValue,
+                    onItemSelected = { index, selectedValue ->
+                        rateValue = selectedValue
+                    }
                 )
+                { item, isSelected ->
+                    if (item.toString().isNotEmpty()) {
+                        Row(
+                            modifier = Modifier.padding(vertical = 5.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            RateImage(
+                                width = 181.dp,
+                                height = 31.dp,
+                                rate = item.toFloat() / 10,
+                                color = if (isSelected) PrimaryMid else Gray500
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            Text(
+                                text = "${item.toFloat() / 2}",
+                                style = AppTypography.Medium_15.copy(color = if (isSelected) Black else Gray500),
+                            )
+                        }
+                    }
+                }
                 Spacer(Modifier.height(25.dp))
 
                 HorizontalDivider(thickness = 1.dp, color = Gray300)

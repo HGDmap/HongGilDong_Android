@@ -27,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -237,6 +238,7 @@ fun FacilityReviewInduceItem(
 fun RateImage(
     width: Dp = 185.dp,
     height: Dp = 35.dp,
+    color: Color = PrimaryMid,
     rate: Float = 0.5f // 0.5 = 0.1 / 2.5 = 0.5 / 5.0 = 1
 ) {
     Box(
@@ -251,7 +253,7 @@ fun RateImage(
         Box(
             modifier = Modifier
                 .size((width * rate), height)
-                .background(PrimaryMid)
+                .background(color)
         )
 
         Image(

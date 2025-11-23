@@ -12,12 +12,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.hongildong.map.data.entity.NodeInfo
 import com.hongildong.map.data.entity.SearchableNodeType
@@ -64,8 +68,21 @@ fun MainScreen(
 
     val context = LocalContext.current
 
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    val bottomBarsRoutes = listOf(
+        NavRoute.Nearby.route,
+        NavRoute.Bookmark.route,
+        NavRoute.Profile.route,
+    )
+
     Scaffold(
-        bottomBar = { BottomNavigationBar(navController) },
+        bottomBar = {
+            if (currentRoute in bottomBarsRoutes) {
+                BottomNavigationBar(navController)
+            }
+        },
         modifier = Modifier.fillMaxSize()
     ) { paddingValues ->
         MapBackground(
