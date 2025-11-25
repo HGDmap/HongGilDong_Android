@@ -1,5 +1,6 @@
 package com.hongildong.map.ui.search.direction
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -47,6 +48,13 @@ fun DirectionSearchScreen(
     setDepart: () -> Unit,
     setArrival: () -> Unit,
 ) {
+
+    // 시스템 뒤로가기 버튼 - 커스텀 동작과 연결
+    BackHandler {
+        onGoBack()
+    }
+
+
     val departInfo by searchViewmodel.departPlaceInfo.collectAsState()
     val arrivalInfo by searchViewmodel.arrivalPlaceInfo.collectAsState()
     LaunchedEffect(key1 = departInfo, key2 = arrivalInfo) {

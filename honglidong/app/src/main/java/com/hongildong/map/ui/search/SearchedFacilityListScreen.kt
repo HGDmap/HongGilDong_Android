@@ -1,5 +1,6 @@
 package com.hongildong.map.ui.search
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -62,6 +63,11 @@ fun SearchedFacilityListScreen(
     onClickItem: (NodeInfo) -> Unit,
     onGoBack: () -> Unit
 ) {
+    // 시스템 뒤로가기 버튼 - 커스텀 동작과 연결
+    BackHandler {
+        onGoBack()
+    }
+
     val searchResult by searchViewmodel.searchedList.collectAsState()
 
     val sheetScaffoldState = rememberBottomSheetScaffoldState()

@@ -1,6 +1,7 @@
 package com.hongildong.map.ui.search
 
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -52,6 +53,11 @@ fun SearchScreen(
 ) {
     var textState by remember { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
+
+    // 시스템 뒤로가기 버튼 - 커스텀 동작 연결
+    BackHandler {
+        onGoBack()
+    }
 
     Column(
         modifier = Modifier

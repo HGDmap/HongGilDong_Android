@@ -1,6 +1,7 @@
 package com.hongildong.map.ui.search.location_detail.facility.review
 
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -71,6 +72,12 @@ fun ReviewScreen(
     onGoBack: () -> Unit,
     onDone: (String, String, String) -> Unit // content, 이런점이좋아요, rate 순서
 ) {
+
+    // 시스템 뒤로가기 버튼 - 커스텀 동작과 연결
+    BackHandler {
+        onGoBack()
+    }
+
     val context = LocalContext.current
     val scrollState = rememberScrollState()
 

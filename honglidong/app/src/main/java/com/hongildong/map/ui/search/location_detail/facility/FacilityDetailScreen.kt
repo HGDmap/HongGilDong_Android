@@ -1,6 +1,7 @@
 package com.hongildong.map.ui.search.location_detail.facility
 
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -45,6 +46,12 @@ fun FacilityDetailScreen(
     onEditReview: (Int, ReviewInfo) -> Unit,
     onDeleteReview: (Int) -> Unit
 ) {
+
+    // 시스템 뒤로가기 버튼 - 커스텀 동작과 연결
+    BackHandler {
+        onGoBack()
+    }
+
     val context = LocalContext.current
     val facilityInfo by searchViewmodel.facilityDetail.collectAsState()
     val directionResult by searchViewmodel.directionResult.collectAsState()
