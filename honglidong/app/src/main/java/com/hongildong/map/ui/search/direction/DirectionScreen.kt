@@ -46,6 +46,7 @@ import com.hongildong.map.ui.theme.Black
 import com.hongildong.map.ui.theme.Gray400
 import com.hongildong.map.ui.theme.PrimaryMid
 import com.hongildong.map.ui.theme.White
+import com.hongildong.map.ui.util.NetworkImage
 import com.hongildong.map.ui.util.bottomsheet.FlexibleBottomSheet
 import com.hongildong.map.ui.util.map.MapViewmodel
 
@@ -154,9 +155,9 @@ fun DirectionSheetHeader(
 fun DirectionSheetContent(
     nodes: List<NodeInfo>
 ) {
-
+    val locations = nodes.filter { it.nodeCode != "OUTDOOR" }
     LazyColumn {
-        items(nodes) { node ->
+        items(locations) { node ->
             DirectionSheetContentItem(node)
         }
     }
@@ -186,15 +187,23 @@ fun DirectionSheetContentItem(
                     .padding(horizontal = 8.dp)
             )
 
-            // todo: 이후 s3 서버 연결되면 coil 이미지로딩으로 바꾸기
-            Image(
-                painterResource(R.drawable.img_blank),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .size(90.dp, 60.dp)
-                    .clip(RoundedCornerShape(5.dp))
-            )
+            if (content.photoList.isNotEmpty()) {
+                NetworkImage(
+                    url = content.photoList[0],
+                    contentDescription = null,
+                    width = 90.dp,
+                    height = 60.dp
+                )
+            } else {
+                Image(
+                    painterResource(R.drawable.img_blank),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(90.dp, 60.dp)
+                        .clip(RoundedCornerShape(5.dp))
+                )
+            }
         }
         HorizontalDivider(
             thickness = 1.dp,

@@ -108,7 +108,7 @@ fun LocationDetailScreen(
             ) {
                 LocationDetailInfo(
                     modifier = Modifier.nestedScroll(nestedScrollConnection),
-                    searchResult = searchResult ?: NodeInfo(0.0,0.0,"temp", "", "",0, nodeId = 0),
+                    searchResult = searchResult ?: NodeInfo(0.0,0.0,"temp", "", "","",0, nodeId = 0),
                     onDepart = {
                         if (searchResult != null) {
                             // 검색 결과를 바탕으로 출발지 설정
