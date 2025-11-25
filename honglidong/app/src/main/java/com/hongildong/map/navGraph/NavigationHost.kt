@@ -25,7 +25,7 @@ fun AppNavHost(
     val destination = if (isTokenValid) {
         WHOLE_APP_ROUTE
     } else {
-        NavRoute.Enter.route
+        NavRoute.EnterFlow.route
     }
 
     NavHost(
