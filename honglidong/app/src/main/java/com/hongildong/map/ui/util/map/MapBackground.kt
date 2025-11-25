@@ -1,6 +1,7 @@
 package com.hongildong.map.ui.util.map
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -51,7 +52,7 @@ fun MapBackground(
     val locationTrackingMode by viewModel.locationTrackingMode.collectAsState()
 
     NaverMap(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.navigationBarsPadding().fillMaxSize(),
         locationSource = rememberFusedLocationSource(),
         properties = MapProperties(
             locationTrackingMode = locationTrackingMode

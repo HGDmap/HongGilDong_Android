@@ -76,8 +76,8 @@ fun ProfileScreen(
     Column (
         modifier = Modifier
             .fillMaxSize()
-            .statusBarsPadding()
-            .background(White),
+            .background(White)
+            .statusBarsPadding(),
     ) {
         Row (
             modifier = Modifier
