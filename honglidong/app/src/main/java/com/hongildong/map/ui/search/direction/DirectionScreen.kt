@@ -47,6 +47,7 @@ import com.hongildong.map.ui.theme.Black
 import com.hongildong.map.ui.theme.Gray400
 import com.hongildong.map.ui.theme.PrimaryMid
 import com.hongildong.map.ui.theme.White
+import com.hongildong.map.ui.util.EmptyContents
 import com.hongildong.map.ui.util.NetworkImage
 import com.hongildong.map.ui.util.bottomsheet.FlexibleBottomSheet
 import com.hongildong.map.ui.util.map.MapViewmodel
@@ -126,7 +127,7 @@ fun DirectionScreen(
             ) {
                 DirectionSheetHeader(calculatedMin)
                 Spacer(Modifier.height(10.dp))
-                DirectionSheetContent(directionInfo?.nodes ?: directions)
+                DirectionSheetContent(directionInfo?.nodes ?: emptyList())
             }
         }
 
@@ -161,10 +162,14 @@ fun DirectionSheetHeader(
 fun DirectionSheetContent(
     nodes: List<NodeInfo>
 ) {
-    val locations = nodes.filter { it.nodeCode != "OUTDOOR" }
-    LazyColumn {
-        items(locations) { node ->
-            DirectionSheetContentItem(node)
+    if (nodes.size < 2) {
+        EmptyContents("경로를 찾을 수 없어요.")
+    } else {
+        val locations = nodes.filter { it.nodeCode != "OUTDOOR" }
+        LazyColumn {
+            items(locations) { node ->
+                DirectionSheetContentItem(node)
+            }
         }
     }
 }
