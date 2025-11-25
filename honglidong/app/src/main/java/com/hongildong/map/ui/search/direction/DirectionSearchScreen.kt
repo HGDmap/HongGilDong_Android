@@ -176,14 +176,14 @@ fun DirectionHeader(
                 titlePlaceholder = "출발지를 입력하세요",
                 withClose = isSearchScreen,
                 onGoBack = onGoBack,
-                onChangeTitle = onSetDepart
+                onChangeTitle = if (isSearchScreen) onSetDepart else onClick
             )
             HorizontalDivider(thickness = 1.dp, color = Gray300)
             IconWithNodeName(
                 icon =R.drawable.ic_location_arrival,
                 title = arrival,
                 titlePlaceholder = "도착지를 입력하세요",
-                onChangeTitle = onSetArrival
+                onChangeTitle = if (isSearchScreen) onSetArrival else onClick
             )
         }
     }
