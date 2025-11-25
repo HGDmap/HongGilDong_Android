@@ -56,6 +56,27 @@ class AuthViewmodel @Inject constructor(
         return sharedPreferences.getString("access_token", null)
     }
 
+    private val _tokenCheckState = MutableStateFlow<UiState>(UiState.Initial)
+    val tokenCheckState: StateFlow<UiState> = _tokenCheckState.asStateFlow()
+
+    fun checkToken() {
+        viewModelScope.launch {
+            val token = getToken() ?: return@launch
+            val response = authRepository.test(token)
+
+            when (response) {
+                is DefaultResponse.Success -> {
+                    Log.d(TAG, "토큰 검증 성공: $response")
+                    _tokenCheckState.value = UiState.Success
+                }
+                is DefaultResponse.Error -> {
+                    Log.d(TAG, "토큰 검증 실패: $response")
+                    _tokenCheckState.value = UiState.Error("토큰 검증 실패")
+                }
+            }
+        }
+    }
+
 
 
     // 이메일 상태 변경

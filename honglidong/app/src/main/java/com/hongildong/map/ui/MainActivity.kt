@@ -12,25 +12,25 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.hongildong.map.data.entity.NodeInfo
-import com.hongildong.map.data.entity.SearchableNodeType
 import com.hongildong.map.navGraph.AppNavHost
 import com.hongildong.map.navGraph.BottomNavigationBar
 import com.hongildong.map.navGraph.MainNavHost
 import com.hongildong.map.navGraph.NavRoute
 import com.hongildong.map.ui.bookmark.BookmarkViewModel
 import com.hongildong.map.ui.theme.HongildongTheme
+import com.hongildong.map.ui.user.signup.AuthViewmodel
+import com.hongildong.map.ui.util.SplashScreen
+import com.hongildong.map.ui.util.UiState
 import com.hongildong.map.ui.util.bottomsheet.BottomSheetViewModel
 import com.hongildong.map.ui.util.bottomsheet.SharedBottomSheetHost
 import com.hongildong.map.ui.util.map.MapBackground
@@ -40,17 +40,36 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val authViewModel: AuthViewmodel = hiltViewModel()
+            val loginState by authViewModel.tokenCheckState.collectAsState()
+
+            LaunchedEffect(Unit) {
+                authViewModel.checkToken()
+            }
+
             HongildongTheme {
                 Surface(
                     modifier = Modifier
                         .fillMaxSize(),
                     color = Color.White
                 ) {
-                    AppNavHost()
+
+                    when (loginState) {
+                        is UiState.Initial -> {
+                            SplashScreen()
+                        }
+                        else -> {
+                            val isTokenValid = loginState is UiState.Success
+
+                            AppNavHost(
+                                isTokenValid = isTokenValid
+                            )
+                        }
+                    }
+
                 }
             }
         }

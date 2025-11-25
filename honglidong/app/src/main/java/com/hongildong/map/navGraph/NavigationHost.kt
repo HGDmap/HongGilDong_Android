@@ -12,19 +12,25 @@ import androidx.navigation.navArgument
 import com.hongildong.map.ui.MainScreen
 import com.hongildong.map.ui.bookmark.BookmarkViewModel
 import com.hongildong.map.ui.search.SearchRootScreen
-import com.hongildong.map.ui.search.SearchScreen
-import com.hongildong.map.ui.util.map.MapViewmodel
 
 const val WHOLE_APP_ROUTE = "whole_app"
 
 // 전체 앱 navhost
 @Composable
-fun AppNavHost() {
+fun AppNavHost(
+    isTokenValid: Boolean
+) {
     val rootNavController = rememberNavController()
+
+    val destination = if (isTokenValid) {
+        WHOLE_APP_ROUTE
+    } else {
+        NavRoute.Enter.route
+    }
 
     NavHost(
         navController = rootNavController,
-        startDestination = NavRoute.EnterFlow.route
+        startDestination = destination
     ) {
         navigation(
             route = NavRoute.EnterFlow.route,

@@ -11,7 +11,7 @@ import retrofit2.http.POST
 
 interface AuthService {
 
-    // 실험 api - 정확한 건 회의하면서 작성해야될듯
+    // 토큰 검증 api
     @GET("auth/random")
     suspend fun test(
         @Header("Authorization") accessToken: String
