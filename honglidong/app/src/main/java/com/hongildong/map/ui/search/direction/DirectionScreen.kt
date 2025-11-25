@@ -193,9 +193,9 @@ fun DirectionSheetContentItem(
                     .padding(horizontal = 8.dp)
             )
 
-            if (content.photoList.isNotEmpty()) {
+            if (content.image != null) {
                 NetworkImage(
-                    url = content.photoList[0],
+                    url = content.image,
                     contentDescription = null,
                     width = 90.dp,
                     height = 60.dp

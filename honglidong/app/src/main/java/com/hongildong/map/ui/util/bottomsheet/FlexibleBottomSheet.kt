@@ -153,8 +153,7 @@ fun AnchoredDraggableBottomSheet(
         ) {
             if (isFullScreen and (state.currentValue == BottomSheetState.Expanded)) {
                 Spacer(Modifier
-                    .systemBarsPadding()
-                    //.windowInsetsPadding(WindowInsets.statusBars)
+                    .windowInsetsPadding(WindowInsets.statusBars)
                 )
                 Image(
                     painter = painterResource(R.drawable.ic_back),

@@ -12,7 +12,8 @@ data class NodeInfo(
     val images: List<String> = listOf(),
     val photoList: List<String> = listOf(),
     val isBookmarked: Boolean? = false, // 북마크 되어있는지 여부 - 윤정이가 구현한 다음에 바뀔수잇슴..
-    val description: String? = null
+    val description: String? = null,
+    val image: String? = null
 )
 
 fun NodeInfo.toSearchKeyword(): SearchKeyword {

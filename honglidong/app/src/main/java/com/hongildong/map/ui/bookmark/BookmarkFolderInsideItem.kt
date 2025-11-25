@@ -28,6 +28,8 @@ import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Black
 import com.hongildong.map.ui.theme.Gray300
 import com.hongildong.map.ui.theme.Gray600
+import com.hongildong.map.ui.util.NetworkImage
+
 
 @Composable
 fun BookmarkFolderInsideItem(
@@ -70,27 +72,36 @@ fun BookmarkFolderInsideItem(
                     }
             )
         }
-        Spacer(Modifier.height(12.dp))
-        LazyRow (
-            modifier = Modifier
-                .height(120.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(
-                // todo: bookmark.images
-                3
-            ) { image ->
-                Image(
-                    painterResource(R.drawable.img_blank),
-                    contentDescription = "",
-                    modifier = Modifier
-                        .size(width = 110.dp, height = 90.dp)
-                        .clip(RoundedCornerShape(12.dp)),
-                    contentScale = ContentScale.Crop
-                )
+        Spacer(Modifier.height(8.dp))
+        if (bookmark.images?.isNotEmpty() ?: false) {
+            LazyRow (
+                modifier = Modifier
+                    .height(120.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(
+                    bookmark.images
+                ) { image ->
+                    NetworkImage(
+                        url = image,
+                        contentDescription = "",
+                        width = 110.dp,
+                        height = 90.dp
+                    )
+                    /*Image(
+                        painterResource(R.drawable.img_blank),
+                        contentDescription = "",
+                        modifier = Modifier
+                            .size(width = 110.dp, height = 90.dp)
+                            .clip(RoundedCornerShape(12.dp)),
+                        contentScale = ContentScale.Crop
+                    )*/
+                }
             }
+            Spacer(Modifier.height(8.dp))
+        } else {
+            //Spacer(Modifier.height(90.dp))
         }
-        //Spacer(Modifier.height(8.dp))
         HorizontalDivider(Modifier.height(1.dp), color = Gray300)
     }
 }

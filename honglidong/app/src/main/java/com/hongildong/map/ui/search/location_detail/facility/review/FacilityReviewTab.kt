@@ -110,7 +110,14 @@ fun FacilityReviewTab(
                 }
 
                 if (reviews.isEmpty()) {
-                    item  { EmptyContents("등록된 리뷰가 아직 없어요.") }
+                    item  {
+                        Box (
+                            modifier = Modifier
+                                .padding(vertical = 25.dp)
+                        ) {
+                            EmptyContents("등록된 리뷰가 아직 없어요.")
+                        }
+                    }
                 } else {
                     items(reviews) { review ->
                         FacilityReviewItem(
@@ -222,6 +229,8 @@ fun FacilityReviewInfo(
                 onClick = {}
             )
         }
+
+        Spacer(Modifier.height(25.dp))
     }
 }
 
