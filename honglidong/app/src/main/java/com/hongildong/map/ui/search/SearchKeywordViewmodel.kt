@@ -242,14 +242,14 @@ class SearchKeywordViewmodel @Inject constructor(
                     Log.d(TAG, "searchResult: ${_searchedEventInfo.value}")
                     _isSearchSuccess.value = UiState.Success
 
-                    /*searchKeywordDao.insertKeyword(
+                    searchKeywordDao.insertKeyword(
                         SearchKeyword(
                             nodeName = response.data.name,
-                            nodeId = response.data.id,
+                            nodeId = response.data.locationInfo.nodeId,
                             nodeCode = "EVENT",
                             id = response.data.id
                         )
-                    )*/
+                    )
                 }
                 is DefaultResponse.Error -> {
                     Log.d(TAG, "응답 실패: $response")

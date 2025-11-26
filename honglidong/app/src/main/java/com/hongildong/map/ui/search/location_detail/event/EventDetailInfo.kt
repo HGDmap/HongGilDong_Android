@@ -150,7 +150,7 @@ fun EventDetailHeader(
             text = searchResult.location,
             style = AppTypography.Medium_13.copy(color = Gray600)
         )
-        Spacer(Modifier.height(5.dp))
+        Spacer(Modifier.height(12.dp))
         NetworkImage(
             url = searchResult.image,
             contentDescription = "",

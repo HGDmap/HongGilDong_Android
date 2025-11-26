@@ -199,7 +199,7 @@ fun SearchNavHost(
                 route = NavRoute.EventDetail.route + "/{searchedWord}/{eventId}",
                 arguments = listOf(
                     navArgument("searchedWord") { type = NavType.StringType },
-                    navArgument("buildingId") { type = NavType.IntType }
+                    navArgument("eventId") { type = NavType.IntType }
                 )
             ) { backStackEntry ->
                 val parentEntry = remember(backStackEntry) {
