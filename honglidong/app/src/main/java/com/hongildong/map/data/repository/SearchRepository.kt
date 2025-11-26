@@ -1,16 +1,19 @@
 package com.hongildong.map.data.repository
 
 import com.hongildong.map.data.entity.AutoCompleteSearchKeyword
+import com.hongildong.map.data.entity.EventDetailInfo
 import com.hongildong.map.data.entity.FacilityInfo
 import com.hongildong.map.data.entity.NodeInfo
 import com.hongildong.map.data.remote.request.PhotoRequest
 import com.hongildong.map.data.remote.response.DirectionResponse
+import com.hongildong.map.data.remote.response.EventResponse
 import com.hongildong.map.data.remote.response.PhotoResponse
 import com.hongildong.map.data.remote.response.RawSearchResponse
 import com.hongildong.map.data.remote.response.ReviewRecommendResponse
 import com.hongildong.map.data.remote.response.ReviewResponse
 import com.hongildong.map.data.util.ApiResponse
 import com.hongildong.map.data.util.DefaultResponse
+import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Path
 
@@ -21,6 +24,11 @@ interface SearchRepository {
 
     suspend fun direct(from: Int, to: Int): DefaultResponse<DirectionResponse>
 
+    suspend fun getAllEvents(): DefaultResponse<EventResponse>
+
+    suspend fun getEventDetail(
+        eventId: Int
+    ): DefaultResponse<EventDetailInfo>
 
     suspend fun getBuildingDetail(
         buildingId: Int

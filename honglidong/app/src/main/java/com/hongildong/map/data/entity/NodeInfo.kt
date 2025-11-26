@@ -27,5 +27,6 @@ fun NodeInfo.toSearchKeyword(): SearchKeyword {
 
 enum class SearchableNodeType(val apiName: String) {
     BUILDING("BUILDING"),
-    FACILITY("FACILITY");
+    FACILITY("FACILITY"),
+    EVENT("EVENT");
 }

@@ -1,10 +1,12 @@
 package com.hongildong.map.data.remote.api
 
 import com.hongildong.map.data.entity.AutoCompleteSearchKeyword
+import com.hongildong.map.data.entity.EventDetailInfo
 import com.hongildong.map.data.entity.FacilityInfo
 import com.hongildong.map.data.entity.NodeInfo
 import com.hongildong.map.data.remote.request.PhotoRequest
 import com.hongildong.map.data.remote.response.DirectionResponse
+import com.hongildong.map.data.remote.response.EventResponse
 import com.hongildong.map.data.remote.response.PhotoResponse
 import com.hongildong.map.data.remote.response.RawSearchResponse
 import com.hongildong.map.data.remote.response.ReviewRecommendResponse
@@ -24,6 +26,14 @@ interface SearchService {
         @Header("Authorization") accessToken: String,
         @Path("nodeId") nodeId: Long
     ): ApiResponse<NodeInfo>
+
+    @GET("events")
+    suspend fun getAllEvents(): ApiResponse<EventResponse>
+
+    @GET("events/{eventId}")
+    suspend fun getEventDetail(
+        @Path("eventId") eventId: Int
+    ): ApiResponse<EventDetailInfo>
 
     // 빌딩 정보 검색: type이 Building인 경우
     @GET("building/{buildingId}/details")

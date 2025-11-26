@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hongildong.map.data.dao.SearchKeywordDao
 import com.hongildong.map.data.entity.AutoCompleteSearchKeyword
+import com.hongildong.map.data.entity.EventDetailInfo
 import com.hongildong.map.data.entity.FacilityInfo
 import com.hongildong.map.data.entity.NodeInfo
 import com.hongildong.map.data.entity.ReviewInfo
@@ -197,7 +198,7 @@ class SearchKeywordViewmodel @Inject constructor(
     private val _searchedBuildingInfo = MutableStateFlow<FacilityInfo?>(null)
     val searchedBuildingInfo: StateFlow<FacilityInfo?> = _searchedBuildingInfo.asStateFlow()
 
-    // 검색시 호출
+    // 건물의 detail info
     fun onSearchBuildingInfo(id: Int) {
         viewModelScope.launch {
             val response = searchRepository.getBuildingDetail(id)
@@ -217,6 +218,38 @@ class SearchKeywordViewmodel @Inject constructor(
                             id = response.data.id
                         )
                     )
+                }
+                is DefaultResponse.Error -> {
+                    Log.d(TAG, "응답 실패: $response")
+                    _isSearchSuccess.value = UiState.Error("유효하지 않은 검색어입니다.")
+                }
+            }
+        }
+    }
+
+    private val _searchedEventInfo = MutableStateFlow<EventDetailInfo?>(null)
+    val searchedEventInfo = _searchedEventInfo.asStateFlow()
+
+    // 이벤트의 detail info
+    fun onSearchEventInfo(id: Int) {
+        viewModelScope.launch {
+            val response = searchRepository.getEventDetail(id)
+
+            when (response) {
+                is DefaultResponse.Success -> {
+                    Log.d(TAG, "응답 성공: $response")
+                    _searchedEventInfo.value = response.data
+                    Log.d(TAG, "searchResult: ${_searchedEventInfo.value}")
+                    _isSearchSuccess.value = UiState.Success
+
+                    /*searchKeywordDao.insertKeyword(
+                        SearchKeyword(
+                            nodeName = response.data.name,
+                            nodeId = response.data.id,
+                            nodeCode = "EVENT",
+                            id = response.data.id
+                        )
+                    )*/
                 }
                 is DefaultResponse.Error -> {
                     Log.d(TAG, "응답 실패: $response")

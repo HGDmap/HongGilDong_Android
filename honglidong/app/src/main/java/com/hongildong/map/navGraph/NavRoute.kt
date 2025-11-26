@@ -43,6 +43,7 @@ sealed class NavRoute(val route: String) {
     object LocationDetail: NavRoute("location_detail")
     object BuildingDetail: NavRoute("building_detail")
     object FacilityDetail: NavRoute("facility_detail")
+    object EventDetail: NavRoute("event_detail")
     object Review: NavRoute("review")
 
     // direct
