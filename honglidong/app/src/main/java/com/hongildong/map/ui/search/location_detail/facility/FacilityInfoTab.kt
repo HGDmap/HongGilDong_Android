@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.hongildong.map.R
@@ -41,12 +42,12 @@ fun FacilityInfoTab(
 @Composable
 fun IconWithText(
     icon: Int,
-    text: String
+    text: String,
+    textColor: Color = Black,
+    modifier: Modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp)
 ) {
     Row (
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 12.dp),
+        modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
@@ -57,7 +58,7 @@ fun IconWithText(
         )
         Text(
             text = text,
-            style = AppTypography.Medium_15.copy(color = Black),
+            style = AppTypography.Medium_15.copy(color = textColor),
             modifier = Modifier.weight(1f)
         )
     }

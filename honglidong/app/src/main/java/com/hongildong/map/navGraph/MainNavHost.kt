@@ -15,9 +15,11 @@ import com.hongildong.map.data.entity.SearchableNodeType
 import com.hongildong.map.ui.bookmark.BookmarkFolderInsideScreen
 import com.hongildong.map.ui.bookmark.BookmarkViewModel
 import com.hongildong.map.ui.home.BookmarkScreen
+import com.hongildong.map.ui.home.FacilityType
+import com.hongildong.map.ui.home.MainViewmodel
 import com.hongildong.map.ui.home.NearbyScreen
 import com.hongildong.map.ui.home.ProfileScreen
-import com.hongildong.map.ui.search.SearchKeywordViewmodel
+import com.hongildong.map.ui.home.SearchAllEventScreen
 import com.hongildong.map.ui.search.location_detail.facility.photo.ImageDetail
 import com.hongildong.map.ui.search.location_detail.facility.review.ReviewScreen
 import com.hongildong.map.ui.search.location_detail.facility.review.ReviewViewModel
@@ -71,6 +73,16 @@ fun MainNavHost(
                             name = facilityInfo.name,
                             id = facilityInfo.id
                         ))
+                    },
+                    onClickTag = {
+                        when (it) {
+                            FacilityType.EVENT.apiName -> {
+                                mainNavController.navigate(NavRoute.AllEvent.route)
+                            }
+                            else -> {
+
+                            }
+                        }
                     }
                 )
             }
@@ -96,6 +108,16 @@ fun MainNavHost(
                     },
                     bottomSheetViewModel = bottomSheetViewModel,
                     bookmarkViewModel = bookmarkViewModel,
+                    onClickTag = {
+                        when (it) {
+                            FacilityType.EVENT.apiName -> {
+                                mainNavController.navigate(NavRoute.AllEvent.route)
+                            }
+                            else -> {
+
+                            }
+                        }
+                    }
                 )
             }
             composable(
@@ -190,6 +212,28 @@ fun MainNavHost(
                     url = imageUrl,
                     onGoBack = {
                         mainNavController.popBackStack()
+                    }
+                )
+            }
+            composable(
+                route = NavRoute.AllEvent.route
+            ) {
+                val mainViewmodel = hiltViewModel<MainViewmodel>()
+
+                SearchAllEventScreen(
+                    mainViewmodel = mainViewmodel,
+                    mapViewModel = mapViewmodel,
+                    searchedWord = "이벤트",
+                    onClickItem = { event ->
+                        rootNavController.navigate(NavRoute.SearchFlow.createRoute(
+                            type = SearchableNodeType.EVENT.apiName,
+                            name = event.name,
+                            id = event.id
+                        ))
+                    },
+                    onGoBack = {
+                        mainNavController.popBackStack()
+                        mapViewmodel.clearMarker()
                     }
                 )
             }

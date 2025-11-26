@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hongildong.map.data.dao.SearchKeywordDao
 import com.hongildong.map.data.entity.AutoCompleteSearchKeyword
+import com.hongildong.map.data.entity.EventBriefInfo
 import com.hongildong.map.data.entity.EventDetailInfo
 import com.hongildong.map.data.entity.FacilityInfo
 import com.hongildong.map.data.entity.NodeInfo
@@ -459,6 +460,8 @@ class SearchKeywordViewmodel @Inject constructor(
             }
         }
     }
+
+
 
     fun eraseFacilityData() {
         viewModelScope.launch {

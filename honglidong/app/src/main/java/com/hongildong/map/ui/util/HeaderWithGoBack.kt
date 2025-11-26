@@ -30,7 +30,9 @@ fun HeaderWithGoBack(
             title,
             style = AppTypography.Bold_22,
             textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth().padding(vertical = 3.dp)
+            modifier = Modifier.fillMaxWidth().padding(vertical = 3.dp).clickable {
+                onGoBackClick()
+            }
         )
         Image(
             painter = painterResource(R.drawable.ic_back),

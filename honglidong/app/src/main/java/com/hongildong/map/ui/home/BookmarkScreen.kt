@@ -37,7 +37,8 @@ fun BookmarkScreen(
     onSearch: () -> Unit,
     onClickFolder: (Int) -> Unit,
     bottomSheetViewModel: BottomSheetViewModel,
-    bookmarkViewModel: BookmarkViewModel = hiltViewModel()
+    bookmarkViewModel: BookmarkViewModel = hiltViewModel(),
+    onClickTag: (String) -> Unit
 ) {
     val context = LocalContext.current
     val sheetScaffoldState = rememberBottomSheetScaffoldState()
@@ -62,7 +63,11 @@ fun BookmarkScreen(
         Column {
             SearchBar(onSearch)
             Spacer(Modifier.height(5.dp))
-            FacilityTypeTags()
+            FacilityTypeTags(
+                onClick = {
+                    onClickTag(it)
+                }
+            )
         }
 
         FlexibleBottomSheet(

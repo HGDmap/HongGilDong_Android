@@ -43,7 +43,9 @@ enum class FacilityType(
 }
 
 @Composable
-fun FacilityTypeTags() {
+fun FacilityTypeTags(
+    onClick: (String) -> Unit = {}
+) {
     val tags = FacilityType.entries
     LazyRow (
         modifier = Modifier
@@ -51,7 +53,7 @@ fun FacilityTypeTags() {
         contentPadding = PaddingValues(start = 15.dp, end = 15.dp)
     ) {
         items(tags) { tag ->
-            FacilityTypeTagItem(tag.icon, tag.displayName)
+            FacilityTypeTagItem(tag.icon, tag.displayName, { onClick(tag.apiName) })
         }
     }
 }

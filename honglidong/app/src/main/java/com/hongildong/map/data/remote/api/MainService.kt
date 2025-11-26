@@ -1,6 +1,6 @@
 package com.hongildong.map.data.remote.api
 
-import com.hongildong.map.data.remote.response.RecommendPlace
+import com.hongildong.map.data.remote.response.AllEventResponse
 import com.hongildong.map.data.remote.response.RecommendPlaceResponse
 import com.hongildong.map.data.util.ApiResponse
 import retrofit2.http.GET
@@ -13,5 +13,6 @@ interface MainService {
         @Header("Authorization") accessToken: String?,
     ): ApiResponse<RecommendPlaceResponse>
 
-    // 키워드 검색
+    @GET("events")
+    suspend fun getAllEvents(): ApiResponse<AllEventResponse>
 }

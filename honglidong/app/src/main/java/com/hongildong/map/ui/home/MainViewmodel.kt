@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hongildong.map.data.entity.EventBriefInfo
 import com.hongildong.map.data.remote.response.RecommendPlace
 import com.hongildong.map.data.repository.MainRepository
 import com.hongildong.map.data.util.DefaultResponse
@@ -43,6 +44,25 @@ class MainViewmodel @Inject constructor(
                 is DefaultResponse.Error -> {
                     // 에러 처리
                     Log.d(TAG, "추천 시설 조회 실패: $response")
+                }
+            }
+        }
+    }
+
+    private val _allEventInfo = MutableStateFlow<List<EventBriefInfo>>(emptyList())
+    val allEventInfo = _allEventInfo.asStateFlow()
+
+    fun getAllEvents() {
+        viewModelScope.launch {
+            val response = mainRepository.getAllEvents()
+
+            when (response) {
+                is DefaultResponse.Success -> {
+                    Log.d(TAG, "모든 이벤트 불러오기 성공: $response")
+                    _allEventInfo.value = response.data.events
+                }
+                is DefaultResponse.Error -> {
+                    Log.d(TAG, "모든 이벤트 불러오기 실패: $response")
                 }
             }
         }

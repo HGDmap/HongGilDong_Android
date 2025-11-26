@@ -66,7 +66,8 @@ fun NearbyScreen(
     onSearchFacility: (RecommendFacilityInfo) -> Unit,
     bookmarkViewModel: BookmarkViewModel = hiltViewModel(),
     mapViewModel: MapViewmodel,
-    bottomSheetViewModel: BottomSheetViewModel
+    bottomSheetViewModel: BottomSheetViewModel,
+    onClickTag: (String) -> Unit
 ) {
     val mainViewmodel: MainViewmodel = hiltViewModel()
     val sheetScaffoldState = rememberBottomSheetScaffoldState()
@@ -101,7 +102,11 @@ fun NearbyScreen(
         Column {
             SearchBar(onSearch = onSearch)
             Spacer(Modifier.height(5.dp))
-            FacilityTypeTags()
+            FacilityTypeTags(
+                onClick = {
+                    onClickTag(it)
+                }
+            )
         }
 
         FlexibleBottomSheet(

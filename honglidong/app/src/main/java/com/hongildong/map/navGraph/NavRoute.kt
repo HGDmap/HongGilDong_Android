@@ -23,6 +23,7 @@ sealed class NavRoute(val route: String) {
     object Bookmark : NavRoute("bookmark")
     object Profile : NavRoute("profile")
     object Main: NavRoute("main")
+    object AllEvent: NavRoute("all_event")
 
     // 북마크 폴더
     object BookmarkFolderInside: NavRoute("bookmark_folder_inside")

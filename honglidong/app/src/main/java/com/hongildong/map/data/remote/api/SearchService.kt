@@ -5,8 +5,8 @@ import com.hongildong.map.data.entity.EventDetailInfo
 import com.hongildong.map.data.entity.FacilityInfo
 import com.hongildong.map.data.entity.NodeInfo
 import com.hongildong.map.data.remote.request.PhotoRequest
+import com.hongildong.map.data.remote.response.AllEventResponse
 import com.hongildong.map.data.remote.response.DirectionResponse
-import com.hongildong.map.data.remote.response.EventResponse
 import com.hongildong.map.data.remote.response.PhotoResponse
 import com.hongildong.map.data.remote.response.RawSearchResponse
 import com.hongildong.map.data.remote.response.ReviewRecommendResponse
@@ -27,8 +27,7 @@ interface SearchService {
         @Path("nodeId") nodeId: Long
     ): ApiResponse<NodeInfo>
 
-    @GET("events")
-    suspend fun getAllEvents(): ApiResponse<EventResponse>
+
 
     @GET("events/{eventId}")
     suspend fun getEventDetail(

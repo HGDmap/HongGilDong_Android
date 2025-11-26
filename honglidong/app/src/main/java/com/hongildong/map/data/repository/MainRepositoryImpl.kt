@@ -1,7 +1,7 @@
 package com.hongildong.map.data.repository
 
 import com.hongildong.map.data.remote.api.MainService
-import com.hongildong.map.data.remote.response.RecommendPlace
+import com.hongildong.map.data.remote.response.AllEventResponse
 import com.hongildong.map.data.remote.response.RecommendPlaceResponse
 import com.hongildong.map.data.util.DefaultResponse
 import com.hongildong.map.data.util.safeApiCall
@@ -14,4 +14,7 @@ class MainRepositoryImpl @Inject constructor(
         return safeApiCall { api.getRecommendPlaces(accessToken) }
     }
 
+    override suspend fun getAllEvents(): DefaultResponse<AllEventResponse> {
+        return safeApiCall { api.getAllEvents() }
+    }
 }
