@@ -27,6 +27,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -79,6 +80,7 @@ fun NearbyScreen(
         bookmarkViewModel.verifyUser()
         mainViewmodel.getRecommendLocations()
     }
+
     LaunchedEffect(isUser) {
         if (isUser) {
             bookmarkViewModel.getAllBookmarks()
@@ -120,6 +122,7 @@ fun NearbyScreen(
                 RecommendPlaces(
                     recommendLocations = recommendLocations,
                     onClickBookmark = { facilityInfo ->
+                        var returnState = facilityInfo.bookmarked ?: false
                         if (isUser) {
                             bottomSheetViewModel.show {
                                 BookmarkUpdateContent(
@@ -140,13 +143,14 @@ fun NearbyScreen(
                                     folders = allBookmarks,
                                     onDone = { folderNumber ->
                                         val targetId = facilityInfo.id
-                                        targetId?.let {
+                                        targetId.let {
                                             if (folderNumber == 0) {
                                                 // 0: 폴더 선택하지 않은 경우 -> 북마크 삭제
                                                 bookmarkViewModel.deleteBookmark(
                                                     type = facilityInfo.type ?: SearchableNodeType.FACILITY.apiName,
                                                     targetId = targetId
                                                 )
+                                                returnState = true
                                             } else {
                                                 // 0이 아님: 폴더를 선택하거나 바꾼 경우 -> 북마크 업데이트
                                                 bookmarkViewModel.updateBookmark(
@@ -154,6 +158,7 @@ fun NearbyScreen(
                                                     targetId = targetId,
                                                     folderId = folderNumber
                                                 )
+                                                returnState = false
                                             }
                                         }
                                         bottomSheetViewModel.hide()
@@ -161,6 +166,7 @@ fun NearbyScreen(
                                 )
                             }
                         }
+                        returnState
                     },
                     onClickFacility = {
                         onSearchFacility(it)
@@ -177,7 +183,7 @@ fun NearbyScreen(
 fun RecommendPlaces(
     recommendLocations: List<RecommendPlace> = emptyList(),
     modifier: Modifier = Modifier,
-    onClickBookmark: (RecommendFacilityInfo) -> Unit,
+    onClickBookmark: (RecommendFacilityInfo) -> Boolean,
     onClickFacility: (RecommendFacilityInfo) -> Unit
 ) {
     val pages = listOf("쉬기 좋은", "공부하기 좋은", "경치 좋은", "회의하기 좋은", "맛있는")
@@ -283,9 +289,12 @@ fun RecommendPlaces(
 @Composable
 fun RecommendPlaceItem(
     place: RecommendFacilityInfo,
-    onClickBookmark: () -> Unit = {},
+    onClickBookmark: () -> Boolean,
     onClickFacility: () -> Unit = {}
 ) {
+    var likeState by remember(place) {
+        mutableStateOf(place.bookmarked ?: false)
+    }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -313,12 +322,12 @@ fun RecommendPlaceItem(
             }
             Image(
                 painterResource(
-                    id = if (place.bookmarked == true) R.drawable.ic_bookmark_true else R.drawable.ic_bookmark_false,
+                    id = if (likeState) R.drawable.ic_bookmark_true else R.drawable.ic_bookmark_false,
                 ),
                 contentDescription = "",
                 modifier = Modifier
                     .clickable {
-                        onClickBookmark()
+                        likeState = onClickBookmark()
                     }
             )
         }

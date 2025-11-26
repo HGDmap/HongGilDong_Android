@@ -5,5 +5,5 @@ import com.hongildong.map.data.remote.response.RecommendPlaceResponse
 import com.hongildong.map.data.util.DefaultResponse
 
 interface MainRepository {
-    suspend fun getRecommendPlaces(): DefaultResponse<RecommendPlaceResponse>
+    suspend fun getRecommendPlaces(accessToken: String?): DefaultResponse<RecommendPlaceResponse>
 }

@@ -32,7 +32,8 @@ class MainViewmodel @Inject constructor(
 
     fun getRecommendLocations() {
         viewModelScope.launch {
-            val response = mainRepository.getRecommendPlaces()
+            val token = getToken()
+            val response = mainRepository.getRecommendPlaces(token)
 
             when (response) {
                 is DefaultResponse.Success -> {

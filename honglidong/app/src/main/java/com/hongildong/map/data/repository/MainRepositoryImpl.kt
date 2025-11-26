@@ -10,8 +10,8 @@ import jakarta.inject.Inject
 class MainRepositoryImpl @Inject constructor(
     private val api: MainService
 ): MainRepository {
-    override suspend fun getRecommendPlaces(): DefaultResponse<RecommendPlaceResponse> {
-        return safeApiCall { api.getRecommendPlaces() }
+    override suspend fun getRecommendPlaces(accessToken: String?): DefaultResponse<RecommendPlaceResponse> {
+        return safeApiCall { api.getRecommendPlaces(accessToken) }
     }
 
 }
