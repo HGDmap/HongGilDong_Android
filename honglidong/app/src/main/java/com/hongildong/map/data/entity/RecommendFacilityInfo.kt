@@ -8,6 +8,6 @@ data class RecommendFacilityInfo(
     val longitude: Double,
     val name: String,
     val nodeId: Int,
-    val type: String,
+    val type: String? = null,
     val isBookmarked: Boolean? = null,
 )

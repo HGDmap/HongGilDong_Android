@@ -161,16 +161,12 @@ class SearchKeywordViewmodel @Inject constructor(
     private val _facilityDetail = MutableStateFlow<FacilityInfo?>(null)
     val facilityDetail = _facilityDetail.asStateFlow()
 
-    // 건물의 detial info 받아오기
+    // 건물의 detail info 받아오기
     fun onSearchFacilityInfo(facilityId: Int) {
         viewModelScope.launch {
-            /*val token = getToken()
-            if (token == null) {
-                Log.e(TAG, "토큰이 없습니다")
-                return@launch
-            }*/
+            val token = getToken()
 
-            val response = searchRepository.getFacilityDetail(facilityId = facilityId)
+            val response = searchRepository.getFacilityDetail(token, facilityId)
             when (response) {
                 is DefaultResponse.Success -> {
                     Log.d(TAG, "응답 성공: $response")

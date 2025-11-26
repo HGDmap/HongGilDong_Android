@@ -44,6 +44,7 @@ interface SearchService {
     // 시설 정보 검색: type이 facility인 경우
     @GET("facility/{facilityId}/details")
     suspend fun getFacilityDetail(
+        @Header("Authorization") accessToken: String?,
         @Path("facilityId") facilityId: Int
     ): ApiResponse<FacilityInfo>
 

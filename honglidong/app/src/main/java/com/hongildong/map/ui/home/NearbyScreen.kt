@@ -40,6 +40,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.hongildong.map.R
 import com.hongildong.map.data.entity.FacilityInfo
 import com.hongildong.map.data.entity.RecommendFacilityInfo
+import com.hongildong.map.data.entity.SearchableNodeType
 import com.hongildong.map.data.remote.response.RecommendPlace
 import com.hongildong.map.ui.bookmark.BookmarkViewModel
 import com.hongildong.map.ui.bookmark.sheet_content.BookmarkFolderUpdateContent
@@ -143,13 +144,13 @@ fun NearbyScreen(
                                             if (folderNumber == 0) {
                                                 // 0: 폴더 선택하지 않은 경우 -> 북마크 삭제
                                                 bookmarkViewModel.deleteBookmark(
-                                                    type = facilityInfo.type,
+                                                    type = facilityInfo.type ?: SearchableNodeType.FACILITY.apiName,
                                                     targetId = targetId
                                                 )
                                             } else {
                                                 // 0이 아님: 폴더를 선택하거나 바꾼 경우 -> 북마크 업데이트
                                                 bookmarkViewModel.updateBookmark(
-                                                    type = facilityInfo.type,
+                                                    type = facilityInfo.type ?: SearchableNodeType.FACILITY.apiName,
                                                     targetId = targetId,
                                                     folderId = folderNumber
                                                 )

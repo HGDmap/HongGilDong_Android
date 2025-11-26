@@ -57,8 +57,11 @@ class SearchRepositoryImpl @Inject constructor(
         return safeApiCall { api.getBuildingDetail(buildingId) }
     }
 
-    override suspend fun getFacilityDetail(facilityId: Int): DefaultResponse<FacilityInfo> {
-        return safeApiCall { api.getFacilityDetail(facilityId) }
+    override suspend fun getFacilityDetail(
+        accessToken: String?,
+        facilityId: Int
+    ): DefaultResponse<FacilityInfo> {
+        return safeApiCall { api.getFacilityDetail(accessToken, facilityId) }
     }
 
     override suspend fun getFacilityReview(

@@ -36,6 +36,7 @@ interface SearchRepository {
 
     // 시설 정보 검색: type이 facility인 경우
     suspend fun getFacilityDetail(
+        accessToken: String?,
         facilityId: Int
     ): DefaultResponse<FacilityInfo>
 

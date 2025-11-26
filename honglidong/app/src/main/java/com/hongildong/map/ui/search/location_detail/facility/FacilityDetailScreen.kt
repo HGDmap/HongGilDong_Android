@@ -11,6 +11,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -57,6 +60,10 @@ fun FacilityDetailScreen(
     val directionResult by searchViewmodel.directionResult.collectAsState()
     val isUser by bookmarkViewModel.isUser.collectAsState()
     val allBookmarks by bookmarkViewModel.allBookmarkInfo.collectAsState()
+
+    var likeState by remember(facilityInfo?.isBookmarked) {
+        mutableStateOf(facilityInfo?.isBookmarked ?: false)
+    }
 
     LaunchedEffect(Unit) {
         // 검색 결과 바탕으로 시설 상세 정보 api 호출
@@ -173,6 +180,7 @@ fun FacilityDetailScreen(
                                                         ?: SearchableNodeType.FACILITY.apiName,
                                                     targetId = targetId
                                                 )
+                                                likeState = false
                                             } else {
                                                 // 0이 아님: 폴더를 선택하거나 바꾼 경우 -> 북마크 업데이트
                                                 bookmarkViewModel.updateBookmark(
@@ -181,6 +189,7 @@ fun FacilityDetailScreen(
                                                     targetId = targetId,
                                                     folderId = folderNumber
                                                 )
+                                                likeState = true
                                             }
                                         }
                                         bottomSheetViewModel.hide()
@@ -213,6 +222,7 @@ fun FacilityDetailScreen(
                             searchViewmodel.updateLikedReview(it)
                         }
                     },
+                    likeState = likeState
                 )
             }
         }

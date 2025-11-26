@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -54,19 +55,25 @@ fun FacilityDetailInfo(
     bookmarkViewmodel: BookmarkViewModel = hiltViewModel(),
     onEditReview: (ReviewInfo) -> Unit,
     onDeleteReview: (Int) -> Unit,
-    onLikeReview: (Int) -> Unit
+    onLikeReview: (Int) -> Unit,
+    likeState: Boolean
 ) {
     val pages = listOf("시설 정보", "리뷰", "사진")
     var tabState by remember { mutableIntStateOf(0) }
 
     val isUser by bookmarkViewmodel.isUser.collectAsState()
 
+
+
     Column {
         FacilityDetailHeader(
             facilityInfo,
             onDepart = onDepart,
             onArrival = onArrival,
-            onBookmarkChange = onBookmarkChange
+            onBookmarkChange = {
+                onBookmarkChange()
+            },
+            likeState = likeState
         )
         Spacer(Modifier.height(16.dp))
         TabRow (
@@ -152,7 +159,8 @@ fun FacilityDetailHeader(
     searchResult: FacilityInfo,
     onDepart: () -> Unit,
     onArrival: () -> Unit,
-    onBookmarkChange: () -> Unit
+    onBookmarkChange: () -> Unit,
+    likeState: Boolean
 ) {
 
     Column(
@@ -173,7 +181,7 @@ fun FacilityDetailHeader(
             ) {
                 Image(
                     painterResource(
-                        if (searchResult.isBookmarked) R.drawable.ic_bookmark_true else R.drawable.ic_bookmark_false,
+                        if (likeState) R.drawable.ic_bookmark_true else R.drawable.ic_bookmark_false,
                     ),
                     contentDescription = "",
                     modifier = Modifier

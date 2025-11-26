@@ -10,6 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
+import com.hongildong.map.data.entity.SearchableNodeType
 import com.hongildong.map.ui.bookmark.BookmarkFolderInsideScreen
 import com.hongildong.map.ui.bookmark.BookmarkViewModel
 import com.hongildong.map.ui.home.BookmarkScreen
@@ -64,7 +65,7 @@ fun MainNavHost(
                     bottomSheetViewModel = bottomSheetViewModel,
                     onSearchFacility = { facilityInfo ->
                         rootNavController.navigate(NavRoute.SearchFlow.createRoute(
-                            type = facilityInfo.type,
+                            type = facilityInfo.type ?: SearchableNodeType.FACILITY.apiName,
                             name = facilityInfo.name,
                             id = facilityInfo.id
                         ))

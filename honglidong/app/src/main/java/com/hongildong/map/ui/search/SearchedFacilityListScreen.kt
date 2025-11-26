@@ -47,6 +47,7 @@ import com.hongildong.map.ui.theme.Gray300
 import com.hongildong.map.ui.theme.Gray600
 import com.hongildong.map.ui.theme.White
 import com.hongildong.map.ui.util.ButtonWithIcon
+import com.hongildong.map.ui.util.NetworkImage
 import com.hongildong.map.ui.util.bottomsheet.BottomSheetViewModel
 import com.hongildong.map.ui.util.bottomsheet.FlexibleBottomSheet
 import com.hongildong.map.ui.util.map.MapViewmodel
@@ -258,32 +259,43 @@ fun PlaceInfoItem(
                     style = AppTypography.Medium_13.copy(color = Gray600)
                 )
             }
-            Image(
-                painterResource(
-                    id = if (info.isBookmarked ?: false) R.drawable.ic_bookmark_true else R.drawable.ic_bookmark_false,
-                ),
-                contentDescription = "",
-                modifier = Modifier
-                    .clickable {
-                        onBookmarkChange()
-                    }
-            )
-        }
-        Spacer(Modifier.height(12.dp))
-        LazyRow (
-            modifier = Modifier
-                .height(120.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(info.photoList) { image ->
-                // 네트워크 이미지 로더 추가 필요
+            if (info.type == SearchableNodeType.FACILITY.apiName) {
                 Image(
-                    painterResource(R.drawable.img_blank),
+                    painterResource(
+                        id = if (info.isBookmarked ?: false) R.drawable.ic_bookmark_true else R.drawable.ic_bookmark_false,
+                    ),
                     contentDescription = "",
                     modifier = Modifier
-                        .size(width = 110.dp, height = 90.dp)
-                        .clip(RoundedCornerShape(12.dp)),
-                    contentScale = ContentScale.Crop
+                        .clickable {
+                            onBookmarkChange()
+                        }
+                )
+            }
+        }
+        Spacer(Modifier.height(12.dp))
+        if (info.type == SearchableNodeType.FACILITY.apiName) {
+            LazyRow (
+                modifier = Modifier
+                    .height(120.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(info.photoList) { image ->
+                    if (image.isNullOrEmpty()) return@items
+                    NetworkImage(
+                        url = image,
+                        width = 110.dp,
+                        height = 90.dp,
+                        contentDescription = null,
+                    )
+                }
+            }
+        } else {
+            if (!info.photoList[0].isNullOrEmpty()) {
+                NetworkImage(
+                    url = info.photoList[0],
+                    height = 90.dp,
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
         }
