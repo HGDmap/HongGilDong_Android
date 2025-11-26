@@ -40,7 +40,7 @@ import com.hongildong.map.data.entity.SearchableNodeType
 import com.hongildong.map.ui.bookmark.sheet_content.BookmarkFolderUpdateContent
 import com.hongildong.map.ui.bookmark.sheet_content.BookmarkUpdateContent
 import com.hongildong.map.ui.bookmark.BookmarkViewModel
-import com.hongildong.map.ui.search.location_detail.SearchBarWithGoBack
+import com.hongildong.map.ui.util.SearchBarWithGoBack
 import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Black
 import com.hongildong.map.ui.theme.Gray300

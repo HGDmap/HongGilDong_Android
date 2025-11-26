@@ -20,7 +20,6 @@ import com.hongildong.map.ui.search.SearchedFacilityListScreen
 import com.hongildong.map.ui.search.direction.DirectionScreen
 import com.hongildong.map.ui.search.direction.DirectionSearchScreen
 import com.hongildong.map.ui.search.location_detail.facility.FacilityDetailScreen
-import com.hongildong.map.ui.search.location_detail.LocationDetailScreen
 import com.hongildong.map.ui.search.location_detail.building.BuildingDetailScreen
 import com.hongildong.map.ui.search.location_detail.event.EventDetailScreen
 import com.hongildong.map.ui.search.location_detail.facility.review.ReviewScreen

@@ -60,7 +60,15 @@ fun MainNavHost(
                         }
                     },
                     bookmarkViewModel = bookmarkViewModel,
-                    mapViewModel = mapViewmodel
+                    mapViewModel = mapViewmodel,
+                    bottomSheetViewModel = bottomSheetViewModel,
+                    onSearchFacility = { facilityInfo ->
+                        rootNavController.navigate(NavRoute.SearchFlow.createRoute(
+                            type = facilityInfo.type,
+                            name = facilityInfo.name,
+                            id = facilityInfo.id
+                        ))
+                    }
                 )
             }
             composable(route = NavRoute.Bookmark.route) { backStackEntry ->

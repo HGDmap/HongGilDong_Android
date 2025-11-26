@@ -61,7 +61,11 @@ class AuthViewmodel @Inject constructor(
 
     fun checkToken() {
         viewModelScope.launch {
-            val token = getToken() ?: return@launch
+            val token = getToken()
+            if (token.isNullOrEmpty()) {
+                _tokenCheckState.value = UiState.Error("토큰이 없습니다.")
+                return@launch
+            }
             val response = authRepository.test(token)
 
             when (response) {

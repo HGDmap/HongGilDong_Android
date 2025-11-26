@@ -19,7 +19,7 @@ import com.hongildong.map.data.entity.FloorFacility
 import com.hongildong.map.data.entity.SearchableNodeType
 import com.hongildong.map.data.entity.toSearchKeyword
 import com.hongildong.map.ui.search.SearchKeywordViewmodel
-import com.hongildong.map.ui.search.location_detail.SearchBarWithGoBack
+import com.hongildong.map.ui.util.SearchBarWithGoBack
 import com.hongildong.map.ui.util.bottomsheet.AnchoredDraggableBottomSheet
 import com.hongildong.map.ui.util.map.MapViewmodel
 import com.naver.maps.geometry.LatLng

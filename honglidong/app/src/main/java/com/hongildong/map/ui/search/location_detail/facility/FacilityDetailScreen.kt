@@ -24,7 +24,7 @@ import com.hongildong.map.ui.bookmark.sheet_content.BookmarkFolderUpdateContent
 import com.hongildong.map.ui.bookmark.sheet_content.BookmarkUpdateContent
 import com.hongildong.map.ui.bookmark.BookmarkViewModel
 import com.hongildong.map.ui.search.SearchKeywordViewmodel
-import com.hongildong.map.ui.search.location_detail.SearchBarWithGoBack
+import com.hongildong.map.ui.util.SearchBarWithGoBack
 import com.hongildong.map.ui.util.bottomsheet.AnchoredDraggableBottomSheet
 import com.hongildong.map.ui.util.bottomsheet.BottomSheetViewModel
 import com.hongildong.map.ui.util.map.MapViewmodel
