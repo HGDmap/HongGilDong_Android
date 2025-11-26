@@ -1,5 +1,6 @@
 package com.hongildong.map.ui.profile
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -37,7 +38,8 @@ fun MyReviews(
     reviews: List<ReviewInfo>,
     onDeleteItem: (Int) -> Unit = {},
     onEditItem: (ReviewInfo) -> Unit = {},
-    onLikeItem: (Int) -> Unit = {}
+    onLikeItem: (Int) -> Unit = {},
+    onClickPhoto: (String) -> Unit
 ) {
     LazyColumn {
         items(reviews) { review ->
@@ -51,6 +53,9 @@ fun MyReviews(
                 },
                 onLikeItem = {
                     onLikeItem(review.id)
+                },
+                onClickPhoto = {
+                    onClickPhoto(it)
                 }
             )
         }
@@ -62,7 +67,8 @@ fun ReviewItem(
     reviewItem: ReviewInfo,
     onDeleteItem: () -> Unit,
     onEditItem: () -> Unit,
-    onLikeItem: () -> Unit
+    onLikeItem: () -> Unit,
+    onClickPhoto: (String) -> Unit
 ) {
     var likeCnt by remember { mutableStateOf(reviewItem.likedCnt ?: 0) }
     var isLiked by remember { mutableStateOf(reviewItem.isLiked) }
@@ -119,7 +125,9 @@ fun ReviewItem(
                         contentDescription = null,
                         width = 180.dp,
                         height = 140.dp,
-                        modifier = Modifier.padding(4.dp)
+                        modifier = Modifier.padding(4.dp).clickable {
+                            onClickPhoto(photo)
+                        }
                     )
                 }
             }

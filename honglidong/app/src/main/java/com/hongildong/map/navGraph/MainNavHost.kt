@@ -1,5 +1,6 @@
 package com.hongildong.map.navGraph
 
+import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -17,6 +18,7 @@ import com.hongildong.map.ui.home.BookmarkScreen
 import com.hongildong.map.ui.home.NearbyScreen
 import com.hongildong.map.ui.home.ProfileScreen
 import com.hongildong.map.ui.search.SearchKeywordViewmodel
+import com.hongildong.map.ui.search.location_detail.facility.photo.ImageDetail
 import com.hongildong.map.ui.search.location_detail.facility.review.ReviewScreen
 import com.hongildong.map.ui.search.location_detail.facility.review.ReviewViewModel
 import com.hongildong.map.ui.util.bottomsheet.BottomSheetViewModel
@@ -135,6 +137,9 @@ fun MainNavHost(
                         reviewViewmodel.setTargetReview(it)
                         mainNavController.navigate(NavRoute.Review.route + "/${it.facilityName}/${it.facilityId}")
                     },
+                    onClickPhoto = {
+                        mainNavController.navigate(NavRoute.ImageDetail.route + "?imageUrl=${Uri.encode(it)}")
+                    }
                 )
             }
 
@@ -170,6 +175,21 @@ fun MainNavHost(
                             recommend = recommend,
                             rating = rating
                         )
+                    }
+                )
+            }
+            // 이미지 상세보기 화면
+            composable(
+                route = NavRoute.ImageDetail.route + "?imageUrl={imageUrl}",
+                arguments = listOf(
+                    navArgument("imageUrl") { type = NavType.StringType },
+                )
+            ) { backStackEntry ->
+                val imageUrl = backStackEntry.arguments?.getString("imageUrl") ?: ""
+                ImageDetail(
+                    url = imageUrl,
+                    onGoBack = {
+                        mainNavController.popBackStack()
                     }
                 )
             }

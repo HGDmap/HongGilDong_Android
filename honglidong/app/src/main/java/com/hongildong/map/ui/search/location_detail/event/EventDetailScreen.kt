@@ -34,7 +34,8 @@ fun EventDetailScreen(
     mapViewmodel: MapViewmodel,
     searchViewmodel: SearchKeywordViewmodel,
     onClickEventLocation: (EventDetailInfo) -> Unit = {},
-    onDirectEventLocation: (EventDetailInfo) -> Unit = {}
+    onDirectEventLocation: (EventDetailInfo) -> Unit = {},
+    onClickPhoto: (String) -> Unit
 ) {
     // 시스템 뒤로가기 버튼 - 커스텀 동작과 연결
     BackHandler {
@@ -94,6 +95,9 @@ fun EventDetailScreen(
                             searchViewmodel.setArrival(keyword)
                             // 경로 검색 화면으로 화면 전환
                             onDirectEventLocation(it)
+                        },
+                        onClickPhoto = {
+                            onClickPhoto(it)
                         }
                     )
                 }

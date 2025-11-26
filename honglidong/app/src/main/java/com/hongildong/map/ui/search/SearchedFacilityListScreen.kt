@@ -280,7 +280,6 @@ fun PlaceInfoItem(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(info.photoList) { image ->
-                    if (image.isNullOrEmpty()) return@items
                     NetworkImage(
                         url = image,
                         width = 110.dp,
@@ -290,14 +289,12 @@ fun PlaceInfoItem(
                 }
             }
         } else {
-            if (!info.photoList[0].isNullOrEmpty()) {
-                NetworkImage(
-                    url = info.photoList[0],
-                    height = 90.dp,
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
+            NetworkImage(
+                url = info.photoList[0],
+                height = 90.dp,
+                contentDescription = null,
+                modifier = Modifier.fillMaxWidth()
+            )
         }
         Spacer(Modifier.height(5.dp))
         Box(

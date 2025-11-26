@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -41,6 +43,7 @@ import com.hongildong.map.ui.theme.Gray600
 import com.hongildong.map.ui.theme.PrimaryMid
 import com.hongildong.map.ui.theme.White
 import com.hongildong.map.ui.util.ButtonWithIcon
+import com.hongildong.map.ui.util.NetworkImage
 
 @Composable
 fun FacilityDetailInfo(
@@ -56,14 +59,13 @@ fun FacilityDetailInfo(
     onEditReview: (ReviewInfo) -> Unit,
     onDeleteReview: (Int) -> Unit,
     onLikeReview: (Int) -> Unit,
-    likeState: Boolean
+    likeState: Boolean,
+    onClickPhoto: (String) -> Unit
 ) {
     val pages = listOf("시설 정보", "리뷰", "사진")
     var tabState by remember { mutableIntStateOf(0) }
 
     val isUser by bookmarkViewmodel.isUser.collectAsState()
-
-
 
     Column {
         FacilityDetailHeader(
@@ -73,7 +75,10 @@ fun FacilityDetailInfo(
             onBookmarkChange = {
                 onBookmarkChange()
             },
-            likeState = likeState
+            likeState = likeState,
+            onClickPhoto = {
+                onClickPhoto(it)
+            }
         )
         Spacer(Modifier.height(16.dp))
         TabRow (
@@ -132,6 +137,9 @@ fun FacilityDetailInfo(
                     },
                     onLikeItem = {
                         onLikeReview(it)
+                    },
+                    onClickPhoto = {
+                        onClickPhoto(it)
                     }
                 )
             }
@@ -142,6 +150,9 @@ fun FacilityDetailInfo(
                     isUser = isUser,
                     onUpdate = {
                         searchViewmodel.getFacilityPhotos(facilityInfo.id)
+                    },
+                    onClickPhoto = {
+                        onClickPhoto(it)
                     }
                 )
             }
@@ -160,7 +171,8 @@ fun FacilityDetailHeader(
     onDepart: () -> Unit,
     onArrival: () -> Unit,
     onBookmarkChange: () -> Unit,
-    likeState: Boolean
+    likeState: Boolean,
+    onClickPhoto: (String) -> Unit
 ) {
 
     Column(
@@ -217,7 +229,23 @@ fun FacilityDetailHeader(
                 style = AppTypography.Medium_13.copy(color = Gray600)
             )
         }
-        Spacer(Modifier.height(5.dp))
+        /*Spacer(Modifier.height(8.dp))
+        LazyRow() {
+            items(searchResult.photoList) { photo ->
+                NetworkImage(
+                    url = photo,
+                    contentDescription = "",
+                    height = 190.dp,
+                    modifier = Modifier.fillMaxWidth().clickable {
+                        if (!photo.isNullOrEmpty()) {
+                            onClickPhoto(photo!!)
+                        }
+                    }
+                )
+            }
+        }*/
+
+        Spacer(Modifier.height(8.dp))
         Row(
             modifier = Modifier.align(Alignment.End)
         ) {

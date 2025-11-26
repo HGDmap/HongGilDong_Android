@@ -313,12 +313,11 @@ fun RecommendPlaceItem(
             }
             Image(
                 painterResource(
-                    id = if (place.isBookmarked == true) R.drawable.ic_bookmark_true else R.drawable.ic_bookmark_false,
+                    id = if (place.bookmarked == true) R.drawable.ic_bookmark_true else R.drawable.ic_bookmark_false,
                 ),
                 contentDescription = "",
                 modifier = Modifier
                     .clickable {
-                        /*place.isBookmarked = !place.isBookmarked*/
                         onClickBookmark()
                     }
             )
@@ -330,14 +329,12 @@ fun RecommendPlaceItem(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(place.images) { image ->
-                if (!image.isNullOrEmpty()) {
-                    NetworkImage(
-                        url = image,
-                        width = 110.dp,
-                        height = 90.dp,
-                        contentDescription = null,
-                    )
-                }
+                NetworkImage(
+                    url = image,
+                    width = 110.dp,
+                    height = 90.dp,
+                    contentDescription = null,
+                )
             }
         }
         //Spacer(Modifier.height(8.dp))

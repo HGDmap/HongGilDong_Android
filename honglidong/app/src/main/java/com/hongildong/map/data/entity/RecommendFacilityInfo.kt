@@ -9,5 +9,5 @@ data class RecommendFacilityInfo(
     val name: String,
     val nodeId: Int,
     val type: String? = null,
-    val isBookmarked: Boolean? = null,
+    val bookmarked: Boolean? = null,
 )

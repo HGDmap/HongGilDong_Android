@@ -14,7 +14,8 @@ fun LikedReviews(
     reviews: List<ReviewInfo>,
     onDeleteItem: (Int) -> Unit = {},
     onEditItem: (ReviewInfo) -> Unit = {},
-    onLikeItem: (Int) -> Unit = {}
+    onLikeItem: (Int) -> Unit = {},
+    onClickPhoto: (String) -> Unit = {}
 ) {
     LazyColumn {
         items(reviews) { review ->
@@ -28,6 +29,9 @@ fun LikedReviews(
                 },
                 onLikeItem = {
                     onLikeItem(review.id)
+                },
+                onClickPhoto = {
+                    onClickPhoto(it)
                 }
             )
         }

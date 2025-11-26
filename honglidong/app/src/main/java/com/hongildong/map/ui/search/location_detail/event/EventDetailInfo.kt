@@ -22,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.hongildong.map.R
@@ -42,6 +43,7 @@ fun EventDetailInfo(
     eventInfo: EventDetailInfo,
     onClickEventLocation: (EventDetailInfo) -> Unit = {},
     onDirectEventLocation: (EventDetailInfo) -> Unit = {},
+    onClickPhoto: (String) -> Unit
 ) {
     val pages = listOf("이벤트 정보", "장소")
     var tabState by remember { mutableIntStateOf(0) }
@@ -51,7 +53,10 @@ fun EventDetailInfo(
             .fillMaxSize()
     ) {
         EventDetailHeader(
-            searchResult = eventInfo
+            searchResult = eventInfo,
+            onClickPhoto = {
+                onClickPhoto(it)
+            }
         )
         Spacer(Modifier.height(16.dp))
         TabRow (
@@ -116,7 +121,8 @@ fun EventDetailInfo(
 
 @Composable
 fun EventDetailHeader(
-    searchResult: EventDetailInfo
+    searchResult: EventDetailInfo,
+    onClickPhoto: (String ) -> Unit
 ) {
 
     Column(
@@ -155,7 +161,9 @@ fun EventDetailHeader(
             url = searchResult.image,
             contentDescription = "",
             height = 190.dp,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth().clickable {
+                onClickPhoto(searchResult.image)
+            }
         )
     }
 }

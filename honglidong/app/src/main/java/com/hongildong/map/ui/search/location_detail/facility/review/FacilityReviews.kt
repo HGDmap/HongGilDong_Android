@@ -1,5 +1,6 @@
 package com.hongildong.map.ui.search.location_detail.facility.review
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -40,7 +41,8 @@ fun FacilityReviewItem(
     reviewItem: ReviewInfo,
     onDeleteItem: () -> Unit,
     onEditItem: () -> Unit,
-    onLikeItem: () -> Unit
+    onLikeItem: () -> Unit,
+    onClickPhoto: (String) -> Unit
 ) {
     var likeCnt by remember { mutableStateOf(reviewItem.likedCnt ?: 0) }
     var isLiked by remember { mutableStateOf(reviewItem.isLiked) }
@@ -105,7 +107,9 @@ fun FacilityReviewItem(
                         contentDescription = null,
                         width = 180.dp,
                         height = 140.dp,
-                        modifier = Modifier.padding(4.dp)
+                        modifier = Modifier.padding(4.dp).clickable {
+                            onClickPhoto(photo)
+                        }
                     )
                 }
             }

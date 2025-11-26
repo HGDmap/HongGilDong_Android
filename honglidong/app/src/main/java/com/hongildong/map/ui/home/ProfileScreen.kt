@@ -51,6 +51,7 @@ fun ProfileScreen(
     bottomSheetViewModel: BottomSheetViewModel = hiltViewModel(),
     onDeleteReview: (Int) -> Unit,
     onUpdateReview: (ReviewInfo) -> Unit,
+    onClickPhoto: (String) -> Unit
 ) {
     val memberViewModel: MemberViewmodel = hiltViewModel()
 
@@ -174,6 +175,9 @@ fun ProfileScreen(
                                 },
                                 onEditItem = {
                                     onUpdateReview(it)
+                                },
+                                onClickPhoto = {
+                                    onClickPhoto(it)
                                 }
                             )
                         } else {
@@ -194,6 +198,9 @@ fun ProfileScreen(
                                 },
                                 onEditItem = {
                                     onUpdateReview(it)
+                                },
+                                onClickPhoto = {
+                                    onClickPhoto(it)
                                 }
                             )
                         } else {
@@ -218,6 +225,9 @@ fun ProfileScreen(
                                 },
                                 onEditItem = {
                                     onUpdateReview(it)
+                                },
+                                onClickPhoto = {
+                                    onClickPhoto(it)
                                 }
                             )
                         } else {

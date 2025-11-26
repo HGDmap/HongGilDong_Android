@@ -22,6 +22,7 @@ import com.hongildong.map.ui.search.direction.DirectionSearchScreen
 import com.hongildong.map.ui.search.location_detail.facility.FacilityDetailScreen
 import com.hongildong.map.ui.search.location_detail.building.BuildingDetailScreen
 import com.hongildong.map.ui.search.location_detail.event.EventDetailScreen
+import com.hongildong.map.ui.search.location_detail.facility.photo.ImageDetail
 import com.hongildong.map.ui.search.location_detail.facility.review.ReviewScreen
 import com.hongildong.map.ui.search.location_detail.facility.review.ReviewViewModel
 import com.hongildong.map.ui.util.bottomsheet.BottomSheetViewModel
@@ -221,6 +222,9 @@ fun SearchNavHost(
                     },
                     onDirectEventLocation = {
                         searchNavController.navigate(NavRoute.DirectionSearch.route)
+                    },
+                    onClickPhoto = {
+                        searchNavController.navigate(NavRoute.ImageDetail.route + "?imageUrl=${Uri.encode(it)}")
                     }
                 )
             }
@@ -252,6 +256,9 @@ fun SearchNavHost(
                     },
                     onClickFacility = { facility ->
                         searchNavController.navigate(NavRoute.FacilityDetail.route + "/${Uri.encode(facility.name)}/${facility.id}")
+                    },
+                    onClickPhoto = {
+                        searchNavController.navigate(NavRoute.ImageDetail.route + "?imageUrl=${Uri.encode(it)}")
                     }
                 )
 
@@ -302,6 +309,9 @@ fun SearchNavHost(
                     onDeleteReview = {
                         reviewViewModel.deleteReview(it)
                     },
+                    onClickPhoto = {
+                        searchNavController.navigate(NavRoute.ImageDetail.route + "?imageUrl=${Uri.encode(it)}")
+                    }
                 )
             }
             // 리뷰 작성 화면
@@ -377,6 +387,21 @@ fun SearchNavHost(
                     onGoBack = {
                         searchNavController.popBackStack()
                         searchKeywordViewmodel.deleteDirectionData()
+                    }
+                )
+            }
+            // 이미지 상세보기 화면
+            composable(
+                route = NavRoute.ImageDetail.route + "?imageUrl={imageUrl}",
+                arguments = listOf(
+                    navArgument("imageUrl") { type = NavType.StringType },
+                )
+            ) { backStackEntry ->
+                val imageUrl = backStackEntry.arguments?.getString("imageUrl") ?: ""
+                ImageDetail(
+                    url = imageUrl,
+                    onGoBack = {
+                        searchNavController.popBackStack()
                     }
                 )
             }

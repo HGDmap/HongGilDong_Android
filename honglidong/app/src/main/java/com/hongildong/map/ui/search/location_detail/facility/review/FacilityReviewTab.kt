@@ -66,7 +66,8 @@ fun FacilityReviewTab(
     onReview: () -> Unit,
     onEditReview: (ReviewInfo) -> Unit,
     onDeleteReview: (Int) -> Unit,
-    onLikeItem: (Int) -> Unit
+    onLikeItem: (Int) -> Unit,
+    onClickPhoto: (String) -> Unit
 ) {
     val reviews by searchViewmodel.facilityReviews.collectAsState()
 
@@ -130,6 +131,9 @@ fun FacilityReviewTab(
                             },
                             onLikeItem = {
                                 onLikeItem(review.id)
+                            },
+                            onClickPhoto = {
+                                onClickPhoto(it)
                             }
                         )
                     }

@@ -32,7 +32,8 @@ fun BuildingDetailScreen(
     mapViewmodel: MapViewmodel,
     onGoBack: () -> Unit,
     onSearchDirection: () -> Unit,
-    onClickFacility: (FloorFacility) -> Unit
+    onClickFacility: (FloorFacility) -> Unit,
+    onClickPhoto: (String) -> Unit
 ) {
     val context = LocalContext.current
     val buildingInfo by searchViewmodel.searchedBuildingInfo.collectAsState()
@@ -116,6 +117,9 @@ fun BuildingDetailScreen(
                     },
                     onClickFacility = {
                         onClickFacility(it)
+                    },
+                    onClickPhoto = {
+                        onClickPhoto(it)
                     }
                 )
             }

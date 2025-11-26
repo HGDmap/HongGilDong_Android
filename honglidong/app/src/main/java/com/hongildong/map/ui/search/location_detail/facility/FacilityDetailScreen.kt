@@ -47,7 +47,8 @@ fun FacilityDetailScreen(
     onSearchDirection: () -> Unit,
     onReview: (FacilityInfo) -> Unit,
     onEditReview: (Int, ReviewInfo) -> Unit,
-    onDeleteReview: (Int) -> Unit
+    onDeleteReview: (Int) -> Unit,
+    onClickPhoto: (String) -> Unit
 ) {
 
     // 시스템 뒤로가기 버튼 - 커스텀 동작과 연결
@@ -222,7 +223,10 @@ fun FacilityDetailScreen(
                             searchViewmodel.updateLikedReview(it)
                         }
                     },
-                    likeState = likeState
+                    likeState = likeState,
+                    onClickPhoto = {
+                        onClickPhoto(it)
+                    }
                 )
             }
         }
