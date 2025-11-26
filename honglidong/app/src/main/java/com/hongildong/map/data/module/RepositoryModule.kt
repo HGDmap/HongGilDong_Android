@@ -2,6 +2,7 @@ package com.hongildong.map.data.module
 
 import com.hongildong.map.data.remote.api.AuthService
 import com.hongildong.map.data.remote.api.BookmarkService
+import com.hongildong.map.data.remote.api.MainService
 import com.hongildong.map.data.remote.api.MemberService
 import com.hongildong.map.data.remote.api.ReviewService
 import com.hongildong.map.data.remote.api.SearchService
@@ -9,6 +10,8 @@ import com.hongildong.map.data.repository.AuthRepository
 import com.hongildong.map.data.repository.AuthRepositoryImpl
 import com.hongildong.map.data.repository.BookmarkRepository
 import com.hongildong.map.data.repository.BookmarkRepositoryImpl
+import com.hongildong.map.data.repository.MainRepository
+import com.hongildong.map.data.repository.MainRepositoryImpl
 import com.hongildong.map.data.repository.MemberRepository
 import com.hongildong.map.data.repository.MemberRepositoryImpl
 import com.hongildong.map.data.repository.ReviewRepository
@@ -55,5 +58,11 @@ object RepositoryModule {
     fun provideMemberRepository(
         memberService: MemberService
     ) : MemberRepository = MemberRepositoryImpl(api = memberService)
+
+    @Provides
+    @Singleton
+    fun provideMainRepository(
+        mainService: MainService
+    ) : MainRepository = MainRepositoryImpl(api = mainService)
 
 }

@@ -1,6 +1,5 @@
 package com.hongildong.map.ui.search.location_detail.event
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,17 +9,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.hongildong.map.R
 import com.hongildong.map.data.entity.EventDetailInfo
@@ -28,6 +22,7 @@ import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Black
 import com.hongildong.map.ui.theme.Gray600
 import com.hongildong.map.ui.util.ButtonWithIcon
+import com.hongildong.map.ui.util.NetworkImage
 
 @Composable
 fun EventLocationTab(
@@ -58,7 +53,7 @@ fun EventLocationTab(
                     )
                     Spacer(Modifier.height(3.dp))
                     Text(
-                        eventInfo.locationInfo.buildingName ?: "",
+                        eventInfo.location ?: "",
                         style = AppTypography.Medium_13.copy(color = Gray600)
                     )
                 }
@@ -76,13 +71,11 @@ fun EventLocationTab(
             ) {
                 items(eventInfo.locationInfo.images) { image ->
                     // 네트워크 이미지 로더 추가 필요
-                    Image(
-                        painterResource(R.drawable.img_blank),
+                    NetworkImage(
+                        url = image,
+                        height = 150.dp,
                         contentDescription = "",
-                        modifier = Modifier
-                            .size(width = 110.dp, height = 90.dp)
-                            .clip(RoundedCornerShape(12.dp)),
-                        contentScale = ContentScale.Crop
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
             }

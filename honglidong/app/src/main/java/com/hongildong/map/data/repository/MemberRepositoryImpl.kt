@@ -6,7 +6,6 @@ import com.hongildong.map.data.remote.request.ProfileUpdateRequest
 import com.hongildong.map.data.remote.response.ImageUploadResponse
 import com.hongildong.map.data.remote.response.ProfileResponse
 import com.hongildong.map.data.remote.response.ReviewResponse
-import com.hongildong.map.data.util.ApiResponse
 import com.hongildong.map.data.util.DefaultResponse
 import com.hongildong.map.data.util.safeApiCall
 import javax.inject.Inject
