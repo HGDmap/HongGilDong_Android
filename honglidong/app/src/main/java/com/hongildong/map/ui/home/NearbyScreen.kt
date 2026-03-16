@@ -150,20 +150,21 @@ fun NearbyScreen(
                                         val targetId = facilityInfo.id
                                         targetId.let {
                                             if (folderNumber == 0) {
+                                                returnState = true
                                                 // 0: 폴더 선택하지 않은 경우 -> 북마크 삭제
                                                 bookmarkViewModel.deleteBookmark(
                                                     type = facilityInfo.type ?: SearchableNodeType.FACILITY.apiName,
                                                     targetId = targetId
                                                 )
-                                                returnState = true
+
                                             } else {
+                                                returnState = false
                                                 // 0이 아님: 폴더를 선택하거나 바꾼 경우 -> 북마크 업데이트
                                                 bookmarkViewModel.updateBookmark(
                                                     type = facilityInfo.type ?: SearchableNodeType.FACILITY.apiName,
                                                     targetId = targetId,
                                                     folderId = folderNumber
                                                 )
-                                                returnState = false
                                             }
                                         }
                                         bottomSheetViewModel.hide()
@@ -300,6 +301,7 @@ fun RecommendPlaceItem(
     var likeState by remember(place) {
         mutableStateOf(place.bookmarked ?: false)
     }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -342,14 +344,26 @@ fun RecommendPlaceItem(
                 .height(120.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(place.images) { image ->
-                NetworkImage(
-                    url = image,
-                    width = 110.dp,
-                    height = 90.dp,
-                    contentDescription = null,
-                )
+            if (place.images.isEmpty()) {
+                items(3) {
+                    NetworkImage(
+                        url = null,
+                        width = 110.dp,
+                        height = 90.dp,
+                        contentDescription = null,
+                    )
+                }
+            } else {
+                items(place.images) { image ->
+                    NetworkImage(
+                        url = image,
+                        width = 110.dp,
+                        height = 90.dp,
+                        contentDescription = null,
+                    )
+                }
             }
+
         }
         //Spacer(Modifier.height(8.dp))
         HorizontalDivider(Modifier.height(1.dp), color = Gray300)

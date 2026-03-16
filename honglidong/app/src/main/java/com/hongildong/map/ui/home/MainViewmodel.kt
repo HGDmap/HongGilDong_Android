@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hongildong.map.data.entity.EventBriefInfo
+import com.hongildong.map.data.entity.FacilityBriefInfo
 import com.hongildong.map.data.remote.response.RecommendPlace
 import com.hongildong.map.data.repository.MainRepository
 import com.hongildong.map.data.util.DefaultResponse
@@ -26,6 +27,15 @@ class MainViewmodel @Inject constructor(
     private val sharedPreferences = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
     fun getToken(): String? {
         return sharedPreferences.getString("access_token", null)
+    }
+
+    private val _isUser = MutableStateFlow<Boolean>(false)
+    val isUser = _isUser.asStateFlow()
+
+    fun verifyUser() {
+        viewModelScope.launch {
+            _isUser.value = !getToken().isNullOrEmpty()
+        }
     }
 
     private val _recommendLocations = MutableStateFlow<List<RecommendPlace>>(emptyList())
@@ -63,6 +73,26 @@ class MainViewmodel @Inject constructor(
                 }
                 is DefaultResponse.Error -> {
                     Log.d(TAG, "모든 이벤트 불러오기 실패: $response")
+                }
+            }
+        }
+    }
+
+    private val _facilityByTypeInfo = MutableStateFlow<List<FacilityBriefInfo>>(emptyList())
+    val facilityByTypeInfo = _facilityByTypeInfo.asStateFlow()
+
+    fun getFacilityByType(type: String) {
+        viewModelScope.launch {
+            val token = getToken()
+            val response = mainRepository.getFacilityByType(token, type)
+
+            when (response) {
+                is DefaultResponse.Success -> {
+                    Log.d(TAG, "타입별 시설 불러오기 성공: $response")
+                    _facilityByTypeInfo.value = response.data.resultList
+                }
+                is DefaultResponse.Error -> {
+                    Log.d(TAG, "타입별 시설 불러오기 실패: $response")
                 }
             }
         }

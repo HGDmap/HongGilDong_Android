@@ -387,6 +387,7 @@ fun SearchNavHost(
                     onGoBack = {
                         searchNavController.popBackStack()
                         searchKeywordViewmodel.deleteDirectionData()
+                        mapViewmodel.clearPath()
                     }
                 )
             }

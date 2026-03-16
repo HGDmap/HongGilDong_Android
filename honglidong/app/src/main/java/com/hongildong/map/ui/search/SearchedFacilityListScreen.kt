@@ -25,6 +25,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -127,6 +130,7 @@ fun SearchedFacilityListScreen(
                         onDirectItem = { onDirectItem(it) },
                         onClickItem = { onClickItem(it)},
                         onBookmarkChange = {
+                            var bookmarkInfo = false
                             if (isUser) {
                                 bottomSheetViewModel.show {
                                     BookmarkUpdateContent(
@@ -150,6 +154,7 @@ fun SearchedFacilityListScreen(
                                                         type = it.type ?: SearchableNodeType.FACILITY.apiName,
                                                         targetId = it.id ?: it.nodeId ?: 0
                                                     )
+                                                    bookmarkInfo = false
                                                 }
                                             } else {
                                                 // 0이 아님: 폴더를 선택하거나 바꾼 경우 -> 북마크 업데이트
@@ -159,6 +164,7 @@ fun SearchedFacilityListScreen(
                                                         targetId = it.id ?: it.nodeId ?: 0,
                                                         folderId = folderNumber
                                                     )
+                                                    bookmarkInfo = true
                                                 }
                                             }
                                             bottomSheetViewModel.hide()
@@ -166,6 +172,7 @@ fun SearchedFacilityListScreen(
                                     )
                                 }
                             }
+                            bookmarkInfo
                         }
                     )
                 }
@@ -206,9 +213,10 @@ fun EmptyItem() {
 @Composable
 fun SearchedPlaces(
     places: List<NodeInfo>,
-    onDirectItem: (NodeInfo) -> Unit,
+    onDirectItem: (NodeInfo) -> Unit = {},
     onClickItem: (NodeInfo) -> Unit,
-    onBookmarkChange: (NodeInfo) -> Unit
+    onBookmarkChange: (NodeInfo) -> Boolean,
+    invisibleDirect: Boolean = false
 ) {
     LazyColumn() {
         items(places) { place ->
@@ -222,7 +230,8 @@ fun SearchedPlaces(
                 },
                 onBookmarkChange = {
                     onBookmarkChange(place)
-                }
+                },
+                invisibleDirect = invisibleDirect
             )
         }
     }
@@ -231,10 +240,12 @@ fun SearchedPlaces(
 @Composable
 fun PlaceInfoItem(
     info: NodeInfo,
-    onDirect: () -> Unit,
+    invisibleDirect: Boolean = false,
+    onDirect: () -> Unit = {},
     onClick: () -> Unit,
-    onBookmarkChange: () -> Unit
+    onBookmarkChange: () -> Boolean
 ) {
+    var bookmarkInfo by remember (info) { mutableStateOf(info.isBookmarked ?: false) }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -262,12 +273,12 @@ fun PlaceInfoItem(
             if (info.type == SearchableNodeType.FACILITY.apiName) {
                 Image(
                     painterResource(
-                        id = if (info.isBookmarked ?: false) R.drawable.ic_bookmark_true else R.drawable.ic_bookmark_false,
+                        id = if (bookmarkInfo) R.drawable.ic_bookmark_true else R.drawable.ic_bookmark_false,
                     ),
                     contentDescription = "",
                     modifier = Modifier
                         .clickable {
-                            onBookmarkChange()
+                            bookmarkInfo = onBookmarkChange()
                         }
                 )
             }
@@ -296,17 +307,20 @@ fun PlaceInfoItem(
                 modifier = Modifier.fillMaxWidth()
             )
         }
-        Spacer(Modifier.height(5.dp))
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.TopEnd
-        ) {
-            ButtonWithIcon(
-                icon = R.drawable.ic_direction,
-                title = "길찾기",
-                onClick = { onDirect() }
-            )
+        if (!invisibleDirect) {
+            Spacer(Modifier.height(5.dp))
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.TopEnd
+            ) {
+                ButtonWithIcon(
+                    icon = R.drawable.ic_direction,
+                    title = "길찾기",
+                    onClick = { onDirect() }
+                )
+            }
         }
+
         Spacer(Modifier.height(8.dp))
         HorizontalDivider(Modifier.height(1.dp), color = Gray300)
     }

@@ -80,7 +80,7 @@ fun EventDetailScreen(
                     EventDetailInfo(
                         eventInfo = eventInfo!!,
                         onClickEventLocation = {
-                            onClickEventLocation(it)
+                            //aw                         onClickEventLocation(it)
                         },
                         onDirectEventLocation = {
                             // 검색 결과를 바탕으로 도착지 설정

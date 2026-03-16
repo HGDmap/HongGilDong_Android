@@ -20,6 +20,7 @@ import com.hongildong.map.ui.home.MainViewmodel
 import com.hongildong.map.ui.home.NearbyScreen
 import com.hongildong.map.ui.home.ProfileScreen
 import com.hongildong.map.ui.home.SearchAllEventScreen
+import com.hongildong.map.ui.home.SearchTypeFacilityScreen
 import com.hongildong.map.ui.search.location_detail.facility.photo.ImageDetail
 import com.hongildong.map.ui.search.location_detail.facility.review.ReviewScreen
 import com.hongildong.map.ui.search.location_detail.facility.review.ReviewViewModel
@@ -80,7 +81,8 @@ fun MainNavHost(
                                 mainNavController.navigate(NavRoute.AllEvent.route)
                             }
                             else -> {
-
+                                val type = FacilityType.fromApiName(it)?.displayName ?: "temp"
+                                mainNavController.navigate(NavRoute.TypeFacility.route + "/${type}")
                             }
                         }
                     }
@@ -114,7 +116,8 @@ fun MainNavHost(
                                 mainNavController.navigate(NavRoute.AllEvent.route)
                             }
                             else -> {
-
+                                val type = FacilityType.fromApiName(it)?.displayName ?: "temp"
+                                mainNavController.navigate(NavRoute.TypeFacility.route + "/${type}")
                             }
                         }
                     }
@@ -229,6 +232,31 @@ fun MainNavHost(
                             type = SearchableNodeType.EVENT.apiName,
                             name = event.name,
                             id = event.id
+                        ))
+                    },
+                    onGoBack = {
+                        mainNavController.popBackStack()
+                        mapViewmodel.clearMarker()
+                    }
+                )
+            }
+            composable(
+                route = NavRoute.TypeFacility.route + "/{type}"
+            ) { backStackEntry ->
+                val mainViewmodel = hiltViewModel<MainViewmodel>()
+                val type = backStackEntry.arguments?.getString("type") ?: ""
+
+                SearchTypeFacilityScreen(
+                    bottomSheetViewModel = bottomSheetViewModel,
+                    bookmarkViewModel = bookmarkViewModel,
+                    mainViewmodel = mainViewmodel,
+                    mapViewModel = mapViewmodel,
+                    searchedWord = type,
+                    onClickItem = { facility ->
+                        rootNavController.navigate(NavRoute.SearchFlow.createRoute(
+                            type = facility.type ?: SearchableNodeType.FACILITY.apiName,
+                            name = facility.name ?: "",
+                            id = facility.id ?: 0
                         ))
                     },
                     onGoBack = {

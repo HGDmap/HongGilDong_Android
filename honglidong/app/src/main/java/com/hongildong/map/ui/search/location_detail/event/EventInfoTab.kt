@@ -29,7 +29,7 @@ fun EventInfoTab(
         IconWithText(icon = R.drawable.ic_calendar, text = "${formatDate(eventInfo.eventInfo.eventStart)} ~ ${formatDate(eventInfo.eventInfo.eventEnd)}")
         IconWithText(icon = R.drawable.ic_location_info, text = eventInfo.location)
         IconWithText(icon = R.drawable.ic_location_open, text = if (eventInfo.eventInfo.isEventOpen == true) "영업중" else "영업종료")
-        if (eventInfo.eventInfo.callNumber.isNotEmpty()) {
+        if (eventInfo.eventInfo.callNumber?.isNotEmpty() ?: false) {
             Row (
                 modifier = Modifier
                     .fillMaxWidth()
@@ -47,7 +47,7 @@ fun EventInfoTab(
                 )
             }
         }
-        if (eventInfo.eventInfo.homepage.isNotEmpty()) {
+        if (eventInfo.eventInfo.homepage?.isNotEmpty() ?: false) {
             Row (
                 modifier = Modifier
                     .fillMaxWidth()

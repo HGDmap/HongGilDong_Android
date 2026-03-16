@@ -1,5 +1,6 @@
 package com.hongildong.map.ui.util.map
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hongildong.map.data.entity.BookmarkFolder
@@ -113,7 +114,11 @@ class MapViewmodel @Inject constructor(
             resetMapState()
 
             _locationTrackingMode.value = LocationTrackingMode.NoFollow
-            _pathNodes.value = nodes.map { it -> LatLng(it.latitude, it.longitude) }
+            _pathNodes.value = nodes
+                .filter { it.nodeCode in listOf("OUTDOOR", "FLOOR", "ENTRANCE") }
+                .map { it -> LatLng(it.latitude, it.longitude) }
+
+            Log.d("MapViewmodel", "${nodes.filter { it.nodeCode in listOf("OUTDOOR", "FLOOR", "ENTRANCE") }}")
 
             if (_pathNodes.value.isEmpty()) return@launch
 
