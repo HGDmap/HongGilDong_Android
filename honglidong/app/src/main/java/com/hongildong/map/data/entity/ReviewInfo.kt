@@ -7,8 +7,12 @@ data class ReviewInfo(
     val isLiked: Boolean,
     val photoList: List<String?>,
     val updatedAt: String,
-    val writerId: Int, // 변경 예정 -> isMine 필드로
-    val writerNickname: String,
+    val writerId: Int?, // 변경 예정 -> isMine 필드로
+    val writerNickname: String?,
     val writerProfilePic: String? = null,
-    val likeCnt: Int? = null
+    val likedCnt: Int? = null,
+    val isMine: Boolean? = null,
+    val facilityName: String?,
+    val facilityId: Int?,
+    val rating: Float?,
 )

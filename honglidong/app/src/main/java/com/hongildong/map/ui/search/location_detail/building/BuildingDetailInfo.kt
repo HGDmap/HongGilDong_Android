@@ -33,13 +33,15 @@ import com.hongildong.map.ui.theme.Gray500
 import com.hongildong.map.ui.theme.Gray600
 import com.hongildong.map.ui.theme.White
 import com.hongildong.map.ui.util.ButtonWithIcon
+import com.hongildong.map.ui.util.NetworkImage
 
 @Composable
 fun BuildingDetailInfo(
     buildingInfo: FacilityInfo,
     onDepart: () -> Unit,
     onArrival: () -> Unit,
-    onClickFacility: (FloorFacility) -> Unit
+    onClickFacility: (FloorFacility) -> Unit,
+    onClickPhoto: (String) -> Unit
 ) {
     val pages = listOf("층별 안내")
     var tabState by remember { mutableIntStateOf(0) }
@@ -51,7 +53,10 @@ fun BuildingDetailInfo(
         BuildingDetailHeader(
             searchResult = buildingInfo,
             onDepart = onDepart,
-            onArrival = onArrival
+            onArrival = onArrival,
+            onClickPhoto = {
+                onClickPhoto(it)
+            }
         )
         Spacer(Modifier.height(16.dp))
         TabRow (
@@ -114,7 +119,8 @@ fun BuildingDetailInfo(
 fun BuildingDetailHeader(
     searchResult: FacilityInfo,
     onDepart: () -> Unit,
-    onArrival: () -> Unit
+    onArrival: () -> Unit,
+    onClickPhoto: (String) -> Unit
 ) {
 
     Column(
@@ -148,7 +154,18 @@ fun BuildingDetailHeader(
             text = searchResult.nodeName,
             style = AppTypography.Medium_13.copy(color = Gray600)
         )
-        Spacer(Modifier.height(5.dp))
+        Spacer(Modifier.height(8.dp))
+        /*NetworkImage(
+            url = searchResult.photoList[0],
+            contentDescription = "",
+            height = 190.dp,
+            modifier = Modifier.fillMaxWidth().clickable {
+                if (!searchResult.photoList[0].isNullOrEmpty()) {
+                    onClickPhoto(searchResult.photoList[0]!!)
+                }
+            }
+        )
+        Spacer(Modifier.height(8.dp))*/
         Row(
             modifier = Modifier.align(Alignment.End)
         ) {

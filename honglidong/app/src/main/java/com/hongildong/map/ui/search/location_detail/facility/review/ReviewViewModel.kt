@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hongildong.map.data.entity.FacilityInfo
 import com.hongildong.map.data.entity.ReviewInfo
-import com.hongildong.map.data.remote.request.ImageUploadRequest
+import com.hongildong.map.data.remote.request.ReviewImageUploadRequest
 import com.hongildong.map.data.remote.request.ReviewUpdateRequest
 import com.hongildong.map.data.remote.response.ImageUploadResponse
 import com.hongildong.map.data.repository.ReviewRepository
@@ -84,6 +84,8 @@ class ReviewViewModel @Inject constructor(
         isNewReview: Boolean = true,
         facilityId: Int = 0,
         content: String,
+        recommend: String,
+        rating: String
     ) {
         viewModelScope.launch {
             try {
@@ -101,14 +103,14 @@ class ReviewViewModel @Inject constructor(
                         imageRepository.getFileName(uri) ?: ""
                     }
 
-                    val imageUploadRequest = ImageUploadRequest(
+                    val reviewImageUploadRequest = ReviewImageUploadRequest(
                         facilityId = facilityId,
                         fileNames = fileNames
                     )
-                    Log.d(TAG, "create presigned url 요청: $imageUploadRequest")
+                    Log.d(TAG, "create presigned url 요청: $reviewImageUploadRequest")
 
                     val presignedUrlResponse =
-                        reviewRepository.createPresignedUrl(token, imageUploadRequest)
+                        reviewRepository.createPresignedUrl(token, reviewImageUploadRequest)
                     when (presignedUrlResponse) {
                         is DefaultResponse.Success -> {
                             Log.d(TAG, "create presigned url 응답 성공: $presignedUrlResponse")
@@ -146,7 +148,9 @@ class ReviewViewModel @Inject constructor(
                 // imageUrl로 api 요청
                 val body = ReviewUpdateRequest(
                     content = content,
-                    photoList = uploadedImageUrls
+                    photoList = uploadedImageUrls,
+                    recommend = recommend,
+                    rating = rating.toFloat()
                 )
 
                 if (isNewReview) {
@@ -199,7 +203,6 @@ class ReviewViewModel @Inject constructor(
                     Log.d(TAG, "리뷰 삭제 성공")
                     _selectedImageUris.value = emptyList() // 성공 후 이미지 비우기
                     _serverUrls.value = emptyList() // 성공 후 url 정보 비우기
-                    _uploadState.value = UiState.Success
                 }
                 is DefaultResponse.Error -> {
                     Log.d(TAG, "리뷰 삭제 실패")
@@ -207,4 +210,6 @@ class ReviewViewModel @Inject constructor(
             }
         }
     }
+
+
 }

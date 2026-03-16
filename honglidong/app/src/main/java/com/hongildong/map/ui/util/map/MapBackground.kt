@@ -1,6 +1,7 @@
 package com.hongildong.map.ui.util.map
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -18,6 +19,8 @@ import com.hongildong.map.ui.theme.White
 import com.hongildong.map.ui.util.BookmarkIcon
 import com.hongildong.map.ui.util.SearchResultIcon
 import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.clustering.ClusterMarkerInfo
+import com.naver.maps.map.clustering.ClusterMarkerUpdater
 import com.naver.maps.map.compose.CircleOverlay
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
 import com.naver.maps.map.compose.MapProperties
@@ -49,7 +52,7 @@ fun MapBackground(
     val locationTrackingMode by viewModel.locationTrackingMode.collectAsState()
 
     NaverMap(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.navigationBarsPadding().fillMaxSize(),
         locationSource = rememberFusedLocationSource(),
         properties = MapProperties(
             locationTrackingMode = locationTrackingMode
@@ -90,7 +93,6 @@ fun MapBackground(
         }
 
         searchResult.forEach { result ->
-            //val folderColor = FolderColor.fromColorName(folderInfo.color)?.color ?: BookmarkRed
             MarkerComposable(
                 state = MarkerState(position = LatLng(result.latitude, result.longitude)),
                 captionText = result.name ?: "",

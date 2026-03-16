@@ -1,8 +1,11 @@
 package com.hongildong.map.ui.search.location_detail.facility.review
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.rememberScrollableState
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +17,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,13 +31,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.hongildong.map.R
 import com.hongildong.map.data.entity.ReviewInfo
+import com.hongildong.map.data.remote.response.ReviewRecommendResponse
 import com.hongildong.map.ui.search.SearchKeywordViewmodel
 import com.hongildong.map.ui.search.location_detail.facility.photo.BlockNonUser
 import com.hongildong.map.ui.theme.AppTypography
@@ -40,6 +51,7 @@ import com.hongildong.map.ui.theme.Gray100
 import com.hongildong.map.ui.theme.Gray300
 import com.hongildong.map.ui.theme.PrimaryMid
 import com.hongildong.map.ui.theme.White
+import com.hongildong.map.ui.util.EmptyContents
 import com.hongildong.map.ui.util.popup.ConfirmPopup
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
@@ -47,88 +59,122 @@ import dev.chrisbanes.haze.materials.HazeMaterials
 
 @Composable
 fun FacilityReviewTab(
+    nestedScrollConnection: NestedScrollConnection,
     searchViewmodel: SearchKeywordViewmodel,
     isUser: Boolean,
     facilityId: Int,
     onReview: () -> Unit,
     onEditReview: (ReviewInfo) -> Unit,
-    onDeleteReview: (Int) -> Unit
+    onDeleteReview: (Int) -> Unit,
+    onLikeItem: (Int) -> Unit,
+    onClickPhoto: (String) -> Unit
 ) {
     val reviews by searchViewmodel.facilityReviews.collectAsState()
+
+    val recommendInfo by searchViewmodel.facilityRecommendInfo.collectAsState()
+
     var targetReviewId by remember { mutableStateOf(-1) }
     var enablePopup by remember { mutableStateOf(false) }
 
+    val hazeState = remember { HazeState() }
+
     LaunchedEffect(Unit) {
-        searchViewmodel.getFacilityReview(facilityId)
-    }
-/*
-    LaunchedEffect(enablePopup) {
-        if (enablePopup) {
+        if (isUser) {
             searchViewmodel.getFacilityReview(facilityId)
+            searchViewmodel.getFacilityRecommendInfo(facilityId)
         }
-    }*/
+    }
 
     Box {
-        Column(
+        LazyColumn (
             modifier = Modifier
-                .fillMaxSize()
+                .nestedScroll(nestedScrollConnection)
         ) {
-            val hazeState = remember { HazeState() }
-
             if (isUser) {
-                // if (리뷰를 단 적이 없으면) {
-                // 리뷰 유도 박스
-                FacilityReviewInduceItem(
-                    onClick = onReview
-                )
-                HorizontalDivider(thickness = 3.dp, color = Gray100)
-                // }
+                item {
+                    // if (리뷰를 단 적이 없으면) {
+                    // 리뷰 유도 박스
+                    FacilityReviewInduceItem(
+                        onClick = onReview
+                    )
+                    HorizontalDivider(thickness = 3.dp, color = Gray100)
+                    // }
 
-                FacilityReviewInfo()
-                HorizontalDivider(thickness = 3.dp, color = Gray100)
+                    FacilityReviewInfo(recommendInfo ?: ReviewRecommendResponse())
+                    HorizontalDivider(thickness = 3.dp, color = Gray100)
 
-                FacilityReviews(
-                    reviews = reviews,
-                    onDeleteItem = {
-                        targetReviewId = it
-                        enablePopup = true
-                    },
-                    onEditItem = {
-                        onEditReview(it)
-                    },
-                )
-            } else {
-                Box(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .haze(
-                                state = hazeState,
-                                style = HazeMaterials.thick(containerColor = White)
-                            )
-                    ) {
-                        // if (리뷰를 단 적이 없으면) {
-                        // 리뷰 유도 박스
-                        FacilityReviewInduceItem()
-                        HorizontalDivider(thickness = 3.dp, color = Gray100)
-                        // }
-
-                        FacilityReviewInfo()
-                        HorizontalDivider(thickness = 3.dp, color = Gray100)
-
-                        FacilityReviews(
-                            reviews = emptyList(),
-                        )
-                    }
-                    BlockNonUser(
-                        title = "리뷰",
-                        hazeState = hazeState,
+                    Text(
+                        "리뷰",
+                        style = AppTypography.Bold_20.copy(color = Black),
+                        modifier = Modifier.padding(vertical = 25.dp)
                     )
                 }
-            }
 
+                if (reviews.isEmpty()) {
+                    item  {
+                        Box (
+                            modifier = Modifier
+                                .padding(vertical = 25.dp)
+                        ) {
+                            EmptyContents("등록된 리뷰가 아직 없어요.")
+                        }
+                    }
+                } else {
+                    items(reviews) { review ->
+                        FacilityReviewItem(
+                            reviewItem = review,
+                            onDeleteItem = {
+                                onDeleteReview(review.id)
+                            },
+                            onEditItem = {
+                                onEditReview(review)
+                            },
+                            onLikeItem = {
+                                onLikeItem(review.id)
+                            },
+                            onClickPhoto = {
+                                onClickPhoto(it)
+                            }
+                        )
+                    }
+                }
+
+            } else {
+                item {
+                    Box(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .haze(
+                                    state = hazeState,
+                                    style = HazeMaterials.thick(containerColor = White)
+                                )
+                        ) {
+                            // if (리뷰를 단 적이 없으면) {
+                            // 리뷰 유도 박스
+                            FacilityReviewInduceItem()
+                            HorizontalDivider(thickness = 3.dp, color = Gray100)
+                            // }
+
+                            FacilityReviewInfo(recommendInfo ?: ReviewRecommendResponse())
+                            HorizontalDivider(thickness = 3.dp, color = Gray100)
+
+                            Text(
+                                "리뷰",
+                                style = AppTypography.Bold_20.copy(color = Black),
+                                modifier = Modifier.padding(vertical = 25.dp)
+                            )
+                            EmptyContents("등록된 리뷰가 아직 없어요.")
+                        }
+                        BlockNonUser(
+                            title = "리뷰",
+                            hazeState = hazeState,
+                        )
+                    }
+                }
+            }
         }
 
         if (enablePopup) {
@@ -150,28 +196,46 @@ fun FacilityReviewTab(
 }
 
 
-@Preview
 @Composable
-fun FacilityReviewInfo() {
-    Row (
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 25.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            "4.0",
-            style = AppTypography.Bold_22.copy(color = Black)
-        )
-        Spacer(Modifier.width(4.dp))
-        RateImage(
-            width = 101.dp,
-            height = 19.dp,
-            rate = 0.8f
-        )
+fun FacilityReviewInfo(
+    recommendInfo: ReviewRecommendResponse
+) {
+    Column {
+        Row (
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 25.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                String.format("%.1f", recommendInfo.avgRating),
+                style = AppTypography.Bold_22.copy(color = Black)
+            )
+            Spacer(Modifier.width(4.dp))
+            RateImage(
+                width = 101.dp,
+                height = 19.dp,
+                rate = String.format("%.1f", recommendInfo.avgRating).toFloat()
+            )
+        }
+
+        FacilityRecommendType.entries.forEach {
+            RecommendTypeItem(
+                type = it,
+                selectedCnt = when (it) {
+                    FacilityRecommendType.STUDY -> recommendInfo.recommendation.studyCnt
+                    FacilityRecommendType.FOOD -> recommendInfo.recommendation.foodCnt
+                    FacilityRecommendType.MEETING -> recommendInfo.recommendation.meetingCnt
+                    FacilityRecommendType.VIEW -> recommendInfo.recommendation.viewCnt
+                    FacilityRecommendType.REST -> recommendInfo.recommendation.restCnt
+                },
+                isSelected = false,
+                onClick = {}
+            )
+        }
+
+        Spacer(Modifier.height(25.dp))
     }
-    
-    // 나중에 ~하기 좋아요 추가한다고 하면 Column으로 감싸고 여기에 추가하면 됨
 }
 
 @Composable
@@ -210,7 +274,8 @@ fun FacilityReviewInduceItem(
 fun RateImage(
     width: Dp = 185.dp,
     height: Dp = 35.dp,
-    rate: Float = 0.5f // 0.5 = 0.1 / 2.5 = 0.5 / 5.0 = 1
+    color: Color = PrimaryMid,
+    rate: Float = 5.0f // 0.5 = 0.1 / 2.5 = 0.5 / 5.0 = 1
 ) {
     Box(
         modifier = Modifier.size(width, height)
@@ -223,8 +288,8 @@ fun RateImage(
 
         Box(
             modifier = Modifier
-                .size((width * rate), height)
-                .background(PrimaryMid)
+                .size((width * rate / 5), height)
+                .background(color)
         )
 
         Image(

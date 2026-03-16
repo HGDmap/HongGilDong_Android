@@ -34,6 +34,7 @@ import com.hongildong.map.ui.theme.BookmarkMint
 import com.hongildong.map.ui.theme.Gray600
 import com.hongildong.map.ui.theme.White
 import com.hongildong.map.ui.util.BookmarkIcon
+import com.hongildong.map.ui.util.EmptyContents
 import com.hongildong.map.ui.util.bottomsheet.BottomSheetViewModel
 
 @Composable
@@ -63,47 +64,51 @@ fun BookmarkFolderInsideScreen(
             iconColor = FolderColor.fromColorName(folderData?.color ?: "mint")?.color ?: BookmarkMint,
             onGoBack = onGoBack
         )
-        BookmarkFolderInsideList(
-            bookmarks = folderData?.bookmarkList ?: emptyList(),
-            onClickBookmark = {
-                onClickBookmark(it)
-            },
-            onModifyBookmark = {
-                bottomSheetViewModel.show {
-                    BookmarkUpdateContent(
-                        title = it.name,
-                        addFolder = {
-                            bottomSheetViewModel.change {
-                                BookmarkFolderUpdateContent(
-                                    onDone = { request ->
-                                        bookmarkViewModel.addFolder(request.folderName, request.folderColor)
-                                        bottomSheetViewModel.restore()
-                                    }
-                                )
+        if (folderData?.bookmarkList.isNullOrEmpty()) {
+            EmptyContents("저장된 북마크가 없습니다.")
+        } else {
+            BookmarkFolderInsideList(
+                bookmarks = folderData?.bookmarkList ?: emptyList(),
+                onClickBookmark = {
+                    onClickBookmark(it)
+                },
+                onModifyBookmark = {
+                    bottomSheetViewModel.show {
+                        BookmarkUpdateContent(
+                            title = it.name,
+                            addFolder = {
+                                bottomSheetViewModel.change {
+                                    BookmarkFolderUpdateContent(
+                                        onDone = { request ->
+                                            bookmarkViewModel.addFolder(request.folderName, request.folderColor)
+                                            bottomSheetViewModel.restore()
+                                        }
+                                    )
+                                }
+                            },
+                            folders = allFolderInfo,
+                            onDone = { folderNumber ->
+                                if (folderNumber == 0) {
+                                    // 0: 폴더 선택하지 않은 경우 -> 북마크 삭제
+                                    bookmarkViewModel.deleteBookmark(
+                                        type = it.type,
+                                        targetId = it.id
+                                    )
+                                } else {
+                                    // 0이 아님: 폴더를 선택하거나 바꾼 경우 -> 북마크 업데이트
+                                    bookmarkViewModel.updateBookmark(
+                                        type = it.type,
+                                        targetId = it.id,
+                                        folderId = folderNumber
+                                    )
+                                }
+                                bottomSheetViewModel.hide()
                             }
-                        },
-                        folders = allFolderInfo,
-                        onDone = { folderNumber ->
-                            if (folderNumber == 0) {
-                                // 0: 폴더 선택하지 않은 경우 -> 북마크 삭제
-                                bookmarkViewModel.deleteBookmark(
-                                    type = it.type,
-                                    targetId = it.id
-                                )
-                            } else {
-                                // 0이 아님: 폴더를 선택하거나 바꾼 경우 -> 북마크 업데이트
-                                bookmarkViewModel.updateBookmark(
-                                    type = it.type,
-                                    targetId = it.id,
-                                    folderId = folderNumber
-                                )
-                            }
-                            bottomSheetViewModel.hide()
-                        }
-                    )
+                        )
+                    }
                 }
-            }
-        )
+            )
+        }
     }
 }
 

@@ -1,15 +1,16 @@
 package com.hongildong.map.data.repository
 
 import com.hongildong.map.data.entity.AutoCompleteSearchKeyword
+import com.hongildong.map.data.entity.EventDetailInfo
 import com.hongildong.map.data.entity.FacilityInfo
 import com.hongildong.map.data.entity.NodeInfo
 import com.hongildong.map.data.remote.api.SearchService
-import com.hongildong.map.data.remote.request.ImageUploadRequest
 import com.hongildong.map.data.remote.request.PhotoRequest
+import com.hongildong.map.data.remote.response.AllEventResponse
 import com.hongildong.map.data.remote.response.DirectionResponse
-import com.hongildong.map.data.remote.response.ImageUploadResponse
 import com.hongildong.map.data.remote.response.PhotoResponse
 import com.hongildong.map.data.remote.response.RawSearchResponse
+import com.hongildong.map.data.remote.response.ReviewRecommendResponse
 import com.hongildong.map.data.remote.response.ReviewResponse
 import com.hongildong.map.data.util.DefaultResponse
 import com.hongildong.map.data.util.safeApiCall
@@ -44,12 +45,19 @@ class SearchRepositoryImpl @Inject constructor(
         return safeApiCall { api.direct(from, to) }
     }
 
+    override suspend fun getEventDetail(eventId: Int): DefaultResponse<EventDetailInfo> {
+        return safeApiCall { api.getEventDetail(eventId) }
+    }
+
     override suspend fun getBuildingDetail(buildingId: Int): DefaultResponse<FacilityInfo> {
         return safeApiCall { api.getBuildingDetail(buildingId) }
     }
 
-    override suspend fun getFacilityDetail(facilityId: Int): DefaultResponse<FacilityInfo> {
-        return safeApiCall { api.getFacilityDetail(facilityId) }
+    override suspend fun getFacilityDetail(
+        accessToken: String?,
+        facilityId: Int
+    ): DefaultResponse<FacilityInfo> {
+        return safeApiCall { api.getFacilityDetail(accessToken, facilityId) }
     }
 
     override suspend fun getFacilityReview(
@@ -59,6 +67,13 @@ class SearchRepositoryImpl @Inject constructor(
         size: Int
     ): DefaultResponse<ReviewResponse> {
         return safeApiCall { api.getFacilityReview(accessToken, facilityId, page, size) }
+    }
+
+    override suspend fun getFacilityRecommend(
+        accessToken: String,
+        facilityId: Int
+    ): DefaultResponse<ReviewRecommendResponse> {
+        return safeApiCall { api.getFacilityRecommend(accessToken, facilityId) }
     }
 
     override suspend fun getFacilityPhoto(

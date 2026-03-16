@@ -1,5 +1,6 @@
 package com.hongildong.map.ui.search.direction
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -46,6 +47,8 @@ import com.hongildong.map.ui.theme.Black
 import com.hongildong.map.ui.theme.Gray400
 import com.hongildong.map.ui.theme.PrimaryMid
 import com.hongildong.map.ui.theme.White
+import com.hongildong.map.ui.util.EmptyContents
+import com.hongildong.map.ui.util.NetworkImage
 import com.hongildong.map.ui.util.bottomsheet.FlexibleBottomSheet
 import com.hongildong.map.ui.util.map.MapViewmodel
 
@@ -57,6 +60,11 @@ fun DirectionScreen(
     mapViewmodel: MapViewmodel,
     onGoBack: () -> Unit,
 ) {
+    // 시스템 뒤로가기 버튼 - 커스텀 동작과 연결
+    BackHandler {
+        onGoBack()
+    }
+
     val departInfo by searchViewmodel.departPlaceInfo.collectAsState()
     val arrivalInfo by searchViewmodel.arrivalPlaceInfo.collectAsState()
     val directionInfo by searchViewmodel.directionResult.collectAsState()
@@ -119,7 +127,7 @@ fun DirectionScreen(
             ) {
                 DirectionSheetHeader(calculatedMin)
                 Spacer(Modifier.height(10.dp))
-                DirectionSheetContent(directionInfo?.nodes ?: directions)
+                DirectionSheetContent(directionInfo?.nodes ?: emptyList())
             }
         }
 
@@ -154,10 +162,14 @@ fun DirectionSheetHeader(
 fun DirectionSheetContent(
     nodes: List<NodeInfo>
 ) {
-
-    LazyColumn {
-        items(nodes) { node ->
-            DirectionSheetContentItem(node)
+    if (nodes.size < 2) {
+        EmptyContents("경로를 찾을 수 없어요.")
+    } else {
+        val locations = nodes.filter { it.nodeCode != "OUTDOOR" }
+        LazyColumn {
+            items(locations) { node ->
+                DirectionSheetContentItem(node)
+            }
         }
     }
 }
@@ -186,15 +198,23 @@ fun DirectionSheetContentItem(
                     .padding(horizontal = 8.dp)
             )
 
-            // todo: 이후 s3 서버 연결되면 coil 이미지로딩으로 바꾸기
-            Image(
-                painterResource(R.drawable.img_blank),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .size(90.dp, 60.dp)
-                    .clip(RoundedCornerShape(5.dp))
-            )
+            if (content.image != null) {
+                NetworkImage(
+                    url = content.image,
+                    contentDescription = null,
+                    width = 90.dp,
+                    height = 60.dp
+                )
+            } else {
+                Image(
+                    painterResource(R.drawable.img_blank),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(90.dp, 60.dp)
+                        .clip(RoundedCornerShape(5.dp))
+                )
+            }
         }
         HorizontalDivider(
             thickness = 1.dp,

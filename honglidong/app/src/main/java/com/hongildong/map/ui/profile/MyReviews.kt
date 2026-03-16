@@ -1,0 +1,152 @@
+package com.hongildong.map.ui.profile
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.hongildong.map.data.entity.ReviewInfo
+import com.hongildong.map.ui.search.location_detail.facility.review.LikedReviewIcon
+import com.hongildong.map.ui.search.location_detail.facility.review.RateImage
+import com.hongildong.map.ui.theme.AppTypography
+import com.hongildong.map.ui.theme.Black
+import com.hongildong.map.ui.theme.Gray300
+import com.hongildong.map.ui.theme.Gray500
+import com.hongildong.map.ui.util.NetworkImage
+import com.hongildong.map.ui.util.formatDate
+import com.hongildong.map.ui.util.popup.DropDownMenu
+
+@Composable
+fun MyReviews(
+    reviews: List<ReviewInfo>,
+    onDeleteItem: (Int) -> Unit = {},
+    onEditItem: (ReviewInfo) -> Unit = {},
+    onLikeItem: (Int) -> Unit = {},
+    onClickPhoto: (String) -> Unit
+) {
+    LazyColumn {
+        items(reviews) { review ->
+            ReviewItem (
+                reviewItem = review,
+                onDeleteItem = {
+                    onDeleteItem(review.id)
+                },
+                onEditItem = {
+                    onEditItem(review)
+                },
+                onLikeItem = {
+                    onLikeItem(review.id)
+                },
+                onClickPhoto = {
+                    onClickPhoto(it)
+                }
+            )
+        }
+    }
+}
+
+@Composable
+fun ReviewItem(
+    reviewItem: ReviewInfo,
+    onDeleteItem: () -> Unit,
+    onEditItem: () -> Unit,
+    onLikeItem: () -> Unit,
+    onClickPhoto: (String) -> Unit
+) {
+    var likeCnt by remember { mutableStateOf(reviewItem.likedCnt ?: 0) }
+    var isLiked by remember { mutableStateOf(reviewItem.isLiked) }
+
+    Column {
+        Row (
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                reviewItem.facilityName ?: "temp",
+                style = AppTypography.Bold_18.copy(color = Black)
+            )
+
+            if (reviewItem.isMine ?: true) {
+                DropDownMenu(
+                    onDelete = onDeleteItem,
+                    onEdit = onEditItem
+                )
+            }
+        }
+        Row (
+            modifier = Modifier.padding(vertical = 5.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            RateImage(
+                width = 101.dp,
+                height = 19.dp,
+                rate = (reviewItem.rating) ?: 4.5f
+            )
+            Spacer(Modifier.width(4.dp))
+            Text(
+                formatDate(reviewItem.updatedAt),
+                style = AppTypography.Medium_13.copy(color = Gray500)
+            )
+        }
+        Spacer(Modifier.height(8.dp))
+
+        Text(
+            reviewItem.content,
+            style = AppTypography.Medium_15.copy(color = Black),
+            modifier = Modifier
+                .fillMaxWidth()
+        )
+        Spacer(Modifier.height(8.dp))
+        if (reviewItem.photoList.isNotEmpty()) {
+            LazyRow {
+                items(reviewItem.photoList) { photo ->
+                    NetworkImage(
+                        url = photo!!,
+                        contentDescription = null,
+                        width = 180.dp,
+                        height = 140.dp,
+                        modifier = Modifier.padding(4.dp).clickable {
+                            onClickPhoto(photo)
+                        }
+                    )
+                }
+            }
+        }
+
+        Spacer(Modifier.height(8.dp))
+
+        LikedReviewIcon(
+            isLiked = isLiked,
+            onClick = {
+                isLiked = !isLiked
+                onLikeItem()
+                if (isLiked) likeCnt++ else likeCnt--
+            },
+            likedCnt = likeCnt
+        )
+
+
+        Spacer(Modifier.height(12.dp))
+        HorizontalDivider(thickness = 1.dp, color = Gray300)
+    }
+}

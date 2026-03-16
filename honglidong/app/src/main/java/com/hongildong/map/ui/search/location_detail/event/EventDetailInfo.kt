@@ -1,4 +1,4 @@
-package com.hongildong.map.ui.search.location_detail
+package com.hongildong.map.ui.search.location_detail.event
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -6,14 +6,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
@@ -25,38 +22,41 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.hongildong.map.R
-import com.hongildong.map.data.entity.NodeInfo
-import com.hongildong.map.ui.home.RecommendPlaceItem
-import com.hongildong.map.ui.home.places
+import com.hongildong.map.data.entity.EventDetailInfo
+import com.hongildong.map.data.entity.FacilityInfo
+import com.hongildong.map.ui.search.location_detail.building.BuildingDetailHeader
+import com.hongildong.map.ui.search.location_detail.building.BuildingFloorInfoTab
 import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Black
 import com.hongildong.map.ui.theme.Gray500
 import com.hongildong.map.ui.theme.Gray600
-import com.hongildong.map.ui.theme.PrimaryMid
 import com.hongildong.map.ui.theme.White
 import com.hongildong.map.ui.util.ButtonWithIcon
-
+import com.hongildong.map.ui.util.NetworkImage
 
 @Composable
-fun LocationDetailInfo(
-    searchResult: NodeInfo,
-    modifier: Modifier = Modifier,
-    onDepart: () -> Unit,
-    onArrival: () -> Unit,
-    onBookmarkChange: () -> Unit
+fun EventDetailInfo(
+    eventInfo: EventDetailInfo,
+    onClickEventLocation: (EventDetailInfo) -> Unit = {},
+    onDirectEventLocation: (EventDetailInfo) -> Unit = {},
+    onClickPhoto: (String) -> Unit
 ) {
-    val pages = listOf("시설 정보", "리뷰", "사진")
+    val pages = listOf("이벤트 정보", "장소")
     var tabState by remember { mutableIntStateOf(0) }
 
-    Column {
-        LocationDetailHeader(
-            searchResult,
-            onDepart = onDepart,
-            onArrival = onArrival,
-            onBookmarkChange = onBookmarkChange
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        EventDetailHeader(
+            searchResult = eventInfo,
+            onClickPhoto = {
+                onClickPhoto(it)
+            }
         )
         Spacer(Modifier.height(16.dp))
         TabRow (
@@ -93,25 +93,36 @@ fun LocationDetailInfo(
                 )
             }
         }
-        HorizontalDivider(Modifier.height(1.dp), color = Gray500)
-        LazyColumn(
-            modifier = modifier
-                .fillMaxWidth()
-                .weight(1f),
-        ) {
-            items(places) { place ->
-                RecommendPlaceItem(place)
+        when (tabState) {
+            0 -> {
+                EventInfoTab(
+                    eventInfo
+                )
+            }
+            1 -> {
+                EventLocationTab(
+                    eventInfo = eventInfo,
+                    onClick = {
+                        onClickEventLocation(eventInfo)
+                    },
+                    onDirect = {
+                        onDirectEventLocation(eventInfo)
+                    }
+                )
+            }
+            else -> {
+                EventInfoTab(
+                    eventInfo
+                )
             }
         }
     }
 }
 
 @Composable
-fun LocationDetailHeader(
-    searchResult: NodeInfo,
-    onDepart: () -> Unit,
-    onArrival: () -> Unit,
-    onBookmarkChange: () -> Unit
+fun EventDetailHeader(
+    searchResult: EventDetailInfo,
+    onClickPhoto: (String ) -> Unit
 ) {
 
     Column(
@@ -124,23 +135,12 @@ fun LocationDetailHeader(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = searchResult.name ?: "",
+                text = searchResult.name,
                 style = AppTypography.Bold_22.copy(color = Black)
             )
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Image(
-                    painterResource(
-                        if (searchResult.isBookmarked == true) R.drawable.ic_bookmark_true else R.drawable.ic_bookmark_false,
-                    ),
-                    contentDescription = "",
-                    modifier = Modifier
-                        .clickable {
-                            onBookmarkChange()
-                        }
-                )
-                Spacer(Modifier.width(10.dp))
                 Image(
                     painterResource(
                         id = R.drawable.ic_share
@@ -153,36 +153,17 @@ fun LocationDetailHeader(
         }
         Spacer(Modifier.height(8.dp))
         Text(
-            text = "인문사회관 A동 3층",
+            text = searchResult.location,
             style = AppTypography.Medium_13.copy(color = Gray600)
         )
-        Spacer(Modifier.height(4.dp))
-        Row {
-            Text(
-                text = "영업중",
-                style = AppTypography.Bold_13.copy(color = PrimaryMid)
-            )
-            Spacer(Modifier.width(3.dp))
-            Text(
-                text = "21:00까지",
-                style = AppTypography.Medium_13.copy(color = Gray600)
-            )
-        }
-        Spacer(Modifier.height(5.dp))
-        Row(
-            modifier = Modifier.align(Alignment.End)
-        ) {
-            ButtonWithIcon(
-                icon = R.drawable.ic_departure,
-                title = "출발",
-                onClick = { onDepart() }
-            )
-            Spacer(Modifier.width(10.dp))
-            ButtonWithIcon(
-                icon = R.drawable.ic_arrival,
-                title = "도착",
-                onClick = { onArrival() }
-            )
-        }
+        Spacer(Modifier.height(12.dp))
+        NetworkImage(
+            url = searchResult.image,
+            contentDescription = "",
+            height = 190.dp,
+            modifier = Modifier.fillMaxWidth().clickable {
+                onClickPhoto(searchResult.image)
+            }
+        )
     }
 }

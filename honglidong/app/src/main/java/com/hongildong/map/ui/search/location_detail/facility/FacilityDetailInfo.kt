@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -18,10 +20,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -39,9 +43,11 @@ import com.hongildong.map.ui.theme.Gray600
 import com.hongildong.map.ui.theme.PrimaryMid
 import com.hongildong.map.ui.theme.White
 import com.hongildong.map.ui.util.ButtonWithIcon
+import com.hongildong.map.ui.util.NetworkImage
 
 @Composable
 fun FacilityDetailInfo(
+    nestedScrollConnection: NestedScrollConnection,
     modifier: Modifier = Modifier,
     facilityInfo: FacilityInfo,
     onDepart: () -> Unit,
@@ -51,7 +57,10 @@ fun FacilityDetailInfo(
     searchViewmodel: SearchKeywordViewmodel = hiltViewModel(),
     bookmarkViewmodel: BookmarkViewModel = hiltViewModel(),
     onEditReview: (ReviewInfo) -> Unit,
-    onDeleteReview: (Int) -> Unit
+    onDeleteReview: (Int) -> Unit,
+    onLikeReview: (Int) -> Unit,
+    likeState: Boolean,
+    onClickPhoto: (String) -> Unit
 ) {
     val pages = listOf("시설 정보", "리뷰", "사진")
     var tabState by remember { mutableIntStateOf(0) }
@@ -63,7 +72,13 @@ fun FacilityDetailInfo(
             facilityInfo,
             onDepart = onDepart,
             onArrival = onArrival,
-            onBookmarkChange = onBookmarkChange
+            onBookmarkChange = {
+                onBookmarkChange()
+            },
+            likeState = likeState,
+            onClickPhoto = {
+                onClickPhoto(it)
+            }
         )
         Spacer(Modifier.height(16.dp))
         TabRow (
@@ -109,6 +124,7 @@ fun FacilityDetailInfo(
             1 -> {
                 // 리뷰 탭
                 FacilityReviewTab(
+                    nestedScrollConnection = nestedScrollConnection,
                     searchViewmodel = searchViewmodel,
                     isUser = isUser,
                     onReview = onReview,
@@ -118,6 +134,12 @@ fun FacilityDetailInfo(
                     },
                     onDeleteReview = {
                         onDeleteReview(it)
+                    },
+                    onLikeItem = {
+                        onLikeReview(it)
+                    },
+                    onClickPhoto = {
+                        onClickPhoto(it)
                     }
                 )
             }
@@ -128,6 +150,9 @@ fun FacilityDetailInfo(
                     isUser = isUser,
                     onUpdate = {
                         searchViewmodel.getFacilityPhotos(facilityInfo.id)
+                    },
+                    onClickPhoto = {
+                        onClickPhoto(it)
                     }
                 )
             }
@@ -145,7 +170,9 @@ fun FacilityDetailHeader(
     searchResult: FacilityInfo,
     onDepart: () -> Unit,
     onArrival: () -> Unit,
-    onBookmarkChange: () -> Unit
+    onBookmarkChange: () -> Unit,
+    likeState: Boolean,
+    onClickPhoto: (String) -> Unit
 ) {
 
     Column(
@@ -166,7 +193,7 @@ fun FacilityDetailHeader(
             ) {
                 Image(
                     painterResource(
-                        if (searchResult.isBookmarked) R.drawable.ic_bookmark_true else R.drawable.ic_bookmark_false,
+                        if (likeState) R.drawable.ic_bookmark_true else R.drawable.ic_bookmark_false,
                     ),
                     contentDescription = "",
                     modifier = Modifier
@@ -202,7 +229,23 @@ fun FacilityDetailHeader(
                 style = AppTypography.Medium_13.copy(color = Gray600)
             )
         }
-        Spacer(Modifier.height(5.dp))
+        /*Spacer(Modifier.height(8.dp))
+        LazyRow() {
+            items(searchResult.photoList) { photo ->
+                NetworkImage(
+                    url = photo,
+                    contentDescription = "",
+                    height = 190.dp,
+                    modifier = Modifier.fillMaxWidth().clickable {
+                        if (!photo.isNullOrEmpty()) {
+                            onClickPhoto(photo!!)
+                        }
+                    }
+                )
+            }
+        }*/
+
+        Spacer(Modifier.height(8.dp))
         Row(
             modifier = Modifier.align(Alignment.End)
         ) {

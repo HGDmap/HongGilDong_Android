@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.hongildong.map.R
+import com.hongildong.map.data.entity.Floor
 import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Black
 import com.hongildong.map.ui.theme.White
@@ -33,17 +34,30 @@ enum class FacilityType(
     val displayName: String,
     val icon: Int,
 ) {
-    EVENT("event", "이벤트", R.drawable.img_event_color),
-    CAFE("cafe","카페", R.drawable.img_cafe_color),
-    LOUNGE("lounge", "휴게실", R.drawable.img_lounge_color),
-    VENDING_MACHINE("vending_machine","자판기", R.drawable.img_vendingmachine_color),
-    TOILET("toilet","화장실", R.drawable.img_toilet_color),
-    SMOKING_AREA("smoking_area","흡연구역", R.drawable.img_smoking_color),
-    STUDY_ROOM("study_room","열람실", R.drawable.img_study_color)
+    EVENT("EVENT", "이벤트", R.drawable.img_event_color),
+    CAFE("CAFE","카페", R.drawable.img_cafe_color),
+    LOUNGE("LOUNGE", "휴게실", R.drawable.img_lounge_color),
+    VENDING_MACHINE("MACHINE","무인 기계", R.drawable.img_vendingmachine_color),
+    TOILET("TOILET","화장실", R.drawable.img_toilet_color),
+    SMOKING_AREA("SMOKING_AREA","흡연구역", R.drawable.img_smoking_color),
+    STUDY_ROOM("STUDY","열람실", R.drawable.img_study_color);
+
+    companion object {
+        // apiName 기반으로 enum 상수 검색
+        fun fromApiName(apiName: String): FacilityType? {
+            return FacilityType.entries.find { it.apiName.equals(apiName, ignoreCase = true) }
+        }
+        // displayName 기반으로 enum 상수 검색
+        fun fromDisplayName(displayName: String): FacilityType? {
+            return FacilityType.entries.find { it.displayName.equals(displayName, ignoreCase = true) }
+        }
+    }
 }
 
 @Composable
-fun FacilityTypeTags() {
+fun FacilityTypeTags(
+    onClick: (String) -> Unit = {}
+) {
     val tags = FacilityType.entries
     LazyRow (
         modifier = Modifier
@@ -51,7 +65,7 @@ fun FacilityTypeTags() {
         contentPadding = PaddingValues(start = 15.dp, end = 15.dp)
     ) {
         items(tags) { tag ->
-            FacilityTypeTagItem(tag.icon, tag.displayName)
+            FacilityTypeTagItem(tag.icon, tag.displayName, { onClick(tag.apiName) })
         }
     }
 }

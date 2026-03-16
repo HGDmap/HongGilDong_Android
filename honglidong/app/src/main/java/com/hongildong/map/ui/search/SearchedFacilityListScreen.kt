@@ -1,5 +1,6 @@
 package com.hongildong.map.ui.search
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,6 +25,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,13 +43,14 @@ import com.hongildong.map.data.entity.SearchableNodeType
 import com.hongildong.map.ui.bookmark.sheet_content.BookmarkFolderUpdateContent
 import com.hongildong.map.ui.bookmark.sheet_content.BookmarkUpdateContent
 import com.hongildong.map.ui.bookmark.BookmarkViewModel
-import com.hongildong.map.ui.search.location_detail.SearchBarWithGoBack
+import com.hongildong.map.ui.util.SearchBarWithGoBack
 import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Black
 import com.hongildong.map.ui.theme.Gray300
 import com.hongildong.map.ui.theme.Gray600
 import com.hongildong.map.ui.theme.White
 import com.hongildong.map.ui.util.ButtonWithIcon
+import com.hongildong.map.ui.util.NetworkImage
 import com.hongildong.map.ui.util.bottomsheet.BottomSheetViewModel
 import com.hongildong.map.ui.util.bottomsheet.FlexibleBottomSheet
 import com.hongildong.map.ui.util.map.MapViewmodel
@@ -62,6 +67,11 @@ fun SearchedFacilityListScreen(
     onClickItem: (NodeInfo) -> Unit,
     onGoBack: () -> Unit
 ) {
+    // 시스템 뒤로가기 버튼 - 커스텀 동작과 연결
+    BackHandler {
+        onGoBack()
+    }
+
     val searchResult by searchViewmodel.searchedList.collectAsState()
 
     val sheetScaffoldState = rememberBottomSheetScaffoldState()
@@ -120,6 +130,7 @@ fun SearchedFacilityListScreen(
                         onDirectItem = { onDirectItem(it) },
                         onClickItem = { onClickItem(it)},
                         onBookmarkChange = {
+                            var bookmarkInfo = false
                             if (isUser) {
                                 bottomSheetViewModel.show {
                                     BookmarkUpdateContent(
@@ -143,6 +154,7 @@ fun SearchedFacilityListScreen(
                                                         type = it.type ?: SearchableNodeType.FACILITY.apiName,
                                                         targetId = it.id ?: it.nodeId ?: 0
                                                     )
+                                                    bookmarkInfo = false
                                                 }
                                             } else {
                                                 // 0이 아님: 폴더를 선택하거나 바꾼 경우 -> 북마크 업데이트
@@ -152,6 +164,7 @@ fun SearchedFacilityListScreen(
                                                         targetId = it.id ?: it.nodeId ?: 0,
                                                         folderId = folderNumber
                                                     )
+                                                    bookmarkInfo = true
                                                 }
                                             }
                                             bottomSheetViewModel.hide()
@@ -159,6 +172,7 @@ fun SearchedFacilityListScreen(
                                     )
                                 }
                             }
+                            bookmarkInfo
                         }
                     )
                 }
@@ -199,9 +213,10 @@ fun EmptyItem() {
 @Composable
 fun SearchedPlaces(
     places: List<NodeInfo>,
-    onDirectItem: (NodeInfo) -> Unit,
+    onDirectItem: (NodeInfo) -> Unit = {},
     onClickItem: (NodeInfo) -> Unit,
-    onBookmarkChange: (NodeInfo) -> Unit
+    onBookmarkChange: (NodeInfo) -> Boolean,
+    invisibleDirect: Boolean = false
 ) {
     LazyColumn() {
         items(places) { place ->
@@ -215,7 +230,8 @@ fun SearchedPlaces(
                 },
                 onBookmarkChange = {
                     onBookmarkChange(place)
-                }
+                },
+                invisibleDirect = invisibleDirect
             )
         }
     }
@@ -224,10 +240,12 @@ fun SearchedPlaces(
 @Composable
 fun PlaceInfoItem(
     info: NodeInfo,
-    onDirect: () -> Unit,
+    invisibleDirect: Boolean = false,
+    onDirect: () -> Unit = {},
     onClick: () -> Unit,
-    onBookmarkChange: () -> Unit
+    onBookmarkChange: () -> Boolean
 ) {
+    var bookmarkInfo by remember (info) { mutableStateOf(info.isBookmarked ?: false) }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -252,46 +270,57 @@ fun PlaceInfoItem(
                     style = AppTypography.Medium_13.copy(color = Gray600)
                 )
             }
-            Image(
-                painterResource(
-                    id = if (info.isBookmarked ?: false) R.drawable.ic_bookmark_true else R.drawable.ic_bookmark_false,
-                ),
-                contentDescription = "",
-                modifier = Modifier
-                    .clickable {
-                        onBookmarkChange()
-                    }
-            )
-        }
-        Spacer(Modifier.height(12.dp))
-        LazyRow (
-            modifier = Modifier
-                .height(120.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(info.photoList) { image ->
-                // 네트워크 이미지 로더 추가 필요
+            if (info.type == SearchableNodeType.FACILITY.apiName) {
                 Image(
-                    painterResource(R.drawable.img_blank),
+                    painterResource(
+                        id = if (bookmarkInfo) R.drawable.ic_bookmark_true else R.drawable.ic_bookmark_false,
+                    ),
                     contentDescription = "",
                     modifier = Modifier
-                        .size(width = 110.dp, height = 90.dp)
-                        .clip(RoundedCornerShape(12.dp)),
-                    contentScale = ContentScale.Crop
+                        .clickable {
+                            bookmarkInfo = onBookmarkChange()
+                        }
                 )
             }
         }
-        Spacer(Modifier.height(5.dp))
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.TopEnd
-        ) {
-            ButtonWithIcon(
-                icon = R.drawable.ic_direction,
-                title = "길찾기",
-                onClick = { onDirect() }
+        Spacer(Modifier.height(12.dp))
+        if (info.type == SearchableNodeType.FACILITY.apiName) {
+            LazyRow (
+                modifier = Modifier
+                    .height(120.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(info.photoList) { image ->
+                    NetworkImage(
+                        url = image,
+                        width = 110.dp,
+                        height = 90.dp,
+                        contentDescription = null,
+                    )
+                }
+            }
+        } else {
+            NetworkImage(
+                url = info.photoList[0],
+                height = 90.dp,
+                contentDescription = null,
+                modifier = Modifier.fillMaxWidth()
             )
         }
+        if (!invisibleDirect) {
+            Spacer(Modifier.height(5.dp))
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.TopEnd
+            ) {
+                ButtonWithIcon(
+                    icon = R.drawable.ic_direction,
+                    title = "길찾기",
+                    onClick = { onDirect() }
+                )
+            }
+        }
+
         Spacer(Modifier.height(8.dp))
         HorizontalDivider(Modifier.height(1.dp), color = Gray300)
     }

@@ -1,6 +1,7 @@
 package com.hongildong.map.ui.search.location_detail.facility
 
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -10,6 +11,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -23,7 +27,7 @@ import com.hongildong.map.ui.bookmark.sheet_content.BookmarkFolderUpdateContent
 import com.hongildong.map.ui.bookmark.sheet_content.BookmarkUpdateContent
 import com.hongildong.map.ui.bookmark.BookmarkViewModel
 import com.hongildong.map.ui.search.SearchKeywordViewmodel
-import com.hongildong.map.ui.search.location_detail.SearchBarWithGoBack
+import com.hongildong.map.ui.util.SearchBarWithGoBack
 import com.hongildong.map.ui.util.bottomsheet.AnchoredDraggableBottomSheet
 import com.hongildong.map.ui.util.bottomsheet.BottomSheetViewModel
 import com.hongildong.map.ui.util.map.MapViewmodel
@@ -43,13 +47,24 @@ fun FacilityDetailScreen(
     onSearchDirection: () -> Unit,
     onReview: (FacilityInfo) -> Unit,
     onEditReview: (Int, ReviewInfo) -> Unit,
-    onDeleteReview: (Int) -> Unit
+    onDeleteReview: (Int) -> Unit,
+    onClickPhoto: (String) -> Unit
 ) {
+
+    // 시스템 뒤로가기 버튼 - 커스텀 동작과 연결
+    BackHandler {
+        onGoBack()
+    }
+
     val context = LocalContext.current
     val facilityInfo by searchViewmodel.facilityDetail.collectAsState()
     val directionResult by searchViewmodel.directionResult.collectAsState()
     val isUser by bookmarkViewModel.isUser.collectAsState()
     val allBookmarks by bookmarkViewModel.allBookmarkInfo.collectAsState()
+
+    var likeState by remember(facilityInfo?.isBookmarked) {
+        mutableStateOf(facilityInfo?.isBookmarked ?: false)
+    }
 
     LaunchedEffect(Unit) {
         // 검색 결과 바탕으로 시설 상세 정보 api 호출
@@ -96,6 +111,7 @@ fun FacilityDetailScreen(
                 isFullScreen = true
             ) {
                 FacilityDetailInfo(
+                    nestedScrollConnection = nestedScrollConnection,
                     modifier = Modifier.nestedScroll(nestedScrollConnection),
                     searchViewmodel = searchViewmodel,
                     bookmarkViewmodel = bookmarkViewModel,
@@ -165,6 +181,7 @@ fun FacilityDetailScreen(
                                                         ?: SearchableNodeType.FACILITY.apiName,
                                                     targetId = targetId
                                                 )
+                                                likeState = false
                                             } else {
                                                 // 0이 아님: 폴더를 선택하거나 바꾼 경우 -> 북마크 업데이트
                                                 bookmarkViewModel.updateBookmark(
@@ -173,6 +190,7 @@ fun FacilityDetailScreen(
                                                     targetId = targetId,
                                                     folderId = folderNumber
                                                 )
+                                                likeState = true
                                             }
                                         }
                                         bottomSheetViewModel.hide()
@@ -200,6 +218,15 @@ fun FacilityDetailScreen(
                             onDeleteReview(it)
                         }
                     },
+                    onLikeReview = {
+                        if (facilityInfo != null) {
+                            searchViewmodel.updateLikedReview(it)
+                        }
+                    },
+                    likeState = likeState,
+                    onClickPhoto = {
+                        onClickPhoto(it)
+                    }
                 )
             }
         }

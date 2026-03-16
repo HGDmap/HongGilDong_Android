@@ -1,7 +1,7 @@
 package com.hongildong.map.data.remote.api
 
 import com.hongildong.map.data.entity.ReviewInfo
-import com.hongildong.map.data.remote.request.ImageUploadRequest
+import com.hongildong.map.data.remote.request.ReviewImageUploadRequest
 import com.hongildong.map.data.remote.request.ReviewUpdateRequest
 import com.hongildong.map.data.remote.response.ImageUploadResponse
 import com.hongildong.map.data.util.ApiResponse
@@ -21,10 +21,10 @@ interface ReviewService {
     // 1. 리뷰에서 사진 등록할 경우 링크 받기 api로 파일명 리스트를 보내서 링크를 받음
     // 2. 해당 api에서 받은 presignedURL로 Put 요청 보내기
     // 3. 해당 api에서 받은 imageURL은 리뷰 등록 api로 보내기
-    @POST("image/presigned-url")
+    @POST("image/review/presigned-url")
     suspend fun createPresignedUrl(
         @Header("Authorization") accessToken: String,
-        @Body body: ImageUploadRequest
+        @Body body: ReviewImageUploadRequest
     ): ApiResponse<List<ImageUploadResponse>>
 
     // 특정한 하나의 리뷰 조회

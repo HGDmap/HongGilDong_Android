@@ -1,6 +1,7 @@
 package com.hongildong.map.ui.search
 
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -53,16 +55,22 @@ fun SearchScreen(
     var textState by remember { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
 
+    // 시스템 뒤로가기 버튼 - 커스텀 동작 연결
+    BackHandler {
+        onGoBack()
+    }
+
     Column(
         modifier = Modifier
-            .background(White)
             .fillMaxSize()
+            .background(White)
+            .systemBarsPadding()
             .padding(vertical = 15.dp, horizontal = 10.dp),
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .windowInsetsPadding(WindowInsets.statusBars),
+                .fillMaxWidth(),
+                //.windowInsetsPadding(WindowInsets.statusBars),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {

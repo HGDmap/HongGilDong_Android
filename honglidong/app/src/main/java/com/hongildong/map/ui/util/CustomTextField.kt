@@ -247,7 +247,7 @@ fun CustomTextBox(
     onTextChange: (String) -> Unit,
 ) {
     // 키보드를 제어하기 위한 컨트롤러
-    val keyboardController = LocalSoftwareKeyboardController.current
+    //val keyboardController = LocalSoftwareKeyboardController.current
 
     BasicTextField(
         value = textState,
@@ -281,7 +281,7 @@ fun CustomTextBox(
                 }
             }
         },
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+        /*keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
         keyboardActions = KeyboardActions(
             // 완료 버튼을 눌렀을 때 실행될 동작
             onDone = {
@@ -290,6 +290,6 @@ fun CustomTextBox(
                 // 검색 실행 후 키보드 숨기기
                 keyboardController?.hide()
             }
-        )
+        )*/
     )
 }

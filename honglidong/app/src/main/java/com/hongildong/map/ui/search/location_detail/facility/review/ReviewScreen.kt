@@ -1,6 +1,7 @@
 package com.hongildong.map.ui.search.location_detail.facility.review
 
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -20,6 +21,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -36,6 +38,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -43,10 +46,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.hongildong.map.R
+import com.hongildong.map.data.entity.Floor
 import com.hongildong.map.ui.search.location_detail.facility.review.ReviewViewModel
 import com.hongildong.map.ui.theme.AppTypography
 import com.hongildong.map.ui.theme.Black
 import com.hongildong.map.ui.theme.Gray300
+import com.hongildong.map.ui.theme.Gray500
+import com.hongildong.map.ui.theme.Gray600
+import com.hongildong.map.ui.theme.PrimaryLight
 import com.hongildong.map.ui.theme.PrimaryMid
 import com.hongildong.map.ui.theme.White
 import com.hongildong.map.ui.util.BottomButton
@@ -54,6 +61,7 @@ import com.hongildong.map.ui.util.CustomLoading
 import com.hongildong.map.ui.util.CustomTextBox
 import com.hongildong.map.ui.util.NetworkImage
 import com.hongildong.map.ui.util.UiState
+import com.hongildong.map.ui.util.WheelPicker
 import com.hongildong.map.ui.util.popup.ConfirmPopup
 
 @Composable
@@ -62,10 +70,22 @@ fun ReviewScreen(
     facilityName: String,
     reviewMode: Int,
     onGoBack: () -> Unit,
-    onDone: (String) -> Unit
+    onDone: (String, String, String) -> Unit // content, 이런점이좋아요, rate 순서
 ) {
+
+    // 시스템 뒤로가기 버튼 - 커스텀 동작과 연결
+    BackHandler {
+        onGoBack()
+    }
+
     val context = LocalContext.current
     val scrollState = rememberScrollState()
+
+    // 이런점이 좋아요
+    var selectedItem by remember { mutableStateOf("") }
+
+    // rate
+    var rateValue by remember { mutableStateOf("5.0") }
 
     // 기존 리뷰 정보 - reviewmode == 1(수정)일때 사용
     val targetReview by reviewViewModel.targetReview.collectAsState()
@@ -98,6 +118,7 @@ fun ReviewScreen(
         if (reviewMode == 1 && targetReview != null) {
             // 리뷰 수정 상황이라면 기존 리뷰 컨텐츠 덮어쓰기
             textState = targetReview!!.content
+            rateValue = targetReview!!.rating.toString()
         }
     }
 
@@ -154,16 +175,49 @@ fun ReviewScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Spacer(Modifier.height(25.dp))
-                RateImage(
-                    width = 181.dp,
-                    height = 31.dp,
-                    rate = 0.9f
+
+                // rate picker
+                WheelPicker(
+                    modifier = Modifier
+                        .height(150.dp)
+                        .fillMaxWidth()
+                        //.width(220.dp)
+                        .padding(horizontal = 10.dp),
+                    items = listOf("5.0", "4.5", "4.0", "3.5", "3.0", "2.5", "2.0", "1.5", "1.0", "0.5"),
+                    initialItem = rateValue,
+                    onItemSelected = { index, selectedValue ->
+                        rateValue = selectedValue
+                    }
                 )
+                { item, isSelected ->
+                    if (item.toString().isNotEmpty()) {
+                        Row(
+                            modifier = Modifier.padding(vertical = 5.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            RateImage(
+                                width = 181.dp,
+                                height = 31.dp,
+                                rate = item.toFloat(),
+                                color = if (isSelected) PrimaryMid else Gray500
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            Text(
+                                text = item.toString(),
+                                style = AppTypography.Medium_15.copy(color = if (isSelected) Black else Gray500),
+                            )
+                        }
+                    }
+                }
                 Spacer(Modifier.height(25.dp))
 
                 HorizontalDivider(thickness = 1.dp, color = Gray300)
 
-                // todo: 여기에 어떤점이 좋았나요 들어감
+                // 어떤점이 좋았나요
+                RecommendSelection(
+                    selectedItemApiName = selectedItem,
+                    onItemSelected = { selectedItem = it }
+                )
 
                 Spacer(Modifier.height(20.dp))
                 Text(
@@ -251,9 +305,9 @@ fun ReviewScreen(
             // bottom button
             BottomButton(
                 buttonText = "작성 완료",
-                isButtonEnabled = if (textState.length > 10) true else false,
+                isButtonEnabled = if ((textState.length > 10) and (selectedItem.isNotEmpty())) true else false,
                 onClick = {
-                    onDone(textState)
+                    onDone(textState, selectedItem, rateValue)
                 }
             )
         }
@@ -273,6 +327,81 @@ fun ReviewScreen(
 
         if (showProgress) {
             CustomLoading()
+        }
+    }
+}
+
+@Composable
+fun RecommendSelection(
+    selectedItemApiName: String,
+    onItemSelected: (String) -> Unit
+) {
+    FacilityRecommendType.entries.forEach {
+        RecommendTypeItem(
+            type = it,
+            isSelected = selectedItemApiName == it.apiName,
+            onClick = {
+                onItemSelected(it.apiName)
+            }
+        )
+    }
+}
+
+@Composable
+fun RecommendTypeItem(
+    type: FacilityRecommendType,
+    selectedCnt: Int? = null,
+    isSelected: Boolean,
+    onClick: () -> Unit = {}
+) {
+    Row(
+        modifier = Modifier
+            .padding(3.dp)
+            .fillMaxWidth()
+            .border(width = 1.dp, color = if (isSelected) PrimaryMid else Gray300, shape = RoundedCornerShape(12.dp))
+            .background(color = if (isSelected) PrimaryLight.copy(alpha = 0.4f) else White, shape = RoundedCornerShape(12.dp))
+            .padding(10.dp)
+            .clickable {
+                onClick()
+            },
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Image(
+            painter = painterResource(type.icon),
+            contentDescription = null,
+            modifier = Modifier.size(30.dp).padding(horizontal = 5.dp)
+        )
+        Text(
+            text = type.displayName,
+            style = AppTypography.Medium_15.copy(color = if (isSelected) PrimaryMid else Gray600),
+            modifier = Modifier.weight(1f)
+        )
+        if (selectedCnt != null) {
+            Text(
+                text = selectedCnt.toString(),
+                style = AppTypography.Medium_15.copy(color = if (isSelected) PrimaryMid else Gray600),
+                modifier = Modifier
+            )
+        }
+    }
+}
+
+enum class FacilityRecommendType(val apiName: String, val displayName: String, val icon: Int) {
+    STUDY("STUDY", "공부하기 좋아요", R.drawable.ic_good_to_study),
+    REST("REST", "쉬기 좋아요", R.drawable.ic_good_to_rest),
+    VIEW("VIEW", "경치가 좋아요", R.drawable.ic_good_to_view),
+    MEETING("MEETING", "회의하기 좋아요", R.drawable.ic_good_to_meeting),
+    FOOD("FOOD", "맛있어요", R.drawable.ic_good_to_food);
+
+    companion object {
+        // apiName 기반으로 enum 상수 검색
+        fun fromApiName(apiName: String): FacilityRecommendType? {
+            return FacilityRecommendType.entries.find { it.apiName.equals(apiName, ignoreCase = true) }
+        }
+        // displayName 기반으로 enum 상수 검색
+        fun fromDisplayName(displayName: String): FacilityRecommendType? {
+            return FacilityRecommendType.entries.find { it.displayName.equals(displayName, ignoreCase = true) }
         }
     }
 }

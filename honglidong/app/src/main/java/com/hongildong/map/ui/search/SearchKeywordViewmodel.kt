@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hongildong.map.data.dao.SearchKeywordDao
 import com.hongildong.map.data.entity.AutoCompleteSearchKeyword
+import com.hongildong.map.data.entity.EventBriefInfo
+import com.hongildong.map.data.entity.EventDetailInfo
 import com.hongildong.map.data.entity.FacilityInfo
 import com.hongildong.map.data.entity.NodeInfo
 import com.hongildong.map.data.entity.ReviewInfo
@@ -15,6 +17,7 @@ import com.hongildong.map.data.entity.SearchableNodeType
 import com.hongildong.map.data.remote.request.PhotoRequest
 import com.hongildong.map.data.remote.response.DirectionResponse
 import com.hongildong.map.data.remote.response.PhotoResponse
+import com.hongildong.map.data.remote.response.ReviewRecommendResponse
 import com.hongildong.map.data.remote.response.ReviewResponse
 import com.hongildong.map.data.repository.ReviewRepository
 import com.hongildong.map.data.repository.SearchRepository
@@ -73,6 +76,15 @@ class SearchKeywordViewmodel @Inject constructor(
     private val sharedPreferences = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
     fun getToken(): String? {
         return sharedPreferences.getString("access_token", null)
+    }
+
+    private val _isUser = MutableStateFlow<Boolean>(false)
+    val isUser: StateFlow<Boolean> = _isUser.asStateFlow()
+
+    fun verifyUser() {
+        viewModelScope.launch {
+            _isUser.value = getToken() != null
+        }
     }
 
     // 출발지 지정
@@ -150,16 +162,12 @@ class SearchKeywordViewmodel @Inject constructor(
     private val _facilityDetail = MutableStateFlow<FacilityInfo?>(null)
     val facilityDetail = _facilityDetail.asStateFlow()
 
-    // 건물의 detial info 받아오기
+    // 건물의 detail info 받아오기
     fun onSearchFacilityInfo(facilityId: Int) {
         viewModelScope.launch {
-            /*val token = getToken()
-            if (token == null) {
-                Log.e(TAG, "토큰이 없습니다")
-                return@launch
-            }*/
+            val token = getToken()
 
-            val response = searchRepository.getFacilityDetail(facilityId = facilityId)
+            val response = searchRepository.getFacilityDetail(token, facilityId)
             when (response) {
                 is DefaultResponse.Success -> {
                     Log.d(TAG, "응답 성공: $response")
@@ -187,7 +195,7 @@ class SearchKeywordViewmodel @Inject constructor(
     private val _searchedBuildingInfo = MutableStateFlow<FacilityInfo?>(null)
     val searchedBuildingInfo: StateFlow<FacilityInfo?> = _searchedBuildingInfo.asStateFlow()
 
-    // 검색시 호출
+    // 건물의 detail info
     fun onSearchBuildingInfo(id: Int) {
         viewModelScope.launch {
             val response = searchRepository.getBuildingDetail(id)
@@ -204,6 +212,38 @@ class SearchKeywordViewmodel @Inject constructor(
                             nodeName = response.data.name,
                             nodeId = response.data.nodeId,
                             nodeCode = response.data.type,
+                            id = response.data.id
+                        )
+                    )
+                }
+                is DefaultResponse.Error -> {
+                    Log.d(TAG, "응답 실패: $response")
+                    _isSearchSuccess.value = UiState.Error("유효하지 않은 검색어입니다.")
+                }
+            }
+        }
+    }
+
+    private val _searchedEventInfo = MutableStateFlow<EventDetailInfo?>(null)
+    val searchedEventInfo = _searchedEventInfo.asStateFlow()
+
+    // 이벤트의 detail info
+    fun onSearchEventInfo(id: Int) {
+        viewModelScope.launch {
+            val response = searchRepository.getEventDetail(id)
+
+            when (response) {
+                is DefaultResponse.Success -> {
+                    Log.d(TAG, "응답 성공: $response")
+                    _searchedEventInfo.value = response.data
+                    Log.d(TAG, "searchResult: ${_searchedEventInfo.value}")
+                    _isSearchSuccess.value = UiState.Success
+
+                    searchKeywordDao.insertKeyword(
+                        SearchKeyword(
+                            nodeName = response.data.name,
+                            nodeId = response.data.locationInfo.nodeId,
+                            nodeCode = "EVENT",
                             id = response.data.id
                         )
                     )
@@ -380,6 +420,48 @@ class SearchKeywordViewmodel @Inject constructor(
             }
         }
     }
+
+    fun updateLikedReview(
+        reviewId: Int
+    ) {
+        viewModelScope.launch {
+            val token = getToken() ?: return@launch
+
+            val response = reviewRepository.saveReview(token, reviewId)
+            when (response) {
+                is DefaultResponse.Success -> {
+                    Log.d(TAG, "리뷰 좋아요 성공 $response")
+                }
+                is DefaultResponse.Error -> {
+                    Log.d(TAG, "리뷰 좋아요 실패 $response")
+                }
+            }
+        }
+    }
+
+    private val _facilityRecommendInfo = MutableStateFlow<ReviewRecommendResponse?>(null)
+    val facilityRecommendInfo = _facilityRecommendInfo.asStateFlow()
+
+    fun getFacilityRecommendInfo(
+        facilityId: Int
+    ) {
+        viewModelScope.launch {
+            val token = getToken() ?: return@launch
+
+            val response = searchRepository.getFacilityRecommend(token, facilityId)
+            when (response) {
+                is DefaultResponse.Success -> {
+                    Log.d(TAG, "시설 평점 및 추천 불러오기 성공 $response")
+                    _facilityRecommendInfo.value = response.data
+                }
+                is DefaultResponse.Error -> {
+                    Log.d(TAG, "시설 평점 및 추천 불러오기 실패 $response")
+                }
+            }
+        }
+    }
+
+
 
     fun eraseFacilityData() {
         viewModelScope.launch {

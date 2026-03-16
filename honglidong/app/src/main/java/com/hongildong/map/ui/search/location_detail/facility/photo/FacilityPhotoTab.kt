@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -49,9 +50,9 @@ fun FacilityPhotoTab(
     searchViewmodel: SearchKeywordViewmodel = hiltViewModel(),
     isUser: Boolean,
     onUpdate: () -> Unit,
+    onClickPhoto: (String) -> Unit
 ) {
     val photos by searchViewmodel.facilityPhotoInfo.collectAsState()
-    var imageDetailInfo by remember { mutableStateOf("") }
     val hazeState = remember { HazeState() }
 
     LaunchedEffect(Unit) {
@@ -79,7 +80,7 @@ fun FacilityPhotoTab(
                                 url = photo,
                                 contentDescription = null,
                                 modifier = Modifier
-                                    .clickable { imageDetailInfo = photo }
+                                    .clickable { onClickPhoto(photo) }
                             )
                         }
                     }
@@ -107,13 +108,6 @@ fun FacilityPhotoTab(
             )
         }
     }
-
-    if (imageDetailInfo.isNotEmpty()) {
-        ImageDetail(
-            url = imageDetailInfo,
-            onGoBack = { imageDetailInfo = "" }
-        )
-    }
 }
 
 @Composable
@@ -125,6 +119,7 @@ fun ImageDetail(
         modifier = Modifier
             .fillMaxSize()
             .background(Black)
+            .systemBarsPadding()
             .clickable { onGoBack() },
         contentAlignment = Alignment.Center
     ) {
@@ -134,9 +129,10 @@ fun ImageDetail(
             ),
             contentDescription = "",
             modifier = Modifier
+                .padding(20.dp)
+                .size(20.dp)
                 .align(Alignment.TopEnd)
                 .clickable { onGoBack() }
-                .padding(20.dp)
         )
         AsyncImage(
             model = url,

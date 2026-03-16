@@ -1,5 +1,7 @@
 package com.hongildong.map.ui
 
+import android.app.Activity
+import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -8,25 +10,34 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.hongildong.map.data.entity.NodeInfo
-import com.hongildong.map.data.entity.SearchableNodeType
 import com.hongildong.map.navGraph.AppNavHost
 import com.hongildong.map.navGraph.BottomNavigationBar
 import com.hongildong.map.navGraph.MainNavHost
 import com.hongildong.map.navGraph.NavRoute
 import com.hongildong.map.ui.bookmark.BookmarkViewModel
 import com.hongildong.map.ui.theme.HongildongTheme
+import com.hongildong.map.ui.user.signup.AuthViewmodel
+import com.hongildong.map.ui.util.SplashScreen
+import com.hongildong.map.ui.util.UiState
 import com.hongildong.map.ui.util.bottomsheet.BottomSheetViewModel
 import com.hongildong.map.ui.util.bottomsheet.SharedBottomSheetHost
 import com.hongildong.map.ui.util.map.MapBackground
@@ -36,17 +47,51 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val authViewModel: AuthViewmodel = hiltViewModel()
+            val loginState by authViewModel.tokenCheckState.collectAsState()
+
+            LaunchedEffect(Unit) {
+                authViewModel.checkToken()
+            }
+
+            val view = LocalView.current
+            if (!view.isInEditMode) {
+                SideEffect {
+                    val window = (view.context as Activity).window
+
+                    WindowCompat.setDecorFitsSystemWindows(window, true)
+
+                    // 시스템바 아이콘 검정색으로 변경
+                    val wic = WindowInsetsControllerCompat(window, view)
+                    wic.isAppearanceLightStatusBars = true // 상태 바 아이콘 검정색
+                    wic.isAppearanceLightNavigationBars = true // 내비게이션 바 아이콘 검정색
+                }
+            }
+
+
             HongildongTheme {
                 Surface(
                     modifier = Modifier
                         .fillMaxSize(),
                     color = Color.White
                 ) {
-                    AppNavHost()
+
+                    when (loginState) {
+                        is UiState.Initial -> {
+                            SplashScreen()
+                        }
+                        else -> {
+                            val isTokenValid = loginState is UiState.Success
+
+                            AppNavHost(
+                                isTokenValid = isTokenValid
+                            )
+                        }
+                    }
+
                 }
             }
         }
@@ -64,8 +109,21 @@ fun MainScreen(
 
     val context = LocalContext.current
 
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    val bottomBarsRoutes = listOf(
+        NavRoute.Nearby.route,
+        NavRoute.Bookmark.route,
+        NavRoute.Profile.route,
+    )
+
     Scaffold(
-        bottomBar = { BottomNavigationBar(navController) },
+        bottomBar = {
+            if (currentRoute in bottomBarsRoutes) {
+                BottomNavigationBar(navController)
+            }
+        },
         modifier = Modifier.fillMaxSize()
     ) { paddingValues ->
         MapBackground(

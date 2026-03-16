@@ -23,6 +23,8 @@ sealed class NavRoute(val route: String) {
     object Bookmark : NavRoute("bookmark")
     object Profile : NavRoute("profile")
     object Main: NavRoute("main")
+    object AllEvent: NavRoute("all_event")
+    object TypeFacility: NavRoute("type_facility")
 
     // 북마크 폴더
     object BookmarkFolderInside: NavRoute("bookmark_folder_inside")
@@ -40,10 +42,11 @@ sealed class NavRoute(val route: String) {
     object SearchRoot: NavRoute("search_root")
     object Search : NavRoute("search")
     object RawSearch: NavRoute("raw_search")
-    object LocationDetail: NavRoute("location_detail")
     object BuildingDetail: NavRoute("building_detail")
     object FacilityDetail: NavRoute("facility_detail")
+    object EventDetail: NavRoute("event_detail")
     object Review: NavRoute("review")
+    object ImageDetail: NavRoute("image_detail")
 
     // direct
     object DirectionSearch: NavRoute("direction_search")

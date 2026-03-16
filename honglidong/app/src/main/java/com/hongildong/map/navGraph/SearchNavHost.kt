@@ -20,8 +20,9 @@ import com.hongildong.map.ui.search.SearchedFacilityListScreen
 import com.hongildong.map.ui.search.direction.DirectionScreen
 import com.hongildong.map.ui.search.direction.DirectionSearchScreen
 import com.hongildong.map.ui.search.location_detail.facility.FacilityDetailScreen
-import com.hongildong.map.ui.search.location_detail.LocationDetailScreen
 import com.hongildong.map.ui.search.location_detail.building.BuildingDetailScreen
+import com.hongildong.map.ui.search.location_detail.event.EventDetailScreen
+import com.hongildong.map.ui.search.location_detail.facility.photo.ImageDetail
 import com.hongildong.map.ui.search.location_detail.facility.review.ReviewScreen
 import com.hongildong.map.ui.search.location_detail.facility.review.ReviewViewModel
 import com.hongildong.map.ui.util.bottomsheet.BottomSheetViewModel
@@ -53,6 +54,9 @@ fun SearchNavHost(
             }
             SearchableNodeType.BUILDING.apiName -> {
                 NavRoute.BuildingDetail.route + "/${Uri.encode(startName)}/$startId"
+            }
+            SearchableNodeType.EVENT.apiName -> {
+                NavRoute.EventDetail.route + "/${Uri.encode(startName)}/$startId"
             }
             else -> {
                 NavRoute.Search.route + "/$LOCATION_SEARCH_MODE"
@@ -92,7 +96,11 @@ fun SearchNavHost(
                                     }
                                     SearchableNodeType.BUILDING.apiName -> {
                                         searchKeywordViewmodel.onSearchBuildingInfo(keyword.id)
-                                        searchNavController.navigate(NavRoute.LocationDetail.route + "/${nodeName}/${keyword.id}")
+                                        searchNavController.navigate(NavRoute.BuildingDetail.route + "/${nodeName}/${keyword.id}")
+                                    }
+                                    SearchableNodeType.EVENT.apiName -> {
+                                        searchKeywordViewmodel.onSearchEventInfo(keyword.id)
+                                        searchNavController.navigate(NavRoute.EventDetail.route + "/${nodeName}/${keyword.id}")
                                     }
                                 }
                             }
@@ -171,6 +179,10 @@ fun SearchNavHost(
                                 searchKeywordViewmodel.onSearchBuildingInfo(node.id!!)
                                 searchNavController.navigate(NavRoute.BuildingDetail.route + "/${nodeName}/${node.id}")
                             }
+                            SearchableNodeType.EVENT.apiName -> {
+                                searchKeywordViewmodel.onSearchEventInfo(node.id!!)
+                                searchNavController.navigate(NavRoute.EventDetail.route + "/${nodeName}/${node.id}")
+                            }
                         }
                     },
                     onGoBack = {
@@ -182,26 +194,38 @@ fun SearchNavHost(
                 )
 
             }
-            // 건물 상세 정보 화면으로 재활용 예정
-            composable(route = NavRoute.LocationDetail.route + "/{searchedWord}") { backStackEntry ->
+            // 이벤트 상세 정보 화면
+            composable(
+                route = NavRoute.EventDetail.route + "/{searchedWord}/{eventId}",
+                arguments = listOf(
+                    navArgument("searchedWord") { type = NavType.StringType },
+                    navArgument("eventId") { type = NavType.IntType }
+                )
+            ) { backStackEntry ->
                 val parentEntry = remember(backStackEntry) {
                     searchNavController.getBackStackEntry(SEARCH_GRAPH_ROUTE)
                 }
                 val searchKeywordViewmodel: SearchKeywordViewmodel = hiltViewModel(parentEntry)
                 val searchedWord = backStackEntry.arguments?.getString("searchedWord") ?: ""
+                val eventId = backStackEntry.arguments?.getInt("eventId") ?: 0
 
-                LocationDetailScreen(
+                EventDetailScreen(
                     searchedWord = searchedWord,
-                    searchViewmodel = searchKeywordViewmodel,
-                    mapViewmodel = mapViewmodel,
-                    bookmarkViewModel = bookmarkViewModel,
-                    bottomSheetViewModel = bottomSheetViewModel,
+                    searchedEventId = eventId,
                     onGoBack = {
                         searchNavController.popBackStack()
                     },
-                    onSearchDirection = {
+                    mapViewmodel = mapViewmodel,
+                    searchViewmodel = searchKeywordViewmodel,
+                    onClickEventLocation = {
+                        searchNavController.navigate(NavRoute.BuildingDetail.route + "/${Uri.encode(it.locationInfo.buildingName)}/${it.locationInfo.nodeId}")
+                    },
+                    onDirectEventLocation = {
                         searchNavController.navigate(NavRoute.DirectionSearch.route)
                     },
+                    onClickPhoto = {
+                        searchNavController.navigate(NavRoute.ImageDetail.route + "?imageUrl=${Uri.encode(it)}")
+                    }
                 )
             }
             // 건물 상세 정보 화면
@@ -232,6 +256,9 @@ fun SearchNavHost(
                     },
                     onClickFacility = { facility ->
                         searchNavController.navigate(NavRoute.FacilityDetail.route + "/${Uri.encode(facility.name)}/${facility.id}")
+                    },
+                    onClickPhoto = {
+                        searchNavController.navigate(NavRoute.ImageDetail.route + "?imageUrl=${Uri.encode(it)}")
                     }
                 )
 
@@ -282,6 +309,9 @@ fun SearchNavHost(
                     onDeleteReview = {
                         reviewViewModel.deleteReview(it)
                     },
+                    onClickPhoto = {
+                        searchNavController.navigate(NavRoute.ImageDetail.route + "?imageUrl=${Uri.encode(it)}")
+                    }
                 )
             }
             // 리뷰 작성 화면
@@ -290,7 +320,7 @@ fun SearchNavHost(
                 arguments = listOf(
                     navArgument("facilityName") { type = NavType.StringType },
                     navArgument("facilityId") { type = NavType.IntType },
-                    navArgument("reviewMode") { type = NavType.IntType }
+                    navArgument("reviewMode") { type = NavType.IntType } // 0이면 새로 생성 1이면 수정
                 )
             ) { backStackEntry ->
                 val parentEntry = remember(backStackEntry) {
@@ -309,11 +339,13 @@ fun SearchNavHost(
                         reviewViewModel.clearReviewInfo()
                         searchNavController.popBackStack()
                     },
-                    onDone = {
+                    onDone = { content: String, recommend: String, rating: String ->
                         reviewViewModel.updateReview(
                             isNewReview = if (reviewMode == 0) true else false,
                             facilityId = facilityId,
-                            content = it
+                            content = content,
+                            recommend = recommend,
+                            rating = rating
                         )
                     }
                 )
@@ -355,6 +387,22 @@ fun SearchNavHost(
                     onGoBack = {
                         searchNavController.popBackStack()
                         searchKeywordViewmodel.deleteDirectionData()
+                        mapViewmodel.clearPath()
+                    }
+                )
+            }
+            // 이미지 상세보기 화면
+            composable(
+                route = NavRoute.ImageDetail.route + "?imageUrl={imageUrl}",
+                arguments = listOf(
+                    navArgument("imageUrl") { type = NavType.StringType },
+                )
+            ) { backStackEntry ->
+                val imageUrl = backStackEntry.arguments?.getString("imageUrl") ?: ""
+                ImageDetail(
+                    url = imageUrl,
+                    onGoBack = {
+                        searchNavController.popBackStack()
                     }
                 )
             }
